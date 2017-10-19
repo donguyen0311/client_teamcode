@@ -10,28 +10,28 @@ import Header from './Header';
 const history = createBrowserHistory();
 // const store = createStore();
 
-function checkAuth(nextState, replaceState) {
-    let {loggedIn} = store.getState();
+// function checkAuth(nextState, replaceState) {
+//     let {loggedIn} = store.getState();
 
-    if (nextState.location.pathname === '/signin' || nextState.location.pathname === '/signup') {
-        if (!loggedIn) {
-            if (nextState.location.state && nextState.location.pathname) {
-                replaceState(null, nextState.location.pathname);
-            } else {
-                replaceState(null, '/');
-            }
-        }
-    } else {
-        // If the user is already logged in, forward them to the homepage
-        if (loggedIn) {
-            if (nextState.location.state && nextState.location.pathname) {
-                replaceState(null, nextState.location.pathname);
-            } else {
-                replaceState(null, '/');
-            }
-        }
-    }
-}
+//     if (nextState.location.pathname === '/signin' || nextState.location.pathname === '/signup') {
+//         if (!loggedIn) {
+//             if (nextState.location.state && nextState.location.pathname) {
+//                 replaceState(null, nextState.location.pathname);
+//             } else {
+//                 replaceState(null, '/');
+//             }
+//         }
+//     } else {
+//         // If the user is already logged in, forward them to the homepage
+//         if (loggedIn) {
+//             if (nextState.location.state && nextState.location.pathname) {
+//                 replaceState(null, nextState.location.pathname);
+//             } else {
+//                 replaceState(null, '/');
+//             }
+//         }
+//     }
+// }
 
 export default class App extends React.Component {
     render() {
@@ -39,13 +39,13 @@ export default class App extends React.Component {
             <Provider >
                 <Router history={history}>
                     <Route component={Header}>
-                        <Route path="/" component={HomePage}/>
+                        {/* <Route path="/" component={HomePage}/>
                         <Route onEnter={checkAuth}>
-                            <Route path="/login" component={LoginPage}/>
-                            <Route path="/register" component={RegisterPage}/>
+                            <Route path="/signin" component={LoginPage}/>
+                            <Route path="/signup" component={RegisterPage}/>
                             <Route path="/dashboard" component={Dashboard}/>
                         </Route>
-                        <Route path="*" component={NotFound}/>
+                        <Route path="*" component={NotFound}/> */}
                     </Route>
                 </Router>
             </Provider>

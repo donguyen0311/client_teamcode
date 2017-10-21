@@ -83,8 +83,6 @@ class CheckAuth extends React.Component {
     }
 }
 
-// store.dispatch({type: 'CHANGE_LOGIN_FORM', newState: {email: 'abc', password:
-// 123}}) console.log(store.getState())
 export default class App extends React.Component {
     render() {
         return (

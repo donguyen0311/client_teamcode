@@ -50,8 +50,7 @@ class Login extends React.Component {
                             .push('/dashboard');
                     }
                 });
-        }
-        
+        }    
     }
     _changeEmail(e) {
         this.setState({submitSignin: false});
@@ -109,13 +108,13 @@ class Login extends React.Component {
                 }}>
                     <Header as='h2'>Sign In</Header>
                     {((this.state.emailValid === false || this.state.passwordValid === false) && this.state.submitSignin)
-                        ? <Message
+                        ? <Message key={"1"}
                                 error
                                 header='There was some errors with your submission'
                                 list={[this.state.emailErrorMessage, this.state.passwordErrorMessage]}/>
                         : ''}
                     {(this.props.data.errorMessage && this.state.emailValid && this.state.passwordValid && this.state.submitSignin)
-                        ? <Message
+                        ? <Message key={"2"}
                                 error
                                 header='There was some errors with your submission'
                                 list={[this.props.data.errorMessage]}/>

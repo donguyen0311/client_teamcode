@@ -36,10 +36,30 @@ export function login(email, password) {
     }
 }
 
-export function register(email, username, password, comfirm_password) {
+export function register(email, username, password, confirm_password) {
     return (dispatch) => {
+        dispatch(setErrorMessage(''));
         dispatch(sendingRequest(true));
-        
+        if (anyElementsEmpty(email, username, password, confirm_password)) {
+            dispatch(sendingRequest(false));
+            return;
+        }
+        return auth.register(email, username, password, confirm_password).then(response => {
+            dispatch(sendingRequest(false));
+            if(response.success) {
+                dispatch(setAuthState(true));
+                dispatch(changeRegisterForm({
+                    email: "",
+                    username: "",
+                    password: "",
+                    confirm_password: ""
+                }));
+            }
+            else {
+                dispatch(setErrorMessage(response.message));
+            }
+            return response;
+        });
     }
 }
 

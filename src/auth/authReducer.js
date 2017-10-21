@@ -10,7 +10,7 @@ const initialState = {
         email: '',
         username: '',
         password: '',
-        comfirm_password: ''
+        confirm_password: ''
     },
     currentlySending: false,
     loggedIn: auth.loggedIn(),

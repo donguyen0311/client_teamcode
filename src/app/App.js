@@ -1,54 +1,104 @@
 import React from 'react';
 import {createStore, combineReducers, applyMiddleware} from 'redux';
-import {Router, Route} from 'react-router-dom';
-
-import createBrowserHistory from 'history/createBrowserHistory';
 import {Provider} from 'react-redux';
+import thunk from 'redux-thunk';
+import {BrowserRouter, Route, Redirect, Switch} from 'react-router-dom';
+import {composeWithDevTools} from 'redux-devtools-extension';
+import axios from 'axios';
+
+import auth from '../utils/auth';
 
 import Header from './Header';
+import Dashboard from '../dashboard/Dashboard';
+import Login from '../auth/Login';
+import Register from '../auth/Register';
 
-const history = createBrowserHistory();
-// const store = createStore();
+import rootReducer from './reducers';
 
-// function checkAuth(nextState, replaceState) {
-//     let {loggedIn} = store.getState();
+const store = createStore(rootReducer, composeWithDevTools(applyMiddleware(thunk)));
 
-//     if (nextState.location.pathname === '/signin' || nextState.location.pathname === '/signup') {
-//         if (!loggedIn) {
-//             if (nextState.location.state && nextState.location.pathname) {
-//                 replaceState(null, nextState.location.pathname);
-//             } else {
-//                 replaceState(null, '/');
+// function checkAuth(nextState, replaceState) {     // let {loggedIn} =
+// store.getState();     console.log(nextState, replaceState);     let loggedIn
+// = auth.loggedIn();     axios         .get('/api/authenticate', { headers: {
+//           'x-access-token': localStorage.token         }     })
+// .then(response => {             if (response.data.success) {       if
+// (nextState.location.pathname === '/signin' || nextState.location.pathname ===
+// '/signup') {                     if (!loggedIn) {                         if
+// (nextState.location.state && nextState.location.pathname) {
+//           replaceState(null, nextState.location.pathname);
+//      } else {              replaceState(null, '/');                         }
+//       }                 } else {                     // If the user is
+// already logged in, forward them to the homepage                     if
+// (loggedIn) {                         if (nextState.location.state &&
+// nextState.location.pathname) {                             replaceState(null,
+// nextState.location.pathname);                         } else {
+// replaceState(null, '/');                         }       }                 }
+//            } else { replaceState(null, '/');             }         })
+// .catch(error => {           console.log(error);         }); }
+
+// const PrivateRoute = ({
+//     component: Component,
+//     ...rest
+// }) => (
+//     <Route
+//         {...rest}
+//         render={(props) => (auth.loggedIn()
+//         ? (<Component {...props}/>)
+//         : (<Redirect
+//             to={{
+//             pathname: '/signin',
+//             state: {
+//                 from: props.location
 //             }
-//         }
-//     } else {
-//         // If the user is already logged in, forward them to the homepage
-//         if (loggedIn) {
-//             if (nextState.location.state && nextState.location.pathname) {
-//                 replaceState(null, nextState.location.pathname);
-//             } else {
-//                 replaceState(null, '/');
-//             }
-//         }
-//     }
-// }
+//         }}/>))}/>
+// );
 
+const Home = ({match}) => match && <h1>Home Page</h1>
+
+class CheckAuth extends React.Component {
+    Authenication() {
+        let {loggedIn} = store.getState().authReducer;
+        let {location, history} = this.props;
+        console.log(location, history)
+        if (location.pathname === '/signin' || location.pathname === '/signup') {
+            if (loggedIn) {
+                history.push('/');
+            }
+        } else {
+            // If the user is already logged in, forward them to the homepage
+            if (!loggedIn) {
+                history.push('/');
+            }
+        }
+    }
+    render() {
+        this.Authenication();
+        return (
+            <div>
+                <Route path="/signin" component={Login}/>
+                <Route path="/signup" component={Register}/>
+                <Route path="/dashboard" component={Dashboard}/>
+            </div>
+        )
+    }
+}
+
+// store.dispatch({type: 'CHANGE_LOGIN_FORM', newState: {email: 'abc', password:
+// 123}}) console.log(store.getState())
 export default class App extends React.Component {
     render() {
         return (
-            <Provider >
-                <Router history={history}>
-                    <Route component={Header}>
-                        {/* <Route path="/" component={HomePage}/>
-                        <Route onEnter={checkAuth}>
-                            <Route path="/signin" component={LoginPage}/>
-                            <Route path="/signup" component={RegisterPage}/>
-                            <Route path="/dashboard" component={Dashboard}/>
-                        </Route>
-                        <Route path="*" component={NotFound}/> */}
-                    </Route>
-                </Router>
-            </Provider>
+            <BrowserRouter>
+                <Provider store={store}>
+                    <div>
+                        <Route component={Header}/>
+                        <Switch>
+                            <Route exact path="/" component={Home}/>
+                            <Route component={CheckAuth}/>
+                        </Switch>
+                    </div>
+                </Provider>
+            </BrowserRouter>
         );
     }
 }

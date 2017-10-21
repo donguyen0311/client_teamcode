@@ -1,30 +1,25 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { Input, Menu, Segment, Button, Dropdown, Image } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
+import { logout } from '../auth/AuthActions';
+import Avatar from '../user/UserAvatar';
 
 class Header extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { activeItem: 'home' };
-        this.handleItemClick = this.handleItemClick.bind(this);
+        this._logout = this._logout.bind(this);
     }
 
-    handleItemClick = (e, { name }) => this.setState({ activeItem: name })
-
-    _logout() {
-        // this.props.dispatch(logout());
+    _logout(e) {
+        e.preventDefault();
+        this.props.logout();
+        this.props.history.push('/signin');
     }
 
     render() {
-        const { activeItem } = this.state;
-
-        const Avatar = (
-            <span>
-              <Image avatar src="https://avatars0.githubusercontent.com/u/23453541?s=40&v=4" /> Đô Nguyễn
-            </span>
-        );
         
-        const NavRight = !this.props.loggedIn ? (
+        const NavRight = this.props.auth.loggedIn ? (
             <Menu.Menu position='right'>
                 <Menu.Item>
                     <Input icon='search' placeholder='Search...' />
@@ -32,18 +27,12 @@ class Header extends React.Component {
                 <Menu.Item>
                     <Dropdown trigger={Avatar} pointing='top right' icon={null}>
                         <Dropdown.Menu>
-                            <Dropdown.Item icon='address book' text='Profile' />
-                            <Dropdown.Item icon='dashboard' text='Dashboard' />
-                            <Dropdown.Item text='Save as...' description='ctrl + s' />
-                            <Dropdown.Item text='Rename' description='ctrl + r' />
-                            <Dropdown.Item text='Make a copy' />
-                            <Dropdown.Item icon='folder' text='Move to folder' />
-                            <Dropdown.Item icon='trash' text='Move to trash' />
+                            <Dropdown.Item icon='address book' text='Profile' as={Link} to={`/profile`} />
+                            <Dropdown.Item icon='dashboard' text='Dashboard' as={Link} to={`/dashboard`} />
                             <Dropdown.Divider />
-                            <Dropdown.Item icon='sign out' text='Sign Out' onClick={() => {alert("Clicked")}} />
+                            <Dropdown.Item icon='sign out' text='Sign Out' onClick={this._logout} />
                         </Dropdown.Menu>
                     </Dropdown>
-                    {/* <Button basic onClick={this._logout} >Sign Out</Button> */}
                 </Menu.Item>
             </Menu.Menu>
         ) : (
@@ -51,16 +40,16 @@ class Header extends React.Component {
                 <Menu.Item>
                     <Input icon='search' placeholder='Search...' />
                 </Menu.Item>
-                <Menu.Item name='signIn' active={activeItem === 'signIn'} onClick={this.handleItemClick} as={Link} to={`/signin`} />
-                <Menu.Item name='signUp' active={activeItem === 'signUp'} onClick={this.handleItemClick} as={Link} to={`/signup`} />
+                <Menu.Item name='signIn' active={this.props.location.pathname === '/signin'} as={Link} to={`/signin`} />
+                <Menu.Item name='signUp' active={this.props.location.pathname === '/signup'} as={Link} to={`/signup`} />
             </Menu.Menu>
         );
 
         return (
             <Segment style={{padding: '0.5em'}}>
                 <Menu secondary stackable>
-                    <Menu.Item name='home' active={activeItem === 'home'} onClick={this.handleItemClick} as={Link} to={`/`}/>
-                    <Menu.Item name='about' active={activeItem === 'about'} onClick={this.handleItemClick} as={Link} to={`/about`} />
+                    <Menu.Item name='home' active={this.props.location.pathname === '/'} as={Link} to={`/`}/>
+                    <Menu.Item name='about' active={this.props.location.pathname === '/about'} as={Link} to={`/about`} />
                     { NavRight }
                 </Menu>
             </Segment>
@@ -73,4 +62,14 @@ class Header extends React.Component {
 //     currentlySending: React.PropTypes.bool.isRequired
 // }
 
-export default Header;
+const mapStateToProps = (state) => {
+    return {
+        auth: state.authReducer
+    };
+}
+
+const mapDispatchToProps = {
+    logout
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Header);;

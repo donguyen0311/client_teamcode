@@ -5,64 +5,15 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import styled, { injectGlobal } from 'styled-components';
 import TaskItem from './TaskItem';
 
+const io = require('socket.io-client');
+const socket = io();
+
 // fake data generator
 const getItems = count =>
   Array.from({ length: count }, (v, k) => k).map(k => ({
     id: `item-${k}`,
     content: `item ${k}`,
   }));
-
-const items = [
-	{
-		_id: 1,
-		task_name: 'Design FanPage',
-		level: '',
-		status: 'TODO',
-		description: '',
-		note: '',
-		responsible_user: '',
-		created_by: '',
-		createdAt: '',
-		updatedAt: '',
-	},
-	{
-		_id: 2,
-		task_name: 'Design HomePage',
-		level: '',
-		status: 'DOING',
-		description: '',
-		note: '',
-		responsible_user: '',
-		created_by: '',
-		createdAt: '',
-		updatedAt: '',
-	},
-	{
-		_id: 3,
-		task_name: 'Design UserPage',
-		level: '',
-		status: 'TESTING',
-		description: '',
-		note: '',
-		responsible_user: '',
-		created_by: '',
-		createdAt: '',
-		updatedAt: '',
-	},
-	{
-		_id: 4,
-		task_name: 'Design MainPage',
-		level: '',
-		status: 'DONE',
-		description: '',
-		note: '',
-		responsible_user: '',
-		created_by: '',
-		createdAt: '',
-		updatedAt: '',
-	}
-];
-
 
 // a little function to help us with reordering the result
 const reorder = (list, startIndex, endIndex) => {
@@ -116,6 +67,19 @@ const reorderQuoteMap = ({
 		quoteMap: result,
 		autoFocusQuoteId: target.id,
 	};
+}
+
+const formatTasks = tasks => {
+	var data = {
+		TODO: [],
+		INPROGRESS: [],
+		CODEREVIEW: [],
+		DONE: []
+	};
+	for(let task of tasks) {
+		data[task.status][task.position] = task;
+	}
+	return data;
 }
 
 // using some little inline style helpers to make the app look okay
@@ -201,25 +165,132 @@ const Title =  styled.h4`
 	}
 `;
 
+const items = [
+	{
+		_id: 1,
+		task_name: 'Design FanPage',
+		level: '',
+		status: 'TODO',
+		description: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.',
+		note: '',
+		position: 0,
+		project_id: '',
+		responsible_user: '',
+		created_by: '',
+		createdAt: '',
+		updatedAt: '',
+	},
+	{
+		_id: 15,
+		task_name: 'Design FanPage 2',
+		level: '',
+		status: 'TODO',
+		description: 'Lorem ipsum dolor sit amet. Aenean commodo ligula eget dolor.',
+		note: '',
+		position: 1,
+		project_id: '',
+		responsible_user: '',
+		created_by: '',
+		createdAt: '',
+		updatedAt: '',
+	},
+	{
+		_id: 2,
+		task_name: 'Design HomePage',
+		level: '',
+		status: 'INPROGRESS',
+		description: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Hello!!!',
+		note: '',
+		position: 0,
+		project_id: '',
+		responsible_user: '',
+		created_by: '',
+		createdAt: '',
+		updatedAt: '',
+	},
+	{
+		_id: 3,
+		task_name: 'Design UserPage',
+		level: '',
+		status: 'CODEREVIEW',
+		description: 'Design user',
+		note: '',
+		position: 0,
+		project_id: '',
+		responsible_user: '',
+		created_by: '',
+		createdAt: '',
+		updatedAt: '',
+	},
+	{
+		_id: 4,
+		task_name: 'Design MainPage',
+		level: '',
+		status: 'DONE',
+		description: 'Nothing',
+		note: '',
+		position: 0,
+		project_id: '',
+		responsible_user: '',
+		created_by: '',
+		createdAt: '',
+		updatedAt: '',
+	},
+	{
+		_id: 45,
+		task_name: 'Design MainPage 34',
+		level: '',
+		status: 'DONE',
+		description: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.',
+		note: '',
+		position: 1,
+		project_id: '',
+		responsible_user: '',
+		created_by: '',
+		createdAt: '',
+		updatedAt: '',
+	}
+];
+
 class Project extends React.Component {
   	constructor(props) {
 		super(props);
 		this.state = {
-			columns: '',
+			columns: formatTasks(items),
 			items: getItems(10),
 			autoFocusQuoteId: ''
 		};
 		this.onDragEnd = this.onDragEnd.bind(this);
 		this.onDragStart = this.onDragStart.bind(this);
+		socket.on('Task:updateTaskPosition', (response) => {
+			// dropped nowhere
+			if (!response.destination) {
+				return;
+			}
+
+			let source = response.source;
+			let destination = response.destination;
+
+			const data = reorderQuoteMap({
+				quoteMap: this.state.columns,
+				source,
+				destination,
+			});
+		
+			this.setState({
+				columns: data.quoteMap,
+				autoFocusQuoteId: data.autoFocusQuoteId,
+			});
+		});
   	}
 
   	onDragStart(initial) {
-		console.log(initial);
+		console.log('onDragStart:', initial);
   	}
 
   	onDragEnd(result) {
-		console.log(result);
-		
+		console.log('onDragEnd:',result);
+		socket.emit('Task:changeTaskPosition', result);
 		// dropped nowhere
 		if (!result.destination) {
 			return;
@@ -227,21 +298,6 @@ class Project extends React.Component {
 
 		let source = result.source;
 		let destination = result.destination;
-
-		// reordering column
-		// if (result.type === 'TASK') {
-		// 	const items = reorder(
-		// 		this.state.items,
-		// 	  	source.index,
-		// 	  	destination.index
-		// 	);
-	  
-		// 	this.setState({
-		// 		items,
-		// 	});
-	  
-		// 	return;
-		// }
 
 		const data = reorderQuoteMap({
 			quoteMap: this.state.columns,
@@ -257,7 +313,7 @@ class Project extends React.Component {
   	}
 
   	// Normally you would want to split things out into separate components.
-	  // But in this example everything is just done in one place for simplicity
+	// But in this example everything is just done in one place for simplicity
 
   	render() {
 		return (
@@ -286,7 +342,8 @@ class Project extends React.Component {
 											ref={provided.innerRef}
 											style={{minHeight: 250, marginBottom: 8}}
 										>
-											<Draggable type="TASK" key={234} draggableId={234} >
+										{this.state.columns['TODO'].map(task => (
+											<Draggable type="TASK" key={task._id} draggableId={task._id} >
 												{(provided, snapshot) => (
 													<div>
 														<div
@@ -295,11 +352,11 @@ class Project extends React.Component {
 															{...provided.dragHandleProps}
 														>	
 															<Popup
-																trigger={<div><TaskItem  /></div>}
+																trigger={<div><TaskItem data={task} /></div>}
 																position='right center'
 																on='click'
 															>
-																I am positioned to the right center
+																{task.description}
 															</Popup>	
 															
 														</div>
@@ -307,20 +364,7 @@ class Project extends React.Component {
 													</div>
 												)}
 											</Draggable>
-											<Draggable type="TASK" key={1234} draggableId={1234} >
-												{(provided, snapshot) => (
-													<div>
-														<div
-															ref={provided.innerRef}
-															style={ContainerItemStyle(provided.draggableStyle, snapshot.isDragging, 'todo')}
-															{...provided.dragHandleProps}
-														>
-															ABCD123
-														</div>
-														{provided.placeholder}
-													</div>
-												)}
-											</Draggable>
+										))}		
 										{provided.placeholder}
 										</div>
 									</ContainerList>
@@ -351,20 +395,29 @@ class Project extends React.Component {
 											ref={provided.innerRef}
 											style={{minHeight: 250, marginBottom: 8}}
 										>
-											<Draggable type="TASK" key={1523} draggableId={15523} >
-												{(provided, snapshot) => (
-													<div>
-														<div
-															ref={provided.innerRef}
-															style={ContainerItemStyle(provided.draggableStyle, snapshot.isDragging, 'inprogress')}
-															{...provided.dragHandleProps}
-														>
-															ABCDddd
+											{this.state.columns['INPROGRESS'].map(task => (
+												<Draggable type="TASK" key={task._id} draggableId={task._id} >
+													{(provided, snapshot) => (
+														<div>
+															<div
+																ref={provided.innerRef}
+																style={ContainerItemStyle(provided.draggableStyle, snapshot.isDragging, 'todo')}
+																{...provided.dragHandleProps}
+															>	
+																<Popup
+																	trigger={<div><TaskItem data={task} /></div>}
+																	position='right center'
+																	on='click'
+																>
+																	{task.description}
+																</Popup>	
+																
+															</div>
+															{provided.placeholder}
 														</div>
-														{provided.placeholder}
-													</div>
-												)}
-											</Draggable>
+													)}
+												</Draggable>
+											))}	
 										{provided.placeholder}
 										</div>
 									</ContainerList>
@@ -395,20 +448,29 @@ class Project extends React.Component {
 											ref={provided.innerRef}
 											style={{minHeight: 250, marginBottom: 8}}
 										>
-											<Draggable type="TASK" key={152355} draggableId={155235} >
-												{(provided, snapshot) => (
-													<div>
-														<div
-															ref={provided.innerRef}
-															style={ContainerItemStyle(provided.draggableStyle, snapshot.isDragging, 'codereview')}
-															{...provided.dragHandleProps}
-														>
-															ABCDddd
+											{this.state.columns['CODEREVIEW'].map(task => (
+												<Draggable type="TASK" key={task._id} draggableId={task._id} >
+													{(provided, snapshot) => (
+														<div>
+															<div
+																ref={provided.innerRef}
+																style={ContainerItemStyle(provided.draggableStyle, snapshot.isDragging, 'todo')}
+																{...provided.dragHandleProps}
+															>	
+																<Popup
+																	trigger={<div><TaskItem data={task} /></div>}
+																	position='right center'
+																	on='click'
+																>
+																	{task.description}
+																</Popup>	
+																
+															</div>
+															{provided.placeholder}
 														</div>
-														{provided.placeholder}
-													</div>
-												)}
-											</Draggable>
+													)}
+												</Draggable>
+											))}	
 										{provided.placeholder}
 										</div>
 									</ContainerList>
@@ -439,20 +501,29 @@ class Project extends React.Component {
 											ref={provided.innerRef}
 											style={{minHeight: 250, marginBottom: 8}}
 										>
-											<Draggable type="TASK" key={555} draggableId={155523} >
+										{this.state.columns['DONE'].map(task => (
+											<Draggable type="TASK" key={task._id} draggableId={task._id} >
 												{(provided, snapshot) => (
 													<div>
 														<div
 															ref={provided.innerRef}
-															style={ContainerItemStyle(provided.draggableStyle, snapshot.isDragging, 'done')}
+															style={ContainerItemStyle(provided.draggableStyle, snapshot.isDragging, 'todo')}
 															{...provided.dragHandleProps}
-														>
-															ABCDddd
+														>	
+															<Popup
+																trigger={<div><TaskItem data={task} /></div>}
+																position='right center'
+																on='click'
+															>
+																{task.description}
+															</Popup>	
+															
 														</div>
 														{provided.placeholder}
 													</div>
 												)}
 											</Draggable>
+										))}	
 										{provided.placeholder}
 										</div>
 									</ContainerList>

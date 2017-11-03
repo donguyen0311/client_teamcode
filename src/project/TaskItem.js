@@ -10,10 +10,10 @@ class TaskItem extends React.Component {
             <div>
                 <Image floated='right' size='mini' src='https://react.semantic-ui.com/assets/images/avatar/large/steve.jpg' />
                 <Header size='small' style={{marginBottom: 5, marginTop: 5}}>
-                    <span>Code Web</span>
+                    <span>{this.props.data.task_name}</span>
                 </Header>
                 <Container style={{marginBottom: 10}}>
-                    Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.
+                    {this.props.data.description}
                 </Container>
                 <Label as='a' image size='mini'>
                 <img src='https://react.semantic-ui.com/assets/images/avatar/small/joe.jpg' />

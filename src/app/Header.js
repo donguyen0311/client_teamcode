@@ -18,17 +18,22 @@ class Header extends React.Component {
     }
 
     render() {
-        
+        var trigger = (
+            <span>
+                <Avatar />
+            </span>
+        )
         const NavRight = this.props.auth.loggedIn ? (
             <Menu.Menu position='right'>
                 <Menu.Item>
                     <Input icon='search' placeholder='Search...' />
                 </Menu.Item>
-                <Menu.Item>
-                    <Dropdown trigger={Avatar} pointing='top right' icon={null}>
+                <Menu.Item style={{paddingTop: 3.5, paddingBottom: 3.5}}>
+                    <Dropdown trigger={trigger} pointing='top right' icon={null} >
                         <Dropdown.Menu>
                             <Dropdown.Item icon='address book' text='Profile' as={Link} to={`/profile`} />
                             <Dropdown.Item icon='dashboard' text='Dashboard' as={Link} to={`/dashboard`} />
+                            <Dropdown.Item icon='game' text='Editor' as={Link} to={`/editor`} />
                             <Dropdown.Divider />
                             <Dropdown.Item icon='sign out' text='Sign Out' onClick={this._logout} />
                         </Dropdown.Menu>
@@ -47,7 +52,7 @@ class Header extends React.Component {
 
         return (
             <Segment style={{padding: '0.5em'}}>
-                <Menu secondary stackable>
+                <Menu secondary>
                     <Menu.Item name='home' active={this.props.location.pathname === '/'} as={Link} to={`/`}/>
                     <Menu.Item name='about' active={this.props.location.pathname === '/about'} as={Link} to={`/about`} />
                     { NavRight }

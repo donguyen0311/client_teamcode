@@ -1,9 +1,10 @@
 import React from 'react';
 import { Popup } from 'semantic-ui-react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-//import { Segment, Container, Header, Grid } from 'semantic-ui-react';
+import { Label, Icon, Modal, Button, Form } from 'semantic-ui-react';
 import styled, { injectGlobal } from 'styled-components';
 import TaskItem from './TaskItem';
+import axios from 'axios';
 
 const io = require('socket.io-client');
 const socket = io();
@@ -47,7 +48,7 @@ const reorderQuoteMap = ({
 		return {
 			quoteMap: result,
 			// not auto focusing in own list
-			autoFocusQuoteId: null,
+			// autoFocusQuoteId: null,
 		}
 	}
 
@@ -65,7 +66,7 @@ const reorderQuoteMap = ({
 	};
 	return {
 		quoteMap: result,
-		autoFocusQuoteId: target.id,
+		// autoFocusQuoteId: target.id,
 	};
 }
 
@@ -136,6 +137,7 @@ const Header = styled.div`
 	justify-content: center;
 	background-color: white;
 	transition: background-color 0.1s ease;
+
 `;
 
 const Wrapper = styled.div`
@@ -256,12 +258,12 @@ class Project extends React.Component {
   	constructor(props) {
 		super(props);
 		this.state = {
-			columns: formatTasks(items),
-			items: getItems(10),
-			autoFocusQuoteId: ''
+			columns: {TODO: [], INPROGRESS: [], CODEREVIEW: [], DONE: []},
+			// autoFocusQuoteId: ''
 		};
 		this.onDragEnd = this.onDragEnd.bind(this);
 		this.onDragStart = this.onDragStart.bind(this);
+
 		socket.on('Task:updateTaskPosition', (response) => {
 			// dropped nowhere
 			if (!response.destination) {
@@ -279,18 +281,48 @@ class Project extends React.Component {
 		
 			this.setState({
 				columns: data.quoteMap,
-				autoFocusQuoteId: data.autoFocusQuoteId,
+				// autoFocusQuoteId: data.autoFocusQuoteId,
 			});
 		});
   	}
+
+	componentWillMount() {
+		axios
+			.get('/api/tasks', {headers: { 'x-access-token': localStorage.token } })
+			.then(response => {
+				this.setState({
+					columns: formatTasks(response.data.tasks)
+				});
+			})
+			.catch(error => {
+				console.log(error);
+			});
+	}
+
+	addTask(status) {
+		console.log('add task');
+		console.log(this.state.columns);
+		console.log(status);
+	}
+
+	editTask(taskId) {
+		console.log(taskId);
+	}
+
+	deleteTask(taskId) {
+		console.log(taskId);
+	}
+
+	showDetail(taskId) {
+		console.log(taskId);
+	}
 
   	onDragStart(initial) {
 		console.log('onDragStart:', initial);
   	}
 
   	onDragEnd(result) {
-		console.log('onDragEnd:',result);
-		socket.emit('Task:changeTaskPosition', result);
+		console.log('onDragEnd:', result);
 		// dropped nowhere
 		if (!result.destination) {
 			return;
@@ -307,8 +339,9 @@ class Project extends React.Component {
 	  
 		this.setState({
 			columns: data.quoteMap,
-			autoFocusQuoteId: data.autoFocusQuoteId,
+			// autoFocusQuoteId: data.autoFocusQuoteId,
 		});
+		socket.emit('Task:changeTaskPosition', {columns: this.state.columns, result: result });
 
   	}
 
@@ -325,7 +358,8 @@ class Project extends React.Component {
 					<Container>
 						<Header>
 							<Title>
-								To Do
+								<span style={{fontSize: 18, verticalAlign: 'middle'}}>To Do</span> 
+								<Label as='a' size={'small'} style={{float: 'right'}}>{this.state.columns['TODO'].length}</Label>
 							</Title>
 						</Header>
 
@@ -351,14 +385,12 @@ class Project extends React.Component {
 															style={ContainerItemStyle(provided.draggableStyle, snapshot.isDragging, 'todo')}
 															{...provided.dragHandleProps}
 														>	
-															<Popup
-																trigger={<div><TaskItem data={task} /></div>}
-																position='right center'
-																on='click'
-															>
-																{task.description}
-															</Popup>	
-															
+															<TaskItem 
+																data={task} 
+																showDetail={this.showDetail.bind(this, task._id)} 
+																editTask={this.editTask.bind(this, task._id)} 
+																deleteTask={this.deleteTask.bind(this, task._id)} 
+															/>
 														</div>
 														{provided.placeholder}
 													</div>
@@ -367,6 +399,43 @@ class Project extends React.Component {
 										))}		
 										{provided.placeholder}
 										</div>
+										<Modal trigger={<div style={{height: 60, width: 'auto', border: '3px dashed #999', lineHeight: '50px', borderRadius: 5, textAlign: 'center', color: '#999', cursor: 'pointer'}}><Icon name="add circle" size={'big'} /></div>} size='mini' closeIcon>
+                                    		<Header icon='hashtag' content='Add Task'/>
+											<Modal.Content>
+												<Form>
+													<Form.Field>
+														<label>Task Name</label>
+														<input placeholder='First Name'/>
+													</Form.Field>
+													<Form.Field>
+														<label>Level</label>
+														<input placeholder='Last Name'/>
+													</Form.Field>
+													<Form.Field>
+														<label>Note</label>
+														<input placeholder='Last Name'/>
+													</Form.Field>
+													<Form.Field>
+														<label>Description</label>
+														<input placeholder='Last Name'/>
+													</Form.Field>
+													<Form.Field>
+														<label>Responsible</label>
+														<input placeholder='Last Name'/>
+													</Form.Field>
+												</Form>
+											</Modal.Content>
+											<Modal.Actions>
+												<Button color='red' size='tiny'>
+													<Icon name='remove'/>
+													Cancel
+												</Button>
+												<Button color='green' size='tiny'>
+													<Icon name='checkmark'/>
+													Update
+												</Button>
+											</Modal.Actions>
+										</Modal>
 									</ContainerList>
 								</WrapperList>
 							)}
@@ -378,7 +447,8 @@ class Project extends React.Component {
 					<Container>
 						<Header>
 							<Title>
-								In Progress
+								<span style={{fontSize: 18, verticalAlign: 'middle'}}>In Progress</span> 
+								<Label as='a' size={'small'} style={{float: 'right'}}>{this.state.columns['INPROGRESS'].length}</Label>
 							</Title>
 						</Header>
 
@@ -401,16 +471,15 @@ class Project extends React.Component {
 														<div>
 															<div
 																ref={provided.innerRef}
-																style={ContainerItemStyle(provided.draggableStyle, snapshot.isDragging, 'todo')}
+																style={ContainerItemStyle(provided.draggableStyle, snapshot.isDragging, 'inprogress')}
 																{...provided.dragHandleProps}
 															>	
-																<Popup
-																	trigger={<div><TaskItem data={task} /></div>}
-																	position='right center'
-																	on='click'
-																>
-																	{task.description}
-																</Popup>	
+																<TaskItem 
+																	data={task} 
+																	showDetail={this.showDetail.bind(this, task._id)} 
+																	editTask={this.editTask.bind(this, task._id)} 
+																	deleteTask={this.deleteTask.bind(this, task._id)} 
+																/>	
 																
 															</div>
 															{provided.placeholder}
@@ -431,7 +500,8 @@ class Project extends React.Component {
 					<Container>
 						<Header>
 							<Title>
-								Code Review
+								<span style={{fontSize: 18, verticalAlign: 'middle'}}>Code Review</span> 
+								<Label as='a' size={'small'} style={{float: 'right'}}>{this.state.columns['CODEREVIEW'].length}</Label>
 							</Title>
 						</Header>
 
@@ -454,16 +524,15 @@ class Project extends React.Component {
 														<div>
 															<div
 																ref={provided.innerRef}
-																style={ContainerItemStyle(provided.draggableStyle, snapshot.isDragging, 'todo')}
+																style={ContainerItemStyle(provided.draggableStyle, snapshot.isDragging, 'codereview')}
 																{...provided.dragHandleProps}
 															>	
-																<Popup
-																	trigger={<div><TaskItem data={task} /></div>}
-																	position='right center'
-																	on='click'
-																>
-																	{task.description}
-																</Popup>	
+																<TaskItem 
+																	data={task} 
+																	showDetail={this.showDetail.bind(this, task._id)} 
+																	editTask={this.editTask.bind(this, task._id)} 
+																	deleteTask={this.deleteTask.bind(this, task._id)} 
+																/>	
 																
 															</div>
 															{provided.placeholder}
@@ -484,7 +553,8 @@ class Project extends React.Component {
 					<Container>
 						<Header>
 							<Title>
-								Done
+								<span style={{fontSize: 18, verticalAlign: 'middle'}}>Done</span> 
+								<Label as='a' size={'small'} style={{float: 'right'}}>{this.state.columns['DONE'].length}</Label>
 							</Title>
 						</Header>
 
@@ -507,16 +577,15 @@ class Project extends React.Component {
 													<div>
 														<div
 															ref={provided.innerRef}
-															style={ContainerItemStyle(provided.draggableStyle, snapshot.isDragging, 'todo')}
+															style={ContainerItemStyle(provided.draggableStyle, snapshot.isDragging, 'done')}
 															{...provided.dragHandleProps}
 														>	
-															<Popup
-																trigger={<div><TaskItem data={task} /></div>}
-																position='right center'
-																on='click'
-															>
-																{task.description}
-															</Popup>	
+															<TaskItem 
+																data={task} 
+																showDetail={this.showDetail.bind(this, task._id)} 
+																editTask={this.editTask.bind(this, task._id)} 
+																deleteTask={this.deleteTask.bind(this, task._id)} 
+															/>	
 															
 														</div>
 														{provided.placeholder}

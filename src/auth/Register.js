@@ -117,7 +117,7 @@ class Register extends React.Component {
     }
     _changeConfirmPassword(e) {
         this.setState({submitSignup: false});
-        if(e.target.value == this.props.data.formRegisterState.password) {
+        if(e.target.value === this.props.data.formRegisterState.password) {
             this.setState({
                 confirmPasswordValid: true,
                 confirmPasswordErrorMessage: ''

@@ -1,15 +1,16 @@
 import React from 'react';
-import {createStore, combineReducers, applyMiddleware} from 'redux';
+import {createStore, applyMiddleware} from 'redux';
 import {Provider} from 'react-redux';
 import thunk from 'redux-thunk';
-import {BrowserRouter, Route, Redirect, Switch} from 'react-router-dom';
+import {BrowserRouter, Route, Switch} from 'react-router-dom';
 import {composeWithDevTools} from 'redux-devtools-extension';
-import axios from 'axios';
+// import axios from 'axios';
 
-import auth from '../utils/auth';
+// import auth from '../utils/auth';
 
 import Header from './Header';
 import Dashboard from '../dashboard/Dashboard';
+import Editor from '../editor/Editor';
 import Login from '../auth/Login';
 import Register from '../auth/Register';
 import Estimate from '../auth/Estimate';
@@ -82,6 +83,7 @@ class CheckAuth extends React.Component {
                 <Route path="/signin" component={Login}/>
                 <Route path="/signup" component={Register}/>
                 <Route path="/dashboard" component={Dashboard}/>
+                <Route path="/editor" component={Editor}/>
             </div>
         )
     }

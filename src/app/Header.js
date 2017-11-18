@@ -14,7 +14,7 @@ class Header extends React.Component {
     _logout(e) {
         e.preventDefault();
         this.props.logout();
-        this.props.history.push('/signin');
+        this.props.history.push('/');
     }
 
     render() {
@@ -32,8 +32,7 @@ class Header extends React.Component {
                     <Dropdown trigger={trigger} pointing='top right' icon={null} >
                         <Dropdown.Menu>
                             <Dropdown.Item icon='address book' text='Profile' as={Link} to={`/profile`} />
-                            <Dropdown.Item icon='dashboard' text='Dashboard' as={Link} to={`/dashboard`} />
-                            <Dropdown.Item icon='game' text='Editor' as={Link} to={`/editor`} />
+                            {/* <Dropdown.Item icon='game' text='Editor' as={Link} to={`/editor`} /> */}
                             <Dropdown.Divider />
                             <Dropdown.Item icon='sign out' text='Sign Out' onClick={this._logout} />
                         </Dropdown.Menu>
@@ -42,10 +41,6 @@ class Header extends React.Component {
             </Menu.Menu>
         ) : (
             <Menu.Menu position='right'>
-                <Menu.Item>
-                    <Input icon='search' placeholder='Search...' />
-                </Menu.Item>
-                <Menu.Item name='signIn' active={this.props.location.pathname === '/signin'} as={Link} to={`/signin`} />
                 <Menu.Item name='signUp' active={this.props.location.pathname === '/signup'} as={Link} to={`/signup`} />
             </Menu.Menu>
         );

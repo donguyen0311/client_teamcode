@@ -138,7 +138,7 @@ class TaskItem extends React.Component {
                                                             .data
                                                             .responsible_user
                                                             .map(user => (
-                                                                <Label as='a' image size='tiny'>
+                                                                <Label key={user._id} as='a' image size='tiny'>
                                                                     <img src={this.props.data.created_by.image}/> {this.props.data.created_by.email}
                                                                 </Label>
                                                             ))}

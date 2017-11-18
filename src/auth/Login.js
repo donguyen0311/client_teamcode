@@ -47,7 +47,7 @@ class Login extends React.Component {
                         this
                             .props
                             .history
-                            .push('/dashboard');
+                            .push(this.props.match.url);
                     }
                 });
         }    
@@ -75,7 +75,7 @@ class Login extends React.Component {
     }
     _changePassword(e) {
         this.setState({submitSignin: false});
-        var regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])[0-9a-zA-Z!@#$%^&*]{8,50}$/;
+        var regex = /^(?=.*\d)(?=.*[a-z])(?=.*[!@#$%^&*])[0-9a-zA-Z!@#$%^&*]{8,50}$/;
         if(regex.test(e.target.value)) {
             this.setState({
                 passwordValid: regex.test(e.target.value),

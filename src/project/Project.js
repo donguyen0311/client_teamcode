@@ -1,4 +1,5 @@
 import React from 'react';
+import SideBar from '../app/Sidebar';
 import { Popup } from 'semantic-ui-react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { Label, Icon, Modal, Button, Form } from 'semantic-ui-react';
@@ -7,6 +8,9 @@ import TaskItem from './TaskItem';
 import axios from 'axios';
 
 const io = require('socket.io-client');
+// axios.get('/donguyen').then(response => {
+// 	console.log(response);
+// })
 const socket = io();
 
 // fake data generator
@@ -285,18 +289,49 @@ class Project extends React.Component {
 			});
 		});
   	}
-
-	componentWillMount() {
-		axios
-			.get('/api/tasks', {headers: { 'x-access-token': localStorage.token } })
+	componentWillReceiveProps(nextProps) {
+		console.log(nextProps);
+		axios.get('/api/projects/' + nextProps.match.params.project, {headers: { 'x-access-token': localStorage.token } })
 			.then(response => {
 				this.setState({
-					columns: formatTasks(response.data.tasks)
+					columns: formatTasks(response.data.project.tasks)
 				});
 			})
 			.catch(error => {
 				console.log(error);
 			});
+		// axios
+		// 	.get('/api/tasks', {headers: { 'x-access-token': localStorage.token } })
+		// 	.then(response => {
+		// 		this.setState({
+		// 			columns: formatTasks(response.data.tasks)
+		// 		});
+		// 	})
+		// 	.catch(error => {
+		// 		console.log(error);
+		// 	});
+	}
+	componentWillMount() {
+		console.log(this.props);
+		axios.get('/api/projects/' + this.props.match.params.project, {headers: { 'x-access-token': localStorage.token } })
+			.then(response => {
+				this.setState({
+					columns: formatTasks(response.data.project.tasks)
+				});
+			})
+			.catch(error => {
+				console.log(error);
+			});
+		// axios
+		// 	.get('/api/tasks', {headers: { 'x-access-token': localStorage.token } })
+		// 	.then(response => {
+		// 		this.setState({
+		// 			columns: formatTasks(response.data.tasks)
+		// 		});
+		// 	})
+		// 	.catch(error => {
+		// 		console.log(error);
+		// 	});
 	}
 
 	addTask(status) {
@@ -350,128 +385,235 @@ class Project extends React.Component {
 
   	render() {
 		return (
-			<DragDropContext 
-				onDragEnd={this.onDragEnd}
-				onDragStart={this.onDragStart}
-			>
-				<Wrapper>
-					<Container>
-						<Header>
-							<Title>
-								<span style={{fontSize: 18, verticalAlign: 'middle'}}>To Do</span> 
-								<Label as='a' size={'small'} style={{float: 'right'}}>{this.state.columns['TODO'].length}</Label>
-							</Title>
-						</Header>
+			<div style={{marginLeft: 264, width: 1600, overflowY: 'auto'}}>
+				<DragDropContext 
+					onDragEnd={this.onDragEnd}
+					onDragStart={this.onDragStart}
+				>
+					<Wrapper>
+						<Container>
+							<Header>
+								<Title>
+									<span style={{fontSize: 18, verticalAlign: 'middle'}}>To Do</span> 
+									<Label as='a' size={'small'} style={{float: 'right'}}>{this.state.columns['TODO'].length}</Label>
+								</Title>
+							</Header>
 
-						<Droppable
-							droppableId="TODO"
-							type="TASK"
-						>
-							{(provided, snapshot) => (
-								<WrapperList
-									isDraggingOver={snapshot.isDraggingOver}
-								>
-									<ContainerList>
-										<div
-											ref={provided.innerRef}
-											style={{minHeight: 250, marginBottom: 8}}
-										>
-										{this.state.columns['TODO'].map(task => (
-											<Draggable type="TASK" key={task._id} draggableId={task._id} >
-												{(provided, snapshot) => (
-													<div>
-														<div
-															ref={provided.innerRef}
-															style={ContainerItemStyle(provided.draggableStyle, snapshot.isDragging, 'todo')}
-															{...provided.dragHandleProps}
-														>	
-															<TaskItem 
-																data={task} 
-																showDetail={this.showDetail.bind(this, task._id)} 
-																editTask={this.editTask.bind(this, task._id)} 
-																deleteTask={this.deleteTask.bind(this, task._id)} 
-															/>
-														</div>
-														{provided.placeholder}
-													</div>
-												)}
-											</Draggable>
-										))}		
-										{provided.placeholder}
-										</div>
-										<Modal trigger={<div style={{height: 60, width: 'auto', border: '3px dashed #999', lineHeight: '50px', borderRadius: 5, textAlign: 'center', color: '#999', cursor: 'pointer'}}><Icon name="add circle" size={'big'} /></div>} size='mini' closeIcon>
-                                    		<Header icon='hashtag' content='Add Task'/>
-											<Modal.Content>
-												<Form>
-													<Form.Field>
-														<label>Task Name</label>
-														<input placeholder='First Name'/>
-													</Form.Field>
-													<Form.Field>
-														<label>Level</label>
-														<input placeholder='Last Name'/>
-													</Form.Field>
-													<Form.Field>
-														<label>Note</label>
-														<input placeholder='Last Name'/>
-													</Form.Field>
-													<Form.Field>
-														<label>Description</label>
-														<input placeholder='Last Name'/>
-													</Form.Field>
-													<Form.Field>
-														<label>Responsible</label>
-														<input placeholder='Last Name'/>
-													</Form.Field>
-												</Form>
-											</Modal.Content>
-											<Modal.Actions>
-												<Button color='red' size='tiny'>
-													<Icon name='remove'/>
-													Cancel
-												</Button>
-												<Button color='green' size='tiny'>
-													<Icon name='checkmark'/>
-													Update
-												</Button>
-											</Modal.Actions>
-										</Modal>
-									</ContainerList>
-								</WrapperList>
-							)}
-						</Droppable>	
-					</Container>
-				</Wrapper>
-
-				<Wrapper>
-					<Container>
-						<Header>
-							<Title>
-								<span style={{fontSize: 18, verticalAlign: 'middle'}}>In Progress</span> 
-								<Label as='a' size={'small'} style={{float: 'right'}}>{this.state.columns['INPROGRESS'].length}</Label>
-							</Title>
-						</Header>
-
-						<Droppable
-							droppableId="INPROGRESS"
-							type="TASK"
-						>
-							{(provided, snapshot) => (
-								<WrapperList
-									isDraggingOver={snapshot.isDraggingOver}
-								>
-									<ContainerList>
-										<div
-											ref={provided.innerRef}
-											style={{minHeight: 250, marginBottom: 8}}
-										>
-											{this.state.columns['INPROGRESS'].map(task => (
+							<Droppable
+								droppableId="TODO"
+								type="TASK"
+							>
+								{(provided, snapshot) => (
+									<WrapperList
+										isDraggingOver={snapshot.isDraggingOver}
+									>
+										<ContainerList>
+											<div
+												ref={provided.innerRef}
+												style={{minHeight: 250, marginBottom: 8}}
+											>
+											{this.state.columns['TODO'].map(task => (
 												<Draggable type="TASK" key={task._id} draggableId={task._id} >
 													{(provided, snapshot) => (
 														<div>
 															<div
 																ref={provided.innerRef}
-																style={ContainerItemStyle(provided.draggableStyle, snapshot.isDragging, 'inprogress')}
+																style={ContainerItemStyle(provided.draggableStyle, snapshot.isDragging, 'todo')}
+																{...provided.dragHandleProps}
+															>	
+																<TaskItem 
+																	data={task} 
+																	showDetail={this.showDetail.bind(this, task._id)} 
+																	editTask={this.editTask.bind(this, task._id)} 
+																	deleteTask={this.deleteTask.bind(this, task._id)} 
+																/>
+															</div>
+															{provided.placeholder}
+														</div>
+													)}
+												</Draggable>
+											))}		
+											{provided.placeholder}
+											</div>
+											<Modal trigger={<div style={{height: 60, width: 'auto', border: '3px dashed #999', lineHeight: '50px', borderRadius: 5, textAlign: 'center', color: '#999', cursor: 'pointer'}}><Icon name="add circle" size={'big'} /></div>} size='mini' closeIcon>
+												<Header icon='hashtag' content='Add Task'/>
+												<Modal.Content>
+													<Form>
+														<Form.Field>
+															<label>Task Name</label>
+															<input placeholder='First Name'/>
+														</Form.Field>
+														<Form.Field>
+															<label>Level</label>
+															<input placeholder='Last Name'/>
+														</Form.Field>
+														<Form.Field>
+															<label>Note</label>
+															<input placeholder='Last Name'/>
+														</Form.Field>
+														<Form.Field>
+															<label>Description</label>
+															<input placeholder='Last Name'/>
+														</Form.Field>
+														<Form.Field>
+															<label>Responsible</label>
+															<input placeholder='Last Name'/>
+														</Form.Field>
+													</Form>
+												</Modal.Content>
+												<Modal.Actions>
+													<Button color='red' size='tiny'>
+														<Icon name='remove'/>
+														Cancel
+													</Button>
+													<Button color='green' size='tiny'>
+														<Icon name='checkmark'/>
+														Update
+													</Button>
+												</Modal.Actions>
+											</Modal>
+										</ContainerList>
+									</WrapperList>
+								)}
+							</Droppable>	
+						</Container>
+					</Wrapper>
+
+					<Wrapper>
+						<Container>
+							<Header>
+								<Title>
+									<span style={{fontSize: 18, verticalAlign: 'middle'}}>In Progress</span> 
+									<Label as='a' size={'small'} style={{float: 'right'}}>{this.state.columns['INPROGRESS'].length}</Label>
+								</Title>
+							</Header>
+
+							<Droppable
+								droppableId="INPROGRESS"
+								type="TASK"
+							>
+								{(provided, snapshot) => (
+									<WrapperList
+										isDraggingOver={snapshot.isDraggingOver}
+									>
+										<ContainerList>
+											<div
+												ref={provided.innerRef}
+												style={{minHeight: 250, marginBottom: 8}}
+											>
+												{this.state.columns['INPROGRESS'].map(task => (
+													<Draggable type="TASK" key={task._id} draggableId={task._id} >
+														{(provided, snapshot) => (
+															<div>
+																<div
+																	ref={provided.innerRef}
+																	style={ContainerItemStyle(provided.draggableStyle, snapshot.isDragging, 'inprogress')}
+																	{...provided.dragHandleProps}
+																>	
+																	<TaskItem 
+																		data={task} 
+																		showDetail={this.showDetail.bind(this, task._id)} 
+																		editTask={this.editTask.bind(this, task._id)} 
+																		deleteTask={this.deleteTask.bind(this, task._id)} 
+																	/>	
+																	
+																</div>
+																{provided.placeholder}
+															</div>
+														)}
+													</Draggable>
+												))}	
+											{provided.placeholder}
+											</div>
+										</ContainerList>
+									</WrapperList>
+								)}
+							</Droppable>	
+						</Container>
+					</Wrapper>	
+
+					<Wrapper>
+						<Container>
+							<Header>
+								<Title>
+									<span style={{fontSize: 18, verticalAlign: 'middle'}}>Code Review</span> 
+									<Label as='a' size={'small'} style={{float: 'right'}}>{this.state.columns['CODEREVIEW'].length}</Label>
+								</Title>
+							</Header>
+
+							<Droppable
+								droppableId="CODEREVIEW"
+								type="TASK"
+							>
+								{(provided, snapshot) => (
+									<WrapperList
+										isDraggingOver={snapshot.isDraggingOver}
+									>
+										<ContainerList>
+											<div
+												ref={provided.innerRef}
+												style={{minHeight: 250, marginBottom: 8}}
+											>
+												{this.state.columns['CODEREVIEW'].map(task => (
+													<Draggable type="TASK" key={task._id} draggableId={task._id} >
+														{(provided, snapshot) => (
+															<div>
+																<div
+																	ref={provided.innerRef}
+																	style={ContainerItemStyle(provided.draggableStyle, snapshot.isDragging, 'codereview')}
+																	{...provided.dragHandleProps}
+																>	
+																	<TaskItem 
+																		data={task} 
+																		showDetail={this.showDetail.bind(this, task._id)} 
+																		editTask={this.editTask.bind(this, task._id)} 
+																		deleteTask={this.deleteTask.bind(this, task._id)} 
+																	/>	
+																	
+																</div>
+																{provided.placeholder}
+															</div>
+														)}
+													</Draggable>
+												))}	
+											{provided.placeholder}
+											</div>
+										</ContainerList>
+									</WrapperList>
+								)}
+							</Droppable>	
+						</Container>
+					</Wrapper>
+
+					<Wrapper>
+						<Container>
+							<Header>
+								<Title>
+									<span style={{fontSize: 18, verticalAlign: 'middle'}}>Done</span> 
+									<Label as='a' size={'small'} style={{float: 'right'}}>{this.state.columns['DONE'].length}</Label>
+								</Title>
+							</Header>
+
+							<Droppable
+								droppableId="DONE"
+								type="TASK"
+							>
+								{(provided, snapshot) => (
+									<WrapperList
+										isDraggingOver={snapshot.isDraggingOver}
+									>
+										<ContainerList>
+											<div
+												ref={provided.innerRef}
+												style={{minHeight: 250, marginBottom: 8}}
+											>
+											{this.state.columns['DONE'].map(task => (
+												<Draggable type="TASK" key={task._id} draggableId={task._id} >
+													{(provided, snapshot) => (
+														<div>
+															<div
+																ref={provided.innerRef}
+																style={ContainerItemStyle(provided.draggableStyle, snapshot.isDragging, 'done')}
 																{...provided.dragHandleProps}
 															>	
 																<TaskItem 
@@ -487,121 +629,16 @@ class Project extends React.Component {
 													)}
 												</Draggable>
 											))}	
-										{provided.placeholder}
-										</div>
-									</ContainerList>
-								</WrapperList>
-							)}
-						</Droppable>	
-					</Container>
-				</Wrapper>	
-
-				<Wrapper>
-					<Container>
-						<Header>
-							<Title>
-								<span style={{fontSize: 18, verticalAlign: 'middle'}}>Code Review</span> 
-								<Label as='a' size={'small'} style={{float: 'right'}}>{this.state.columns['CODEREVIEW'].length}</Label>
-							</Title>
-						</Header>
-
-						<Droppable
-							droppableId="CODEREVIEW"
-							type="TASK"
-						>
-							{(provided, snapshot) => (
-								<WrapperList
-									isDraggingOver={snapshot.isDraggingOver}
-								>
-									<ContainerList>
-										<div
-											ref={provided.innerRef}
-											style={{minHeight: 250, marginBottom: 8}}
-										>
-											{this.state.columns['CODEREVIEW'].map(task => (
-												<Draggable type="TASK" key={task._id} draggableId={task._id} >
-													{(provided, snapshot) => (
-														<div>
-															<div
-																ref={provided.innerRef}
-																style={ContainerItemStyle(provided.draggableStyle, snapshot.isDragging, 'codereview')}
-																{...provided.dragHandleProps}
-															>	
-																<TaskItem 
-																	data={task} 
-																	showDetail={this.showDetail.bind(this, task._id)} 
-																	editTask={this.editTask.bind(this, task._id)} 
-																	deleteTask={this.deleteTask.bind(this, task._id)} 
-																/>	
-																
-															</div>
-															{provided.placeholder}
-														</div>
-													)}
-												</Draggable>
-											))}	
-										{provided.placeholder}
-										</div>
-									</ContainerList>
-								</WrapperList>
-							)}
-						</Droppable>	
-					</Container>
-				</Wrapper>
-
-				<Wrapper>
-					<Container>
-						<Header>
-							<Title>
-								<span style={{fontSize: 18, verticalAlign: 'middle'}}>Done</span> 
-								<Label as='a' size={'small'} style={{float: 'right'}}>{this.state.columns['DONE'].length}</Label>
-							</Title>
-						</Header>
-
-						<Droppable
-							droppableId="DONE"
-							type="TASK"
-						>
-							{(provided, snapshot) => (
-								<WrapperList
-									isDraggingOver={snapshot.isDraggingOver}
-								>
-									<ContainerList>
-										<div
-											ref={provided.innerRef}
-											style={{minHeight: 250, marginBottom: 8}}
-										>
-										{this.state.columns['DONE'].map(task => (
-											<Draggable type="TASK" key={task._id} draggableId={task._id} >
-												{(provided, snapshot) => (
-													<div>
-														<div
-															ref={provided.innerRef}
-															style={ContainerItemStyle(provided.draggableStyle, snapshot.isDragging, 'done')}
-															{...provided.dragHandleProps}
-														>	
-															<TaskItem 
-																data={task} 
-																showDetail={this.showDetail.bind(this, task._id)} 
-																editTask={this.editTask.bind(this, task._id)} 
-																deleteTask={this.deleteTask.bind(this, task._id)} 
-															/>	
-															
-														</div>
-														{provided.placeholder}
-													</div>
-												)}
-											</Draggable>
-										))}	
-										{provided.placeholder}
-										</div>
-									</ContainerList>
-								</WrapperList>
-							)}
-						</Droppable>	
-					</Container>
-				</Wrapper>		
-			</DragDropContext>
+											{provided.placeholder}
+											</div>
+										</ContainerList>
+									</WrapperList>
+								)}
+							</Droppable>	
+						</Container>
+					</Wrapper>		
+				</DragDropContext>
+			</div>
 		);
   	}
 }

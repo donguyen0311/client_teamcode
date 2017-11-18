@@ -14,6 +14,10 @@ import Project from '../project/Project';
 import Editor from '../editor/Editor';
 import Login from '../auth/Login';
 import Register from '../auth/Register';
+import Estimate from '../auth/Estimate';
+import CostDriver from '../auth/CostDriver';
+import ScaleFactor from '../auth/ScaleFactor';
+import FunctionPoint from '../auth/FunctionPoint';
 
 import rootReducer from './reducers';
 
@@ -130,6 +134,10 @@ export default class App extends React.Component {
                             <Route path="/signup" component={Register}/>
                             {/* <Route component={CheckAuth}/> */}
                             <PrivateRoute path="/:company" component={Dashboard} />
+                            <Route exact path="/estimate" component={Estimate}/>
+                            <Route exact path="/costdriver" component={CostDriver}/>
+                            <Route exact path="/scalefactor" component={ScaleFactor}/>
+                            <Route exact path="/fp" component={FunctionPoint}/>
                         </Switch>
                     </div>
                 </Provider>
@@ -137,3 +145,4 @@ export default class App extends React.Component {
         );
     }
 }
+

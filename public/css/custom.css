@@ -1,0 +1,13 @@
+.disabled_star{
+	color: #da0b0b !important;
+	text-shadow: 0 -1px 0 #a50303,-1px 0 0 #a50303,0 1px 0 #a50303,1px 0 0 #a50303!important;
+	cursor: no-drop !important;
+}
+
+input.FP{
+	text-align: center !important;
+}
+
+.inline-block{
+	display: inline-block !important;
+}

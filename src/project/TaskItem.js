@@ -62,7 +62,7 @@ class TaskItem extends React.Component {
                 <Image
                     floated='right'
                     size='mini'
-                    src='https://react.semantic-ui.com/assets/images/avatar/large/steve.jpg'/>
+                    src={this.props.data.created_by.image}/>
                 <Header
                     size='small'
                     style={{
@@ -226,14 +226,12 @@ class TaskItem extends React.Component {
                 }}>
                     {this.props.data.description}
                 </Container>
-                <Label as='a' image size='mini'>
-                    <img src='https://react.semantic-ui.com/assets/images/avatar/small/joe.jpg'/>
-                    Joe
-                </Label>
-                <Label as='a' image size='mini'>
-                    <img src='https://react.semantic-ui.com/assets/images/avatar/small/elliot.jpg'/>
-                    Joe
-                </Label>
+                {this.props.data.responsible_user.map(user => (
+                    <Label key={user._id} as='a' image size='mini'>
+                        <img src={user.image}/>
+                        {user.email}
+                    </Label>
+                ))}
             </div>
         )
     }

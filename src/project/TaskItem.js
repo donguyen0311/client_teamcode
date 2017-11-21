@@ -21,6 +21,21 @@ import {
 class TaskItem extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+            openModalEdit: false,
+            editTaskName: this.props.data.task_name,
+			editLevel: this.props.data.level,
+			editNote: this.props.data.note,
+			editDescription: this.props.data.description,
+			editResponsible: this.props.data.responsible_user.map(user => user._id)
+        }
+		this.handleChangeEditResponsible = this.handleChangeEditResponsible.bind(this);
+		this.handleChangeEditTaskName = this.handleChangeEditTaskName.bind(this);
+		this.handleChangeEditLevel = this.handleChangeEditLevel.bind(this);
+		this.handleChangeEditNote = this.handleChangeEditNote.bind(this);
+        this.handleChangeEditDescription = this.handleChangeEditDescription.bind(this);
+        this.editTask = this.editTask.bind(this);
+        this.deleteTask = this.deleteTask.bind(this);
     }
 
     formatDate(dateValue) {
@@ -56,7 +71,64 @@ class TaskItem extends React.Component {
         return `${monthNames[monthIndex]} ${day} ${year} ${hours}:${minutes}:${seconds}`;
     }
 
+    handleChangeEditTaskName(event) {
+		this.setState({
+			editTaskName: event.target.value
+		});
+	}
+
+	handleChangeEditLevel(event) {
+		this.setState({
+			editLevel: event.target.value
+		});
+	}
+
+	handleChangeEditNote(event) {
+		this.setState({
+			editNote: event.target.value
+		});
+	}
+
+	handleChangeEditDescription(event) {
+		this.setState({
+			editDescription: event.target.value
+		});
+	}
+
+	handleChangeEditResponsible(event, { value }) {
+		this.setState({
+			editResponsible: value
+		});
+    }
+    
+    closeModalEdit = () => {
+		this.setState({ 
+			openModalEdit: false,
+            editTaskName: this.props.data.task_name,
+			editLevel: this.props.data.level,
+			editNote: this.props.data.note,
+			editDescription: this.props.data.description,
+			editResponsible: this.props.data.responsible_user.map(user => user._id)
+        })
+        
+	}
+	openModalEdit = () => this.setState({ openModalEdit: true })
+
+    editTask() {
+        this.props.editTask({ ...this.state, _id: this.props.data._id });
+        this.closeModalEdit();
+	}
+
+    closeModalDelete = () => this.setState({ openModalDelete: false })
+    openModalDelete = () => this.setState({ openModalDelete: true })
+
+    deleteTask() {
+        this.props.deleteTask({ _id: this.props.data._id });
+        this.closeModalDelete();
+    }
+
     render() {
+        const { openModalEdit, openModalDelete } = this.state;
         return (
             <div>
                 <Image
@@ -164,54 +236,47 @@ class TaskItem extends React.Component {
                                         </Table>
                                     </Modal.Content>
                                 </Modal>
-                                <Modal trigger={< Dropdown.Item text = 'Edit' />} size='mini' closeIcon>
+                                <Modal open={openModalEdit} onClose={this.closeModalEdit} trigger={<Dropdown.Item onClick={this.openModalEdit} text = 'Edit' />} size='mini' closeIcon>
                                     <Header icon='hashtag' content='Edit Task'/>
                                     <Modal.Content>
-                                        <Form>
+                                        <Form onSubmit={this.editTask}>
                                             <Form.Field>
-                                                <label>Task Name</label>
-                                                <input placeholder='First Name'/>
+                                                <Form.Input label="Task Name" placeholder='Task Name' defaultValue={this.props.data.task_name} onChange={this.handleChangeEditTaskName} required />
                                             </Form.Field>
                                             <Form.Field>
-                                                <label>Level</label>
-                                                <input placeholder='Last Name'/>
+                                                <Form.Input type="number" label="Level"  placeholder='Level' defaultValue={this.props.data.level} onChange={this.handleChangeEditLevel} required />
                                             </Form.Field>
                                             <Form.Field>
-                                                <label>Note</label>
-                                                <input placeholder='Last Name'/>
+                                                <Form.TextArea label="Note" placeholder='Note' defaultValue={this.props.data.note} onChange={this.handleChangeEditNote} required />
                                             </Form.Field>
                                             <Form.Field>
-                                                <label>Description</label>
-                                                <input placeholder='Last Name'/>
+                                                <Form.TextArea label="Description" placeholder='Description' defaultValue={this.props.data.description} onChange={this.handleChangeEditDescription} required />
                                             </Form.Field>
                                             <Form.Field>
                                                 <label>Responsible</label>
-                                                <input placeholder='Last Name'/>
+                                                <Dropdown placeholder='Responsible User' fluid multiple selection 
+                                                    defaultValue={this.props.data.responsible_user.map(user => user._id)}
+                                                    options={this.props.formatResponsibleUser(this.props.users)}
+                                                    onChange={this.handleChangeEditResponsible} />
                                             </Form.Field>
+                                            <Button color='green' size='tiny' type='submit'>
+                                                <Icon name='checkmark'/>
+                                                Update
+                                            </Button>
                                         </Form>
                                     </Modal.Content>
-                                    <Modal.Actions>
-                                        <Button color='red' size='tiny'>
-                                            <Icon name='remove'/>
-                                            Cancel
-                                        </Button>
-                                        <Button color='green' size='tiny'>
-                                            <Icon name='checkmark'/>
-                                            Update
-                                        </Button>
-                                    </Modal.Actions>
                                 </Modal>
-                                <Modal trigger={< Dropdown.Item text = 'Delete' />} size='mini' closeIcon>
+                                <Modal open={openModalDelete} onClose={this.closeModalDelete} trigger={<Dropdown.Item onClick={this.openModalDelete} text = 'Delete' />} size='mini' closeIcon>
                                     <Header icon='hashtag' content='Delete Task'/>
                                     <Modal.Content>
                                         <h4>Are you sure to delete this task ?</h4>
                                     </Modal.Content>
                                     <Modal.Actions>
-                                        <Button color='red' size='tiny'>
+                                        <Button color='red' size='tiny' onClick={this.closeModalDelete}>
                                             <Icon name='remove'/>
                                             No
                                         </Button>
-                                        <Button color='green' size='tiny'>
+                                        <Button color='green' size='tiny' onClick={this.deleteTask}>
                                             <Icon name='checkmark'/>
                                             Yes
                                         </Button>

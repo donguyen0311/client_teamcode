@@ -262,7 +262,7 @@ class Project extends React.Component {
   	constructor(props) {
 		super(props);
 		this.state = {
-			openModal: false,
+			openModalAdd: false,
 			columns: {TODO: [], INPROGRESS: [], CODEREVIEW: [], DONE: []},
 			// autoFocusQuoteId: ''
 			currentProject: '',
@@ -279,6 +279,8 @@ class Project extends React.Component {
 		this.handleChangeAddNote = this.handleChangeAddNote.bind(this);
 		this.handleChangeAddDescription = this.handleChangeAddDescription.bind(this);
 		this.addTask = this.addTask.bind(this);
+		this.editTask = this.editTask.bind(this);
+		this.deleteTask = this.deleteTask.bind(this);
 		this.onDragEnd = this.onDragEnd.bind(this);
 		this.onDragStart = this.onDragStart.bind(this);
 		this.socket = io();
@@ -309,12 +311,37 @@ class Project extends React.Component {
 			columns[response.status].push(response);
 			this.setState({
 				columns: columns
-			})
+			});
+		});
+		this.socket.on('Task:updateEditTask', (response) => {
+			console.log(response);
+			var columns = this.state.columns;
+			columns[response.status][response.position] = response;
+			this.setState({
+				columns: columns
+			});
+		});
+		this.socket.on('Task:updateDeleteTask', (response) => {
+			console.log(response);
+			var columns = this.state.columns;
+			columns[response.status].splice(response.position, 1);
+			this.setState({
+				columns: columns
+			});
 		});
 	}
 	  
-	closeModal = () => this.setState({ openModal: false })
-	openModal = () => this.setState({ openModal: true })
+	closeModalAdd = () => {
+		this.setState({ 
+			openModalAdd: false,
+			addTaskName: '',
+			addLevel: '',
+			addNote: '',
+			addDescription: '',
+			addResponsible: ''
+		})
+	}
+	openModalAdd = () => this.setState({ openModalAdd: true })
 
 	componentWillReceiveProps(nextProps) {
 		console.log(nextProps);
@@ -403,19 +430,16 @@ class Project extends React.Component {
 			belong_project: this.state.currentProject._id,
 			created_by: this.props.profileUser.profile._id
 		});
-		this.closeModal();
+		this.closeModalAdd();
 	}
 
-	editTask(taskId) {
-		console.log(taskId);
+	editTask(task) {
+		this.socket.emit('Task:editTask', task);
 	}
 
-	deleteTask(taskId) {
-		console.log(taskId);
-	}
-
-	showDetail(taskId) {
-		console.log(taskId);
+	deleteTask(task) {
+		console.log(task);
+		this.socket.emit('Task:deleteTask', task);
 	}
 
   	onDragStart(initial) {
@@ -450,7 +474,7 @@ class Project extends React.Component {
 	// But in this example everything is just done in one place for simplicity
 
   	render() {
-		const { openModal } = this.state; 
+		const { openModalAdd } = this.state; 
 		return (
 			<div style={{marginLeft: 264, width: 1600, overflowY: 'auto'}}>
 				<DragDropContext 
@@ -490,9 +514,10 @@ class Project extends React.Component {
 															>	
 																<TaskItem 
 																	data={task} 
-																	showDetail={this.showDetail.bind(this, task._id)} 
-																	editTask={this.editTask.bind(this, task._id)} 
-																	deleteTask={this.deleteTask.bind(this, task._id)} 
+																	editTask={this.editTask} 
+																	deleteTask={this.deleteTask}
+																	formatResponsibleUser={this.formatResponsibleUser}
+																	users={this.state.currentProject.users} 
 																/>
 															</div>
 															{provided.placeholder}
@@ -502,25 +527,21 @@ class Project extends React.Component {
 											))}		
 											{provided.placeholder}
 											</div>
-											<Modal open={openModal} onClose={this.closeModal} trigger={<div onClick={this.openModal} style={{height: 60, width: 'auto', border: '3px dashed #999', lineHeight: '50px', borderRadius: 5, textAlign: 'center', color: '#999', cursor: 'pointer'}}><Icon name="add circle" size={'big'} /></div>} size='mini' closeIcon>
+											<Modal open={openModalAdd} onClose={this.closeModalAdd} trigger={<div onClick={this.openModalAdd} style={{height: 60, width: 'auto', border: '3px dashed #999', lineHeight: '50px', borderRadius: 5, textAlign: 'center', color: '#999', cursor: 'pointer'}}><Icon name="add circle" size={'big'} /></div>} size='mini' closeIcon>
 												<Header icon='hashtag' content='Add Task'/>
 												<Modal.Content>
 													<Form onSubmit={this.addTask.bind(this, 'TODO')}>
 														<Form.Field>
-															<label>Task Name</label>
-															<input placeholder='Task Name' onChange={this.handleChangeAddTaskName} required />
+															<Form.Input label="Task Name" placeholder='Task Name' onChange={this.handleChangeAddTaskName} required />
 														</Form.Field>
 														<Form.Field>
-															<label>Level</label>
-															<input placeholder='Level' onChange={this.handleChangeAddLevel} required />
+															<Form.Input type="number" label="Level" placeholder='Level' onChange={this.handleChangeAddLevel} required />
 														</Form.Field>
 														<Form.Field>
-															<label>Note</label>
-															<input placeholder='Note' onChange={this.handleChangeAddNote} required />
+															<Form.TextArea label="Note" placeholder='Note' onChange={this.handleChangeAddNote} required />
 														</Form.Field>
 														<Form.Field>
-															<label>Description</label>
-															<input placeholder='Description' onChange={this.handleChangeAddDescription} required />
+															<Form.TextArea label="Description" placeholder='Description' onChange={this.handleChangeAddDescription} required />
 														</Form.Field>
 														<Form.Field>
 															<label>Responsible</label>
@@ -575,9 +596,10 @@ class Project extends React.Component {
 																>	
 																	<TaskItem 
 																		data={task} 
-																		showDetail={this.showDetail.bind(this, task._id)} 
-																		editTask={this.editTask.bind(this, task._id)} 
-																		deleteTask={this.deleteTask.bind(this, task._id)} 
+																		editTask={this.editTask} 
+																		deleteTask={this.deleteTask}
+																		formatResponsibleUser={this.formatResponsibleUser}
+																		users={this.state.currentProject.users}  
 																	/>	
 																	
 																</div>
@@ -628,9 +650,10 @@ class Project extends React.Component {
 																>	
 																	<TaskItem 
 																		data={task} 
-																		showDetail={this.showDetail.bind(this, task._id)} 
-																		editTask={this.editTask.bind(this, task._id)} 
-																		deleteTask={this.deleteTask.bind(this, task._id)} 
+																		editTask={this.editTask} 
+																		deleteTask={this.deleteTask} 
+																		formatResponsibleUser={this.formatResponsibleUser} 
+																		users={this.state.currentProject.users}
 																	/>	
 																	
 																</div>
@@ -681,9 +704,10 @@ class Project extends React.Component {
 															>	
 																<TaskItem 
 																	data={task} 
-																	showDetail={this.showDetail.bind(this, task._id)} 
-																	editTask={this.editTask.bind(this, task._id)} 
-																	deleteTask={this.deleteTask.bind(this, task._id)} 
+																	editTask={this.editTask} 
+																	deleteTask={this.deleteTask} 
+																	formatResponsibleUser={this.formatResponsibleUser} 
+																	users={this.state.currentProject.users}
 																/>	
 																
 															</div>

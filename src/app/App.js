@@ -16,10 +16,10 @@ import Project from '../project/Project';
 import Editor from '../editor/Editor';
 import Login from '../auth/Login';
 import Register from '../auth/Register';
-import Estimate from '../auth/Estimate';
-import CostDriver from '../auth/CostDriver';
-import ScaleFactor from '../auth/ScaleFactor';
-import FunctionPoint from '../auth/FunctionPoint';
+import Estimate from '../estimate/Estimate';
+import CostDriver from '../estimate/CostDriver';
+import ScaleFactor from '../estimate/ScaleFactor';
+import FunctionPoint from '../estimate/FunctionPoint';
 
 import rootReducer from './reducers';
 

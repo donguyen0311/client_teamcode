@@ -1,3 +1,4 @@
+
 .disabled_star{
 	color: #da0b0b !important;
 	text-shadow: 0 -1px 0 #a50303,-1px 0 0 #a50303,0 1px 0 #a50303,1px 0 0 #a50303!important;
@@ -10,4 +11,60 @@ input.FP{
 
 .inline-block{
 	display: inline-block !important;
+}
+
+.estimate_maxHeight
+{
+	min-height: calc(70vh);
+}
+
+.margin-left-3{
+	 margin-left: 3px !important;
+}
+
+#estimate{
+	/*background-color: #f0eed;*/
+}
+
+.suitable_staff{
+	/*box-shadow: 0 0.1rem 0.2rem 0 rgba(0,0,0,.2)*/
+}
+
+.suitable_staff:hover{
+	box-shadow: 0 0.1rem 0.2rem 0 rgba(0,0,0,.6)
+}
+
+.suitable_staff_content{
+	background-color: white;
+	color: #808080;
+}
+
+.no_margin{
+	margin: 0 !important;
+}
+
+.no_padding{
+	padding: 0 !important;
+}
+
+.margin_top_7{
+	margin-top: 7px;
+}
+
+.suitable_staff_name{
+    font-size: 18px;
+    color: #1a69a4;
+    font-weight: bold;
+    min-height: 7vh;
+}
+
+.estimated_statistics_fixed{
+    position: fixed;        
+    /* left: 63vw; */
+    width: 48vw;
+}
+
+.ui.grid>.column.suitable_staff:not(.row) {
+    padding-top: 0rem;
+    padding-bottom: 0rem;
 }

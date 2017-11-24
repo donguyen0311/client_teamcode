@@ -84,7 +84,7 @@ class SideBar extends React.Component {
                                 
                                 <Modal trigger={<Icon name="add circle" size={'large'} style={{float: 'right', cursor: 'pointer'}} />} >
                                     <Header icon='archive' content='Create Project' />
-
+                                    
                                     <Modal.Content>
                                         <p>Your inbox is getting full, would you like us to enable automatic archiving of old messages?</p>
                                     </Modal.Content>

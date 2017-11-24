@@ -8,10 +8,13 @@ import {
 	Rating,
 	Popup
 } from 'semantic-ui-react';
-import {login, changeLoginForm} from './AuthActions';
 import {
 	EAF
  } from '../app/COCOMO.js'
+
+ import {
+ 	changeEAF
+ } from './estimateActions'
 
 class CostDriver extends React.Component {
 		constructor(props) {
@@ -81,13 +84,16 @@ class CostDriver extends React.Component {
 			}
 			document.getElementById(clickedFactor+'_description').innerHTML=EAF.find(factor => Object.keys(factor) == clickedFactor)[clickedFactor].rating[clickedValue].description;
 			this.EAF[clickedFactor] = clickedValue;
-			console.log(this.EAF);
+			// console.log(this.EAF);
+			this.props.changeEAF(this.EAF);
 		}
     render() {
     		const NOMINAL_RATING_VALUE = 2;
     		const factors = EAF.map((factor, factorIndex) => {
     			return (
+
     				<Table.Row>
+
 				        <Table.Cell width={1}>{Object.keys(factor)}</Table.Cell>
 				        <Table.Cell width={6}>{factor[Object.keys(factor)].description}</Table.Cell>
 				        <Table.Cell width={4}>
@@ -99,10 +105,10 @@ class CostDriver extends React.Component {
 				        					return (
 			        					    <Popup
 												      trigger={<i id={Object.keys(factor)+'_'+ratingIndex} 
-												      						className={ratingIndex > NOMINAL_RATING_VALUE ? 'icon' : 'icon active'}
-																					onClick={this.starOnClick}
-																		      onMouseOver={this.starOnMouseOver} 
-																		      onMouseOut={this.starOnMouseOut}></i>}
+												      						className={(this.props.input_project.EAF[Object.keys(factor)] === undefined) ? ( (ratingIndex > NOMINAL_RATING_VALUE) ? 'icon' : 'icon active') : ((ratingIndex > this.props.input_project.EAF[Object.keys(factor)]) ? 'icon' : 'icon active')}
+																			onClick={this.starOnClick}
+																	        onMouseOver={this.starOnMouseOver} 
+																	        onMouseOut={this.starOnMouseOut}></i>}
 												      content={
 												      	rating.description ? rating.description :'Not available'
 												      }
@@ -154,4 +160,12 @@ class CostDriver extends React.Component {
     }
 }
 
-export default CostDriver;
+const mapStateToProps = (state) => {
+    return {input_project: state.estimateReducer};
+}
+
+const mapDispatchToProps = {
+    changeEAF
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(CostDriver);

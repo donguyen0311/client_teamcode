@@ -466,7 +466,9 @@ class Project extends React.Component {
 			columns: data.quoteMap,
 			// autoFocusQuoteId: data.autoFocusQuoteId,
 		});
+
 		this.socket.emit('Task:changeTaskPosition', {columns: this.state.columns, result: result });
+
 
   	}
 

@@ -478,7 +478,7 @@ class Project extends React.Component {
   	render() {
 		const { openModalAdd } = this.state; 
 		return (
-			<div style={{marginLeft: 264, width: 1600, overflowY: 'auto'}}>
+			<div style={{marginLeft: 264, minWidth: 940, overflowY: 'auto'}}>
 				<DragDropContext 
 					onDragEnd={this.onDragEnd}
 					onDragStart={this.onDragStart}

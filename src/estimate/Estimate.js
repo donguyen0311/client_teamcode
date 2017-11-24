@@ -86,11 +86,11 @@ class Estimate extends React.Component {
         currentState = {...this.state}
         this.props.getSuitableStaffs({
           person_month: this.state.estimatedResult.ceil.PM,
-          analyst_capability: (this.props.input_project.EAF.ACAP == undefined) ? NOMINAL_RATING_VALUE : parseInt(this.props.input_project.EAF.ACAP)+1,
-          programmer_capability: (this.props.input_project.EAF.PCAP == undefined) ? NOMINAL_RATING_VALUE : parseInt(this.props.input_project.EAF.PCAP)+1,
-          application_experience: (this.props.input_project.EAF.APEX == undefined) ? NOMINAL_RATING_VALUE : parseInt(this.props.input_project.EAF.APEX)+1,
-          platform_experience: (this.props.input_project.EAF.PLEX == undefined) ? NOMINAL_RATING_VALUE : parseInt(this.props.input_project.EAF.PLEX)+1,
-          language_and_toolset_experience: (this.props.input_project.EAF.LTEX == undefined) ? NOMINAL_RATING_VALUE : parseInt(this.props.input_project.EAF.LTEX)+1,
+          analyst_capability: (this.props.input_project.EAF.ACAP == undefined) ? NOMINAL_RATING_VALUE : parseInt(this.props.input_project.EAF.ACAP),
+          programmer_capability: (this.props.input_project.EAF.PCAP == undefined) ? NOMINAL_RATING_VALUE : parseInt(this.props.input_project.EAF.PCAP),
+          application_experience: (this.props.input_project.EAF.APEX == undefined) ? NOMINAL_RATING_VALUE : parseInt(this.props.input_project.EAF.APEX),
+          platform_experience: (this.props.input_project.EAF.PLEX == undefined) ? NOMINAL_RATING_VALUE : parseInt(this.props.input_project.EAF.PLEX),
+          language_and_toolset_experience: (this.props.input_project.EAF.LTEX == undefined) ? NOMINAL_RATING_VALUE : parseInt(this.props.input_project.EAF.LTEX),
         })
         .then((response) => {
             let data = response.data
@@ -308,20 +308,20 @@ class Estimate extends React.Component {
                     </Grid>
                     <Grid.Row>
                       <Grid.Column className="no_padding">
-                        <p><Icon name="money" />Lương: {staff.salary} <Icon name="usd" /></p>
+                        <p><Icon name="money" />Lương: {staff.salary}<Icon name="usd" /></p>
                       </Grid.Column>
                     </Grid.Row>
                     <Grid.Row>
                         <Grid columns={2} className="no_margin">
                             <Grid.Row>
                                 <Grid.Column className="no_padding">
-                                    <p><Icon name="write" />ACAP: {staff.analyst_capability}<Rating maxRating={1} defaultRating={1} icon='star' size='mini' disabled/></p>
-                                    <p><Icon name="code" />PCAP: {staff.programmer_capability}<Rating maxRating={1} defaultRating={1} icon='star' size='mini' disabled/></p>
+                                    <p><Icon name="write" />ACAP: {staff.analyst_capability+1}<Rating maxRating={1} defaultRating={1} icon='star' size='mini' disabled/></p>
+                                    <p><Icon name="code" />PCAP: {staff.programmer_capability+1}<Rating maxRating={1} defaultRating={1} icon='star' size='mini' disabled/></p>
                                 </Grid.Column>
                                 <Grid.Column className="no_padding">
-                                    <p><Icon name="edit" />APEX: {staff.application_experience}<Rating maxRating={1} defaultRating={1} icon='star' size='mini' disabled/></p>
-                                    <p><Icon name="cloud upload" size="medium" />PLEX: {staff.platform_experience}<Rating maxRating={1} defaultRating={1} icon='star' size='mini' disabled/></p>
-                                    <p><Icon name="wrench" size="medium" />LTEX: {staff.language_and_toolset_experience}<Rating maxRating={1} defaultRating={1} icon='star' size='mini' disabled/></p>
+                                    <p><Icon name="edit" />APEX: {staff.application_experience+1}<Rating maxRating={1} defaultRating={1} icon='star' size='mini' disabled/></p>
+                                    <p><Icon name="cloud upload" size="medium" />PLEX: {staff.platform_experience+1}<Rating maxRating={1} defaultRating={1} icon='star' size='mini' disabled/></p>
+                                    <p><Icon name="wrench" size="medium" />LTEX: {staff.language_and_toolset_experience+1}<Rating maxRating={1} defaultRating={1} icon='star' size='mini' disabled/></p>
                                 </Grid.Column>
                             </Grid.Row>
                         </Grid>
@@ -444,21 +444,10 @@ class Estimate extends React.Component {
                     </Grid.Column>
                 </Grid.Row>
             </Grid>
-             
-        const estimate = 
-            <Container>
-                <h2>Kết quả </h2>
-                <h3>Persons/Months: <span id="PMs">0</span></h3>
-                <h3>Time Development: <span id="TDEV">0</span></h3>
-                <h3>Total Person: <span id="PM">0</span></h3>
-              </Container>
-
 
         return (
         <div id="estimate">
             <Container>
-                
-                <h2>Nhân Viên Phù Hợp Với Dự Án</h2>
                 <Button onClick={this.show('SLOCModal')}>Tiến hành ước lượng</Button>
                 <Modal 
                     id = "fp-modal"
@@ -568,20 +557,7 @@ class Estimate extends React.Component {
                     <Button onClick={this.show('CostDriverModal')} > <Icon name='left chevron' /> Quay lại </Button>
                     <Button onClick={this.close('SuitableStaffsModal')} color='green'> Xong  <Icon name='checkmark' /></Button>
                 </Modal.Actions>
-                </Modal>
-
-                <Grid divided='vertically'>
-                        <Grid.Row columns={3}>
-                            <Grid.Column>
-                          </Grid.Column>
-                          <Grid.Column width={10}>
-                            {
-                                estimate
-                            }
-                          </Grid.Column>
-                    </Grid.Row>
-                  </Grid>                           
-
+                </Modal>                          
             </Container>
         </div>
         );

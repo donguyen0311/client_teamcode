@@ -48,7 +48,6 @@ class SideBar extends React.Component {
                         <Menu.Item>
                             <Menu.Header>
                                 <div style={{display: 'inline-block', fontSize: 20}}>Project</div>
-                                
                                 <Modal trigger={<Icon name="add circle" size={'large'} style={{float: 'right', cursor: 'pointer'}} />} >
                                     <Header icon='archive' content='Create Project' />
                                     

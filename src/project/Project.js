@@ -285,37 +285,21 @@ class Project extends React.Component {
 		this.onDragStart = this.onDragStart.bind(this);
 		this.socket = io();
 
-<<<<<<< HEAD
-		// socket.on('Task:updateTaskPosition', (response) => {
-		// 	// dropped nowhere
-		// 	if (!response.destination) {
-		// 		return;
-		// 	}
-=======
 		this.socket.on('Task:updateTaskPosition', (response) => {
 			// dropped nowhere
 			if (!response.destination) {
 				return;
 			}
->>>>>>> 5ab44828514654023eac697edbddfba0f6ffe62b
 
-		// 	let source = response.source;
-		// 	let destination = response.destination;
+			let source = response.source;
+			let destination = response.destination;
 
-		// 	const data = reorderQuoteMap({
-		// 		quoteMap: this.state.columns,
-		// 		source,
-		// 		destination,
-		// 	});
+			const data = reorderQuoteMap({
+				quoteMap: this.state.columns,
+				source,
+				destination,
+			});
 		
-<<<<<<< HEAD
-		// 	this.setState({
-		// 		columns: data.quoteMap,
-		// 		// autoFocusQuoteId: data.autoFocusQuoteId,
-		// 	});
-		// });
-  	}
-=======
 			this.setState({
 				columns: data.quoteMap,
 				// autoFocusQuoteId: data.autoFocusQuoteId,
@@ -358,7 +342,6 @@ class Project extends React.Component {
 		})
 	}
 	openModalAdd = () => this.setState({ openModalAdd: true })
->>>>>>> 5ab44828514654023eac697edbddfba0f6ffe62b
 
 	componentWillReceiveProps(nextProps) {
 		console.log(nextProps);
@@ -483,11 +466,9 @@ class Project extends React.Component {
 			columns: data.quoteMap,
 			// autoFocusQuoteId: data.autoFocusQuoteId,
 		});
-<<<<<<< HEAD
-		// socket.emit('Task:changeTaskPosition', {columns: this.state.columns, result: result });
-=======
+
 		this.socket.emit('Task:changeTaskPosition', {columns: this.state.columns, result: result });
->>>>>>> 5ab44828514654023eac697edbddfba0f6ffe62b
+
 
   	}
 

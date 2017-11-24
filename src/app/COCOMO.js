@@ -749,29 +749,6 @@ export const FUNCTION_POINT_TO_SLOC = {
 	'4gl': 20
 };
 
-export const input_project = {
-	KLOC: 3,
-	cocomo_mode: 'organic',
-	EAF: {
-		product:{
-			RELY: 3,
-		},
-		platform:{
-			
-		},
-		personnel:{
-			
-		},
-		project:{
-			TOOL: 1
-		}
-	},
-	SCALE_FACTORS:{
-	},
-	FUNCTION_POINT:{
-
-	}
-};
 // module.exports ={
 // 	SCALE_FACTORS: SCALE_FACTORS,
 // 	NOMINAL_RATING_VALUE: NOMINAL_RATING_VALUE,

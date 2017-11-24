@@ -8,10 +8,15 @@ import {
 	Rating,
 	Popup
 } from 'semantic-ui-react';
-import {login, changeLoginForm} from './AuthActions';
+
 import {
 	SCALE_FACTORS
  } from '../app/COCOMO.js'
+
+ import {
+    changeScaleFactors
+} from './estimateActions'
+
 
 class ScaleFactor extends React.Component {
 
@@ -68,7 +73,9 @@ class ScaleFactor extends React.Component {
 			}
 			document.getElementById(clickedFactor+'_description').innerHTML=SCALE_FACTORS.find(factor => Object.keys(factor) == clickedFactor)[clickedFactor].rating[clickedValue].description;
 			this.SCALE_FACTORS[clickedFactor] = clickedValue;
-			console.log(this.SCALE_FACTORS);
+			//console.log(this.SCALE_FACTORS);
+			this.props.changeScaleFactors(this.SCALE_FACTORS);
+			
 		}
     render() {
     		const NOMINAL_RATING_VALUE = 2;
@@ -83,16 +90,16 @@ class ScaleFactor extends React.Component {
 				        			factor[Object.keys(factor)].rating.map((rating,ratingIndex) =>{
 				        				return (
 			        					    <Popup
-												      trigger={<i id={Object.keys(factor)+'_'+ratingIndex} 
-												      						className={ratingIndex > NOMINAL_RATING_VALUE ? 'icon' : 'icon active'}
-																					onClick={this.starOnClick}
-																		      onMouseOver={this.starOnMouseOver} 
-																		      onMouseOut={this.starOnMouseOut}></i>}
-												      content={
-												      	rating.description ? rating.description :'n/a'
-												      }
-												      size='large'
-												    />
+										      trigger={<i id={Object.keys(factor)+'_'+ratingIndex} 
+					      						  className={(this.props.input_project.SCALE_FACTORS[Object.keys(factor)] === undefined) ? ( (ratingIndex > NOMINAL_RATING_VALUE) ? 'icon' : 'icon active') : ((ratingIndex > this.props.input_project.SCALE_FACTORS[Object.keys(factor)]) ? 'icon' : 'icon active')}
+												  onClick={this.starOnClick}
+											      onMouseOver={this.starOnMouseOver} 
+											      onMouseOut={this.starOnMouseOut}></i>}
+										      content={
+										      	rating.description ? rating.description :'n/a'
+										      }
+										      size='large'
+										    />
 				        					)
 				        			})
 					        	}
@@ -125,4 +132,12 @@ class ScaleFactor extends React.Component {
     }
 }
 
-export default ScaleFactor;
+const mapStateToProps = (state) => {
+    return {input_project: state.estimateReducer};
+}
+
+const mapDispatchToProps = {
+    changeScaleFactors
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(ScaleFactor);

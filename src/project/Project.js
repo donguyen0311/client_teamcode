@@ -6,8 +6,8 @@ import styled, { injectGlobal } from 'styled-components';
 import TaskItem from './TaskItem';
 import axios from 'axios';
 
-const io = require('socket.io-client');
-const socket = io();
+// const io = require('socket.io-client');
+// const socket = io();
 
 // fake data generator
 const getItems = count =>
@@ -264,26 +264,26 @@ class Project extends React.Component {
 		this.onDragEnd = this.onDragEnd.bind(this);
 		this.onDragStart = this.onDragStart.bind(this);
 
-		socket.on('Task:updateTaskPosition', (response) => {
-			// dropped nowhere
-			if (!response.destination) {
-				return;
-			}
+		// socket.on('Task:updateTaskPosition', (response) => {
+		// 	// dropped nowhere
+		// 	if (!response.destination) {
+		// 		return;
+		// 	}
 
-			let source = response.source;
-			let destination = response.destination;
+		// 	let source = response.source;
+		// 	let destination = response.destination;
 
-			const data = reorderQuoteMap({
-				quoteMap: this.state.columns,
-				source,
-				destination,
-			});
+		// 	const data = reorderQuoteMap({
+		// 		quoteMap: this.state.columns,
+		// 		source,
+		// 		destination,
+		// 	});
 		
-			this.setState({
-				columns: data.quoteMap,
-				// autoFocusQuoteId: data.autoFocusQuoteId,
-			});
-		});
+		// 	this.setState({
+		// 		columns: data.quoteMap,
+		// 		// autoFocusQuoteId: data.autoFocusQuoteId,
+		// 	});
+		// });
   	}
 
 	componentWillMount() {
@@ -341,7 +341,7 @@ class Project extends React.Component {
 			columns: data.quoteMap,
 			// autoFocusQuoteId: data.autoFocusQuoteId,
 		});
-		socket.emit('Task:changeTaskPosition', {columns: this.state.columns, result: result });
+		// socket.emit('Task:changeTaskPosition', {columns: this.state.columns, result: result });
 
   	}
 

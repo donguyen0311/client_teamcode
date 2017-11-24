@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import {
     Sidebar,
     Segment,
@@ -10,21 +11,30 @@ import {
     Modal
 } from 'semantic-ui-react';
 import axios from 'axios';
-
-const io = require('socket.io-client');
-const socket = io();
+import user from '../utils/user';
 
 class SideBar extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            activeItem: '',
+            projects: []
+        }
+    }
+
     handleItemClick = name => this.setState({activeItem: name})
 
-    
     componentWillMount() {
-        
+        user.getUserInfo().then(response => {
+            console.log(response);
+            this.setState({
+                projects: response.user.belong_project
+            })
+        });
     }    
-
     render() {
         const {activeItem} = this.state || {}
-
+        console.log(this.props);
         return (
             <div>
                     <Sidebar
@@ -58,20 +68,17 @@ class SideBar extends React.Component {
                             </Menu.Header>
 
                             <Menu.Menu>
-                                <Menu.Item 
-                                    style={{fontSize: 15}}
-                                    name='enterprise'
-                                    active={activeItem === 'enterprise'}
-                                    onClick={this.handleItemClick}> 
-                                    @ Enterprise
-                                </Menu.Item>
-                                <Menu.Item 
-                                    style={{fontSize: 15}}
-                                    name='consumer'
-                                    active={activeItem === 'consumer'}
-                                    onClick={this.handleItemClick}> 
-                                    @ Consumer
-                                </Menu.Item>
+                                {this.state.projects.map(project => (
+                                    <Menu.Item 
+                                        key={project._id}
+                                        style={{fontSize: 15}}
+                                        name={project.project_name}
+                                        active={activeItem === project.project_name}
+                                        onClick={this.handleItemClick}
+                                        as={Link} to={`${this.props.match.url}/${project.project_name}`}> 
+                                        @ {project.project_name}
+                                    </Menu.Item>
+                                ))}
                             </Menu.Menu>
                         </Menu.Item>
 

@@ -1,13 +1,17 @@
 import React from 'react';
-import { Popup } from 'semantic-ui-react';
+import SideBar from '../app/Sidebar';
+import { Popup, Dropdown, Header } from 'semantic-ui-react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { Label, Icon, Modal, Button, Form } from 'semantic-ui-react';
 import styled, { injectGlobal } from 'styled-components';
 import TaskItem from './TaskItem';
+import {connect} from 'react-redux';
 import axios from 'axios';
 
-// const io = require('socket.io-client');
-// const socket = io();
+const io = require('socket.io-client');
+// axios.get('/donguyen').then(response => {
+// 	console.log(response);
+// })
 
 // fake data generator
 const getItems = count =>
@@ -131,7 +135,7 @@ const ContainerItemStyle = (draggableStyle, isDragging, status) => ({
 	...draggableStyle,
 });
 
-const Header = styled.div`
+const HeaderCustom = styled.div`
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -258,17 +262,42 @@ class Project extends React.Component {
   	constructor(props) {
 		super(props);
 		this.state = {
+			openModalAdd: false,
 			columns: {TODO: [], INPROGRESS: [], CODEREVIEW: [], DONE: []},
 			// autoFocusQuoteId: ''
+			currentProject: '',
+			addTaskName: '',
+			addLevel: '',
+			addNote: '',
+			addDescription: '',
+			addResponsible: ''
 		};
+		this.formatResponsibleUser = this.formatResponsibleUser.bind(this);
+		this.handleChangeAddResponsible = this.handleChangeAddResponsible.bind(this);
+		this.handleChangeAddTaskName = this.handleChangeAddTaskName.bind(this);
+		this.handleChangeAddLevel = this.handleChangeAddLevel.bind(this);
+		this.handleChangeAddNote = this.handleChangeAddNote.bind(this);
+		this.handleChangeAddDescription = this.handleChangeAddDescription.bind(this);
+		this.addTask = this.addTask.bind(this);
+		this.editTask = this.editTask.bind(this);
+		this.deleteTask = this.deleteTask.bind(this);
 		this.onDragEnd = this.onDragEnd.bind(this);
 		this.onDragStart = this.onDragStart.bind(this);
+		this.socket = io();
 
+<<<<<<< HEAD
 		// socket.on('Task:updateTaskPosition', (response) => {
 		// 	// dropped nowhere
 		// 	if (!response.destination) {
 		// 		return;
 		// 	}
+=======
+		this.socket.on('Task:updateTaskPosition', (response) => {
+			// dropped nowhere
+			if (!response.destination) {
+				return;
+			}
+>>>>>>> 5ab44828514654023eac697edbddfba0f6ffe62b
 
 		// 	let source = response.source;
 		// 	let destination = response.destination;
@@ -279,19 +308,81 @@ class Project extends React.Component {
 		// 		destination,
 		// 	});
 		
+<<<<<<< HEAD
 		// 	this.setState({
 		// 		columns: data.quoteMap,
 		// 		// autoFocusQuoteId: data.autoFocusQuoteId,
 		// 	});
 		// });
   	}
+=======
+			this.setState({
+				columns: data.quoteMap,
+				// autoFocusQuoteId: data.autoFocusQuoteId,
+			});
+		});
+		this.socket.on('Task:updateAddTask', (response) => {
+			console.log(response);
+			var columns = this.state.columns;
+			columns[response.status].push(response);
+			this.setState({
+				columns: columns
+			});
+		});
+		this.socket.on('Task:updateEditTask', (response) => {
+			console.log(response);
+			var columns = this.state.columns;
+			columns[response.status][response.position] = response;
+			this.setState({
+				columns: columns
+			});
+		});
+		this.socket.on('Task:updateDeleteTask', (response) => {
+			console.log(response);
+			var columns = this.state.columns;
+			columns[response.status].splice(response.position, 1);
+			this.setState({
+				columns: columns
+			});
+		});
+	}
+	  
+	closeModalAdd = () => {
+		this.setState({ 
+			openModalAdd: false,
+			addTaskName: '',
+			addLevel: '',
+			addNote: '',
+			addDescription: '',
+			addResponsible: ''
+		})
+	}
+	openModalAdd = () => this.setState({ openModalAdd: true })
+>>>>>>> 5ab44828514654023eac697edbddfba0f6ffe62b
 
-	componentWillMount() {
-		axios
-			.get('/api/tasks', {headers: { 'x-access-token': localStorage.token } })
+	componentWillReceiveProps(nextProps) {
+		console.log(nextProps);
+		this.socket.emit('Task:joinRoom', nextProps.match.url);
+		axios.get('/api/projects/' + nextProps.match.params.project, {headers: { 'x-access-token': localStorage.token } })
 			.then(response => {
 				this.setState({
-					columns: formatTasks(response.data.tasks)
+					columns: formatTasks(response.data.project.tasks),
+					currentProject: response.data.project
+				});
+			})
+			.catch(error => {
+				console.log(error);
+			});
+	}
+	componentWillMount() {
+		console.log(this.props);
+		this.socket.emit('Task:joinRoom', this.props.match.url);
+		axios.get('/api/projects/' + this.props.match.params.project, {headers: { 'x-access-token': localStorage.token } })
+			.then(response => {
+				console.log(response);
+				this.setState({
+					columns: formatTasks(response.data.project.tasks),
+					currentProject: response.data.project
 				});
 			})
 			.catch(error => {
@@ -299,22 +390,73 @@ class Project extends React.Component {
 			});
 	}
 
+	formatResponsibleUser(users = []) {
+		var userFormat = [];
+		for(let user of users) {
+			userFormat.push({
+				text: user.email,
+				value: user._id,
+				image: { avatar: true, src: user.image }
+			})
+		}
+		return userFormat;
+	}
+
+	handleChangeAddTaskName(event) {
+		this.setState({
+			addTaskName: event.target.value
+		});
+	}
+
+	handleChangeAddLevel(event) {
+		this.setState({
+			addLevel: event.target.value
+		});
+	}
+
+	handleChangeAddNote(event) {
+		this.setState({
+			addNote: event.target.value
+		});
+	}
+
+	handleChangeAddDescription(event) {
+		this.setState({
+			addDescription: event.target.value
+		});
+	}
+
+	handleChangeAddResponsible(event, { value }) {
+		this.setState({
+			addResponsible: value
+		});
+	}
+
 	addTask(status) {
 		console.log('add task');
-		console.log(this.state.columns);
+		console.log(this.state);
 		console.log(status);
+		this.socket.emit('Task:addTask', {
+			position: this.state.columns[status].length,
+			status: status,
+			task_name: this.state.addTaskName,
+			level: this.state.addLevel,
+			note: this.state.addNote,
+			description: this.state.addDescription,
+			responsible_user: this.state.addResponsible,
+			belong_project: this.state.currentProject._id,
+			created_by: this.props.profileUser.profile._id
+		});
+		this.closeModalAdd();
 	}
 
-	editTask(taskId) {
-		console.log(taskId);
+	editTask(task) {
+		this.socket.emit('Task:editTask', task);
 	}
 
-	deleteTask(taskId) {
-		console.log(taskId);
-	}
-
-	showDetail(taskId) {
-		console.log(taskId);
+	deleteTask(task) {
+		console.log(task);
+		this.socket.emit('Task:deleteTask', task);
 	}
 
   	onDragStart(initial) {
@@ -341,7 +483,11 @@ class Project extends React.Component {
 			columns: data.quoteMap,
 			// autoFocusQuoteId: data.autoFocusQuoteId,
 		});
+<<<<<<< HEAD
 		// socket.emit('Task:changeTaskPosition', {columns: this.state.columns, result: result });
+=======
+		this.socket.emit('Task:changeTaskPosition', {columns: this.state.columns, result: result });
+>>>>>>> 5ab44828514654023eac697edbddfba0f6ffe62b
 
   	}
 
@@ -349,136 +495,240 @@ class Project extends React.Component {
 	// But in this example everything is just done in one place for simplicity
 
   	render() {
+		const { openModalAdd } = this.state; 
 		return (
-			<DragDropContext 
-				onDragEnd={this.onDragEnd}
-				onDragStart={this.onDragStart}
-			>
-				<Wrapper>
-					<Container>
-						<Header>
-							<Title>
-								<span style={{fontSize: 18, verticalAlign: 'middle'}}>To Do</span> 
-								<Label as='a' size={'small'} style={{float: 'right'}}>{this.state.columns['TODO'].length}</Label>
-							</Title>
-						</Header>
+			<div style={{marginLeft: 264, width: 1600, overflowY: 'auto'}}>
+				<DragDropContext 
+					onDragEnd={this.onDragEnd}
+					onDragStart={this.onDragStart}
+				>
+					<Wrapper>
+						<Container>
+							<HeaderCustom>
+								<Title>
+									<span style={{fontSize: 18, verticalAlign: 'middle'}}>To Do</span> 
+									<Label as='a' size={'small'} style={{float: 'right'}}>{this.state.columns['TODO'].length}</Label>
+								</Title>
+							</HeaderCustom>
 
-						<Droppable
-							droppableId="TODO"
-							type="TASK"
-						>
-							{(provided, snapshot) => (
-								<WrapperList
-									isDraggingOver={snapshot.isDraggingOver}
-								>
-									<ContainerList>
-										<div
-											ref={provided.innerRef}
-											style={{minHeight: 250, marginBottom: 8}}
-										>
-										{this.state.columns['TODO'].map(task => (
-											<Draggable type="TASK" key={task._id} draggableId={task._id} >
-												{(provided, snapshot) => (
-													<div>
-														<div
-															ref={provided.innerRef}
-															style={ContainerItemStyle(provided.draggableStyle, snapshot.isDragging, 'todo')}
-															{...provided.dragHandleProps}
-														>	
-															<TaskItem 
-																data={task} 
-																showDetail={this.showDetail.bind(this, task._id)} 
-																editTask={this.editTask.bind(this, task._id)} 
-																deleteTask={this.deleteTask.bind(this, task._id)} 
-															/>
-														</div>
-														{provided.placeholder}
-													</div>
-												)}
-											</Draggable>
-										))}		
-										{provided.placeholder}
-										</div>
-										<Modal trigger={<div style={{height: 60, width: 'auto', border: '3px dashed #999', lineHeight: '50px', borderRadius: 5, textAlign: 'center', color: '#999', cursor: 'pointer'}}><Icon name="add circle" size={'big'} /></div>} size='mini' closeIcon>
-                                    		<Header icon='hashtag' content='Add Task'/>
-											<Modal.Content>
-												<Form>
-													<Form.Field>
-														<label>Task Name</label>
-														<input placeholder='First Name'/>
-													</Form.Field>
-													<Form.Field>
-														<label>Level</label>
-														<input placeholder='Last Name'/>
-													</Form.Field>
-													<Form.Field>
-														<label>Note</label>
-														<input placeholder='Last Name'/>
-													</Form.Field>
-													<Form.Field>
-														<label>Description</label>
-														<input placeholder='Last Name'/>
-													</Form.Field>
-													<Form.Field>
-														<label>Responsible</label>
-														<input placeholder='Last Name'/>
-													</Form.Field>
-												</Form>
-											</Modal.Content>
-											<Modal.Actions>
-												<Button color='red' size='tiny'>
-													<Icon name='remove'/>
-													Cancel
-												</Button>
-												<Button color='green' size='tiny'>
-													<Icon name='checkmark'/>
-													Update
-												</Button>
-											</Modal.Actions>
-										</Modal>
-									</ContainerList>
-								</WrapperList>
-							)}
-						</Droppable>	
-					</Container>
-				</Wrapper>
-
-				<Wrapper>
-					<Container>
-						<Header>
-							<Title>
-								<span style={{fontSize: 18, verticalAlign: 'middle'}}>In Progress</span> 
-								<Label as='a' size={'small'} style={{float: 'right'}}>{this.state.columns['INPROGRESS'].length}</Label>
-							</Title>
-						</Header>
-
-						<Droppable
-							droppableId="INPROGRESS"
-							type="TASK"
-						>
-							{(provided, snapshot) => (
-								<WrapperList
-									isDraggingOver={snapshot.isDraggingOver}
-								>
-									<ContainerList>
-										<div
-											ref={provided.innerRef}
-											style={{minHeight: 250, marginBottom: 8}}
-										>
-											{this.state.columns['INPROGRESS'].map(task => (
+							<Droppable
+								droppableId="TODO"
+								type="TASK"
+							>
+								{(provided, snapshot) => (
+									<WrapperList
+										isDraggingOver={snapshot.isDraggingOver}
+									>
+										<ContainerList>
+											<div
+												ref={provided.innerRef}
+												style={{minHeight: 250, marginBottom: 8}}
+											>
+											{this.state.columns['TODO'].map(task => (
 												<Draggable type="TASK" key={task._id} draggableId={task._id} >
 													{(provided, snapshot) => (
 														<div>
 															<div
 																ref={provided.innerRef}
-																style={ContainerItemStyle(provided.draggableStyle, snapshot.isDragging, 'inprogress')}
+																style={ContainerItemStyle(provided.draggableStyle, snapshot.isDragging, 'todo')}
 																{...provided.dragHandleProps}
 															>	
 																<TaskItem 
 																	data={task} 
-																	showDetail={this.showDetail.bind(this, task._id)} 
-																	editTask={this.editTask.bind(this, task._id)} 
-																	deleteTask={this.deleteTask.bind(this, task._id)} 
+																	editTask={this.editTask} 
+																	deleteTask={this.deleteTask}
+																	formatResponsibleUser={this.formatResponsibleUser}
+																	users={this.state.currentProject.users} 
+																/>
+															</div>
+															{provided.placeholder}
+														</div>
+													)}
+												</Draggable>
+											))}		
+											{provided.placeholder}
+											</div>
+											<Modal open={openModalAdd} onClose={this.closeModalAdd} trigger={<div onClick={this.openModalAdd} style={{height: 60, width: 'auto', border: '3px dashed #999', lineHeight: '50px', borderRadius: 5, textAlign: 'center', color: '#999', cursor: 'pointer'}}><Icon name="add circle" size={'big'} /></div>} size='mini' closeIcon>
+												<Header icon='hashtag' content='Add Task'/>
+												<Modal.Content>
+													<Form onSubmit={this.addTask.bind(this, 'TODO')}>
+														<Form.Field>
+															<Form.Input label="Task Name" placeholder='Task Name' onChange={this.handleChangeAddTaskName} required />
+														</Form.Field>
+														<Form.Field>
+															<Form.Input type="number" label="Level" placeholder='Level' onChange={this.handleChangeAddLevel} required />
+														</Form.Field>
+														<Form.Field>
+															<Form.TextArea label="Note" placeholder='Note' onChange={this.handleChangeAddNote} required />
+														</Form.Field>
+														<Form.Field>
+															<Form.TextArea label="Description" placeholder='Description' onChange={this.handleChangeAddDescription} required />
+														</Form.Field>
+														<Form.Field>
+															<label>Responsible</label>
+															<Dropdown placeholder='Responsible User' fluid multiple selection 
+																options={this.formatResponsibleUser(this.state.currentProject.users)}
+																onChange={this.handleChangeAddResponsible} />
+														</Form.Field>
+														<Button color='green' size='tiny' type='submit'>
+															<Icon name='checkmark'/>
+															Add
+														</Button>
+													</Form>
+												</Modal.Content>
+											</Modal>
+										</ContainerList>
+									</WrapperList>
+								)}
+							</Droppable>	
+						</Container>
+					</Wrapper>
+
+					<Wrapper>
+						<Container>
+							<HeaderCustom>
+								<Title>
+									<span style={{fontSize: 18, verticalAlign: 'middle'}}>In Progress</span> 
+									<Label as='a' size={'small'} style={{float: 'right'}}>{this.state.columns['INPROGRESS'].length}</Label>
+								</Title>
+							</HeaderCustom>
+
+							<Droppable
+								droppableId="INPROGRESS"
+								type="TASK"
+							>
+								{(provided, snapshot) => (
+									<WrapperList
+										isDraggingOver={snapshot.isDraggingOver}
+									>
+										<ContainerList>
+											<div
+												ref={provided.innerRef}
+												style={{minHeight: 250, marginBottom: 8}}
+											>
+												{this.state.columns['INPROGRESS'].map(task => (
+													<Draggable type="TASK" key={task._id} draggableId={task._id} >
+														{(provided, snapshot) => (
+															<div>
+																<div
+																	ref={provided.innerRef}
+																	style={ContainerItemStyle(provided.draggableStyle, snapshot.isDragging, 'inprogress')}
+																	{...provided.dragHandleProps}
+																>	
+																	<TaskItem 
+																		data={task} 
+																		editTask={this.editTask} 
+																		deleteTask={this.deleteTask}
+																		formatResponsibleUser={this.formatResponsibleUser}
+																		users={this.state.currentProject.users}  
+																	/>	
+																	
+																</div>
+																{provided.placeholder}
+															</div>
+														)}
+													</Draggable>
+												))}	
+											{provided.placeholder}
+											</div>
+										</ContainerList>
+									</WrapperList>
+								)}
+							</Droppable>	
+						</Container>
+					</Wrapper>	
+
+					<Wrapper>
+						<Container>
+							<HeaderCustom>
+								<Title>
+									<span style={{fontSize: 18, verticalAlign: 'middle'}}>Code Review</span> 
+									<Label as='a' size={'small'} style={{float: 'right'}}>{this.state.columns['CODEREVIEW'].length}</Label>
+								</Title>
+							</HeaderCustom>
+
+							<Droppable
+								droppableId="CODEREVIEW"
+								type="TASK"
+							>
+								{(provided, snapshot) => (
+									<WrapperList
+										isDraggingOver={snapshot.isDraggingOver}
+									>
+										<ContainerList>
+											<div
+												ref={provided.innerRef}
+												style={{minHeight: 250, marginBottom: 8}}
+											>
+												{this.state.columns['CODEREVIEW'].map(task => (
+													<Draggable type="TASK" key={task._id} draggableId={task._id} >
+														{(provided, snapshot) => (
+															<div>
+																<div
+																	ref={provided.innerRef}
+																	style={ContainerItemStyle(provided.draggableStyle, snapshot.isDragging, 'codereview')}
+																	{...provided.dragHandleProps}
+																>	
+																	<TaskItem 
+																		data={task} 
+																		editTask={this.editTask} 
+																		deleteTask={this.deleteTask} 
+																		formatResponsibleUser={this.formatResponsibleUser} 
+																		users={this.state.currentProject.users}
+																	/>	
+																	
+																</div>
+																{provided.placeholder}
+															</div>
+														)}
+													</Draggable>
+												))}	
+											{provided.placeholder}
+											</div>
+										</ContainerList>
+									</WrapperList>
+								)}
+							</Droppable>	
+						</Container>
+					</Wrapper>
+
+					<Wrapper>
+						<Container>
+							<HeaderCustom>
+								<Title>
+									<span style={{fontSize: 18, verticalAlign: 'middle'}}>Done</span> 
+									<Label as='a' size={'small'} style={{float: 'right'}}>{this.state.columns['DONE'].length}</Label>
+								</Title>
+							</HeaderCustom>
+
+							<Droppable
+								droppableId="DONE"
+								type="TASK"
+							>
+								{(provided, snapshot) => (
+									<WrapperList
+										isDraggingOver={snapshot.isDraggingOver}
+									>
+										<ContainerList>
+											<div
+												ref={provided.innerRef}
+												style={{minHeight: 250, marginBottom: 8}}
+											>
+											{this.state.columns['DONE'].map(task => (
+												<Draggable type="TASK" key={task._id} draggableId={task._id} >
+													{(provided, snapshot) => (
+														<div>
+															<div
+																ref={provided.innerRef}
+																style={ContainerItemStyle(provided.draggableStyle, snapshot.isDragging, 'done')}
+																{...provided.dragHandleProps}
+															>	
+																<TaskItem 
+																	data={task} 
+																	editTask={this.editTask} 
+																	deleteTask={this.deleteTask} 
+																	formatResponsibleUser={this.formatResponsibleUser} 
+																	users={this.state.currentProject.users}
 																/>	
 																
 															</div>
@@ -487,123 +737,22 @@ class Project extends React.Component {
 													)}
 												</Draggable>
 											))}	
-										{provided.placeholder}
-										</div>
-									</ContainerList>
-								</WrapperList>
-							)}
-						</Droppable>	
-					</Container>
-				</Wrapper>	
-
-				<Wrapper>
-					<Container>
-						<Header>
-							<Title>
-								<span style={{fontSize: 18, verticalAlign: 'middle'}}>Code Review</span> 
-								<Label as='a' size={'small'} style={{float: 'right'}}>{this.state.columns['CODEREVIEW'].length}</Label>
-							</Title>
-						</Header>
-
-						<Droppable
-							droppableId="CODEREVIEW"
-							type="TASK"
-						>
-							{(provided, snapshot) => (
-								<WrapperList
-									isDraggingOver={snapshot.isDraggingOver}
-								>
-									<ContainerList>
-										<div
-											ref={provided.innerRef}
-											style={{minHeight: 250, marginBottom: 8}}
-										>
-											{this.state.columns['CODEREVIEW'].map(task => (
-												<Draggable type="TASK" key={task._id} draggableId={task._id} >
-													{(provided, snapshot) => (
-														<div>
-															<div
-																ref={provided.innerRef}
-																style={ContainerItemStyle(provided.draggableStyle, snapshot.isDragging, 'codereview')}
-																{...provided.dragHandleProps}
-															>	
-																<TaskItem 
-																	data={task} 
-																	showDetail={this.showDetail.bind(this, task._id)} 
-																	editTask={this.editTask.bind(this, task._id)} 
-																	deleteTask={this.deleteTask.bind(this, task._id)} 
-																/>	
-																
-															</div>
-															{provided.placeholder}
-														</div>
-													)}
-												</Draggable>
-											))}	
-										{provided.placeholder}
-										</div>
-									</ContainerList>
-								</WrapperList>
-							)}
-						</Droppable>	
-					</Container>
-				</Wrapper>
-
-				<Wrapper>
-					<Container>
-						<Header>
-							<Title>
-								<span style={{fontSize: 18, verticalAlign: 'middle'}}>Done</span> 
-								<Label as='a' size={'small'} style={{float: 'right'}}>{this.state.columns['DONE'].length}</Label>
-							</Title>
-						</Header>
-
-						<Droppable
-							droppableId="DONE"
-							type="TASK"
-						>
-							{(provided, snapshot) => (
-								<WrapperList
-									isDraggingOver={snapshot.isDraggingOver}
-								>
-									<ContainerList>
-										<div
-											ref={provided.innerRef}
-											style={{minHeight: 250, marginBottom: 8}}
-										>
-										{this.state.columns['DONE'].map(task => (
-											<Draggable type="TASK" key={task._id} draggableId={task._id} >
-												{(provided, snapshot) => (
-													<div>
-														<div
-															ref={provided.innerRef}
-															style={ContainerItemStyle(provided.draggableStyle, snapshot.isDragging, 'done')}
-															{...provided.dragHandleProps}
-														>	
-															<TaskItem 
-																data={task} 
-																showDetail={this.showDetail.bind(this, task._id)} 
-																editTask={this.editTask.bind(this, task._id)} 
-																deleteTask={this.deleteTask.bind(this, task._id)} 
-															/>	
-															
-														</div>
-														{provided.placeholder}
-													</div>
-												)}
-											</Draggable>
-										))}	
-										{provided.placeholder}
-										</div>
-									</ContainerList>
-								</WrapperList>
-							)}
-						</Droppable>	
-					</Container>
-				</Wrapper>		
-			</DragDropContext>
+											{provided.placeholder}
+											</div>
+										</ContainerList>
+									</WrapperList>
+								)}
+							</Droppable>	
+						</Container>
+					</Wrapper>		
+				</DragDropContext>
+			</div>
 		);
   	}
 }
 
-export default Project;
+const mapStateToProps = (state) => {
+    return {profileUser: state.userReducer};
+}
+
+export default connect(mapStateToProps)(Project);

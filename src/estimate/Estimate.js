@@ -42,27 +42,18 @@ class Estimate extends React.Component {
         this.onInputSLOCChange = this.onInputSLOCChange.bind(this);
         this.caculateEAF = this.caculateEAF.bind(this);
         this.caculateScaleFactors = this.caculateScaleFactors.bind(this);
+        
 
     }
     estimate(){
-        
 
         let currentState;
-
-        if(this.state.estimatedResult.projectCost != 0)
-        {
-          currentState = {...this.state}
-          currentState.estimatedResult.projectCost = 0
-          this.setState(currentState) 
-        }
-
-        if(this.state.modal.CostDriverModal)
-        {
-            currentState = {...this.state}
-            currentState.modal['CostDriverModal'] = false
-            currentState.modal['SuitableStaffsModal'] = true
-            this.setState(currentState)
-        }
+        currentState = {...this.state}
+        currentState.modal['SLOCModal'] = false
+        currentState.modal['ScaleFactorModal'] = false
+        currentState.modal['CostDriverModal'] = false
+        currentState.modal['SuitableStaffsModal'] = true
+        this.setState(currentState)
 
         var E = COEFFICIENT.B+0.01*(this.caculateScaleFactors(this.props.input_project));
 
@@ -108,19 +99,6 @@ class Estimate extends React.Component {
             currentState.estimatedResult.projectCost = data.projectCost
             this.setState(currentState)
         })
-
-        // this.props.getSuitableStaffs({
-        //   person_month: this.state.estimatedResult.ceil.PM,
-        //   analyst_capability: (this.props.input_project.EAF.ACAP == undefined) ? NOMINAL_RATING_VALUE : parseInt(this.props.input_project.EAF.ACAP)+1,
-        //   programmer_capability: (this.props.input_project.EAF.PCAP == undefined) ? NOMINAL_RATING_VALUE : parseInt(this.props.input_project.EAF.PCAP)+1,
-        //   application_experience: (this.props.input_project.EAF.APEX == undefined) ? NOMINAL_RATING_VALUE : parseInt(this.props.input_project.EAF.APEX)+1,
-        //   platform_experience: (this.props.input_project.EAF.PLEX == undefined) ? NOMINAL_RATING_VALUE : parseInt(this.props.input_project.EAF.PLEX)+1,
-        //   language_and_toolset_experience: (this.props.input_project.EAF.LTEX == undefined) ? NOMINAL_RATING_VALUE : parseInt(this.props.input_project.EAF.LTEX)+1,
-        // }).then(abc){
-        //   console.log(abc);
-        // });
-
-
     }
 
     caculateEAF(){
@@ -272,7 +250,7 @@ class Estimate extends React.Component {
         const { stickyRef } = this.state.stickyRef
         const estimateStep = 
               <Step.Group >
-                <Step active = {SLOCModal} completed ={!SLOCModal}>
+                <Step active = {SLOCModal} completed ={!SLOCModal} onClick={this.show('SLOCModal')}>
                     <Icon name='align justify' />
                   <Step.Content>
                     <Step.Title>Size In Source Lines of Code</Step.Title>
@@ -280,7 +258,8 @@ class Estimate extends React.Component {
                   </Step.Content>
                 </Step>
 
-                <Step active = {ScaleFactorModal} completed={((SLOCModal == false) && (ScaleFactorModal == false)) ? true : false}>
+                <Step active = {ScaleFactorModal} completed={((SLOCModal == false) && (ScaleFactorModal == false)) ? true : false}
+                      onClick={this.show('ScaleFactorModal')}>
                   <Icon name='signal' />
                   <Step.Content>
                     <Step.Title>Scale Factors</Step.Title>
@@ -288,7 +267,8 @@ class Estimate extends React.Component {
                   </Step.Content>
                 </Step>
 
-                <Step active = {CostDriverModal} completed={((SLOCModal == false) && (ScaleFactorModal == false) && (CostDriverModal == false)) ? true : false}>
+                <Step active = {CostDriverModal} completed={((SLOCModal == false) && (ScaleFactorModal == false) && (CostDriverModal == false)) ? true : false}
+                      onClick={this.show('CostDriverModal')}>
                   <Icon name='tasks' />
                   <Step.Content>
                     <Step.Title>Cost Drivers</Step.Title>
@@ -296,7 +276,7 @@ class Estimate extends React.Component {
                   </Step.Content>
                 </Step>
 
-                <Step active = {SuitableStaffsModal}>
+                <Step active = {SuitableStaffsModal} onClick={this.estimate}>
                   <Icon name='trophy' />
                   <Step.Content>
                     <Step.Title>Your Team</Step.Title>

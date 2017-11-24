@@ -140,7 +140,7 @@ class Register extends React.Component {
     }
     render() {
         return (
-            <Container text>
+            <Container text style={{paddingTop: 30}}>
                 <Segment
                     color='black'
                     style={{

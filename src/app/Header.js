@@ -41,15 +41,15 @@ class Header extends React.Component {
             </Menu.Menu>
         ) : (
             <Menu.Menu position='right'>
-                <Menu.Item name='signUp' active={this.props.location.pathname === '/signup'} as={Link} to={`/signup`} />
+                <Menu.Item name='signUp' as={Link} to={`/signup`} />
             </Menu.Menu>
         );
 
         return (
             <Segment style={{padding: '0.5em'}}>
-                <Menu secondary>
-                    <Menu.Item name='home' active={this.props.location.pathname === '/'} as={Link} to={`/`}/>
-                    <Menu.Item name='about' active={this.props.location.pathname === '/about'} as={Link} to={`/about`} />
+                <Menu secondary stackable> 
+                    {/* <Menu.Item name='home' as={Link} to={`/`}/>
+                    <Menu.Item name='about' as={Link} to={`/about`} /> */}
                     { NavRight }
                 </Menu>
             </Segment>
@@ -72,4 +72,4 @@ const mapDispatchToProps = {
     logout
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Header);;
+export default connect(mapStateToProps, mapDispatchToProps)(Header);

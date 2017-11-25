@@ -90,45 +90,12 @@ class SideBar extends React.Component {
                         <Menu.Header>
                             <div style={{display: 'inline-block', fontSize: 19}}>Project</div>
                             
-<<<<<<< HEAD
                             <Modal trigger={<Icon name="add circle" size={'large'} style={{float: 'right', cursor: 'pointer'}} />} >
                                 <Header icon='archive' content='Create Project' />
                                 
                                 <Modal.Content>
                                     <Estimate />
                                 </Modal.Content>
-=======
-                        </Menu.Item>
-                        <Menu.Item style={{fontSize: 19, fontWeight: 'bold'}} 
-                                    as={Link} 
-                                    to={`${this.props.match.url}/dashboard`}
-                                    name={'dashboard'}
-                                    active={activeItem === 'dashboard'}
-                                    onClick={this.handleItemClick.bind(this, 'dashboard')}>
-                                    
-                                <Icon name='dashboard' />Dashboard   
-                        </Menu.Item>
-                        <Menu.Item>
-                            <Menu.Header>
-                                <div style={{display: 'inline-block', fontSize: 19}}>Project</div>
-                                <Modal trigger={<Icon name="add circle" size={'large'} style={{float: 'right', cursor: 'pointer'}} />} >
-                                    <Header icon='archive' content='Create Project' />
-                                    
-                                    <Modal.Content>
-                                        <p>Your inbox is getting full, would you like us to enable automatic archiving of old messages?</p>
-                                    </Modal.Content>
-
-                                    <Modal.Actions>
-                                        <Button>
-                                            <Icon name='plus' /> Create
-                                        </Button>
-                                        <Button>
-                                            <Icon name='cancel' /> Cancel
-                                        </Button>
-                                    </Modal.Actions>
-                                </Modal>
-                            </Menu.Header>
->>>>>>> fc48c356261f3beb8fce48dfb7ed5aa9fd9beb17
 
                                 <Modal.Actions>
                                     <Button>

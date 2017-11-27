@@ -85,7 +85,12 @@ class CostDriver extends React.Component {
 			document.getElementById(clickedFactor+'_description').innerHTML=EAF.find(factor => Object.keys(factor) == clickedFactor)[clickedFactor].rating[clickedValue].description;
 			this.EAF[clickedFactor] = clickedValue;
 			// console.log(this.EAF);
-			this.props.changeEAF(this.EAF);
+			this.props.changeEAF(
+				Object.assign(
+					{...this.props.input_project.EAF},
+					{[clickedFactor]: clickedValue}
+				)
+			);
 		}
     render() {
     		const NOMINAL_RATING_VALUE = 2;

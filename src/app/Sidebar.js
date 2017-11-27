@@ -12,6 +12,7 @@ import {
     Dropdown
 } from 'semantic-ui-react';
 import NavBar from './Header';
+import Estimate from '../estimate/Estimate';
 import Avatar from '../user/UserAvatar';
 import axios from 'axios';
 import user from '../utils/user';
@@ -85,7 +86,7 @@ class SideBar extends React.Component {
                                     <Header icon='archive' content='Create Project' />
                                     
                                     <Modal.Content>
-                                        <p>Your inbox is getting full, would you like us to enable automatic archiving of old messages?</p>
+                                        <Estimate />
                                     </Modal.Content>
 
                                     <Modal.Actions>

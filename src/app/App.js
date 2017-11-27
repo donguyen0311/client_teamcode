@@ -47,11 +47,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
             });
         return (
             loggedIn ? (
-                <div>
-                    <Component {...props}/>
-                    <Route path={`${props.match.url}/dashboard`} component={Dashboard} />
-                    <Route path={`${props.match.url}/project/:project`} component={Projects} />
-                </div>
+                <Component {...props}/>
             ) : (
                 <Route component={Login} />
             )
@@ -64,7 +60,7 @@ export default class App extends React.Component {
         return (
             <BrowserRouter>
                 <Provider store={store}>
-                    <div>
+                    <div style={{height: '100%'}}>
                         <Switch>
                             <Route exact path="/" component={Home}/>
                             <Route path="/signup" component={Register}/>

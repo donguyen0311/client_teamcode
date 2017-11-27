@@ -19,6 +19,7 @@ var auth = {
     },
     logout() {
         localStorage.removeItem('token');
+        sessionStorage.removeItem('current_project');
     },
     loggedIn() {
         return !!localStorage.token;

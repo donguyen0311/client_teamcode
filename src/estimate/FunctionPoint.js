@@ -112,30 +112,28 @@ class FunctionPoint extends React.Component {
                     </Table.Header>
                     <Table.Body>
                       {
-                                FUNCTION_POINT.map((fpType, fpTypeIndex) => {
-                                    return (
-                                        <Table.Row>
-                                            <Table.Cell>
-                                                {fpType[Object.keys(fpType)].standfor+' ('+Object.keys(fpType)+')'}
-                                            </Table.Cell>
-                                            <Table.Cell width={12}>
-                                                {fpType[Object.keys(fpType)].description}
-                                            </Table.Cell>
-                                        </Table.Row>
-                                    )
-                                })
+                        FUNCTION_POINT.map((fpType, fpTypeIndex) => (
+                                <Table.Row key={fpTypeIndex}>
+                                    <Table.Cell key={'cell_1_' + fpTypeIndex}>
+                                        {fpType[Object.keys(fpType)].standfor+' ('+Object.keys(fpType)+')'}
+                                    </Table.Cell>
+                                    <Table.Cell width={12} key={'cell_2_' + fpTypeIndex}>
+                                        {fpType[Object.keys(fpType)].description}
+                                    </Table.Cell>
+                                </Table.Row>
+                            )
+                        )
                       }
                     </Table.Body>                   
                 </Table>
 
             const fpTypes = FUNCTION_POINT.map((fpType, fpTypeIndex) => {
                 return (
-                    <Table.Row>
-                        <Table.Cell>{fpType[Object.keys(fpType)].standfor+' ('+Object.keys(fpType)+')'}</Table.Cell>
+                    <Table.Row key={fpTypeIndex}>
+                        <Table.Cell key={'cell_' + fpTypeIndex}>{fpType[Object.keys(fpType)].standfor+' ('+Object.keys(fpType)+')'}</Table.Cell>
                         {
-                            fpType[Object.keys(fpType)].weight.map((fpWeight, fpWeightIndex) => {
-                                return (
-                                    <Table.Cell>
+                            fpType[Object.keys(fpType)].weight.map((fpWeight, fpWeightIndex) => (
+                                    <Table.Cell key={fpWeightIndex}>
                                         <div className="ui input">
                                             <input  type="text" 
                                                     id={Object.keys(fpType)+'_'+fpWeightIndex} 
@@ -145,8 +143,7 @@ class FunctionPoint extends React.Component {
                                                     val={0}/>
                                         </div>
                                     </Table.Cell>
-                                    )
-                            })
+                            ))
                         }
                         
                     </Table.Row>

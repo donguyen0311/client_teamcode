@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Input, Menu, Segment, Button, Dropdown, Image } from 'semantic-ui-react';
+import { Input, Menu, Segment, Button, Dropdown, Image, Icon } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { logout } from '../auth/AuthActions';
 import Avatar from '../user/UserAvatar';
@@ -50,6 +50,9 @@ class Header extends React.Component {
                 <Menu secondary stackable> 
                     {/* <Menu.Item name='home' as={Link} to={`/`}/>
                     <Menu.Item name='about' as={Link} to={`/about`} /> */}
+                    <Menu.Item name='home'> 
+                        <Icon name='sidebar' size='large' style={{cursor: 'pointer'}} onClick={this.props.toggleVisibility}/>
+                    </Menu.Item>
                     { NavRight }
                 </Menu>
             </Segment>

@@ -74,7 +74,12 @@ class ScaleFactor extends React.Component {
 			document.getElementById(clickedFactor+'_description').innerHTML=SCALE_FACTORS.find(factor => Object.keys(factor) == clickedFactor)[clickedFactor].rating[clickedValue].description;
 			this.SCALE_FACTORS[clickedFactor] = clickedValue;
 			//console.log(this.SCALE_FACTORS);
-			this.props.changeScaleFactors(this.SCALE_FACTORS);
+			this.props.changeScaleFactors(
+				Object.assign(
+					{...this.props.input_project.SCALE_FACTORS},
+					{[clickedFactor]: clickedValue}
+				)
+			);
 			
 		}
     render() {

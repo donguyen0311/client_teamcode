@@ -4,9 +4,11 @@ import auth from '../utils/auth';
 const initialState = {
     formLoginState: {
         email: '',
-        password: ''
+        password: '',
+        company_name: ''
     },
     formRegisterState: {
+        company_name: '',
         email: '',
         username: '',
         password: '',

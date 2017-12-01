@@ -13,6 +13,9 @@ import SideBar from '../sidebar/Sidebar';
 
 import Login from '../auth/Login';
 import Register from '../auth/Register';
+
+import Dashboard from '../dashboard/Dashboard';
+import Project from '../project/Project';
 // import Estimate from '../estimate/Estimate';
 // import CostDriver from '../estimate/CostDriver';
 // import ScaleFactor from '../estimate/ScaleFactor';

@@ -1,12 +1,12 @@
 import axios from 'axios';
 
 var auth = {
-    login(email, password) {
+    login(email, password, company_name) {
         if (this.loggedIn()) {
             return {error: false, message: 'You have been logged in.'};
         }
         return axios
-                .post('/api/login', {email, password})
+                .post('/api/login', {email, password, company_name})
                 .then(response => {
                     if (response.data.success) {
                         localStorage.token = response.data.token;
@@ -24,12 +24,12 @@ var auth = {
     loggedIn() {
         return !!localStorage.token;
     },
-    register(email, username, password, confirm_password) {
+    register(company_name, email, username, password, confirm_password) {
         return axios
-            .post('/api/register', {email, username, password, confirm_password})
+            .post('/api/register', {company_name, email, username, password, confirm_password})
             .then(response => {
                 if (response.data.success) {
-                    return this.login(email, password);
+                    return this.login(email, password, company_name);
                 }
                 return response.data;
             })

@@ -35,6 +35,8 @@ class SideBar extends React.Component {
     // toggleVisibility = () => this.setState({ visibleSidebar: !this.state.visibleSidebar })
     toggleVisibility = () => this.props.changeVisible(!this.props.sidebar.visibleSidebar)
 
+    hideSidebar = () => this.props.sidebar.visibleSidebar ? this.props.changeVisible(false) : ''
+
     handleItemClick = name => {
         sessionStorage.current_project = name;
         this.setState({activeItem: name})
@@ -63,7 +65,7 @@ class SideBar extends React.Component {
             <Sidebar.Pushable>
                 <Sidebar
                     as={Menu}
-                    animation='push'
+                    animation='overlay'
                     visible={this.props.sidebar.visibleSidebar}
                     vertical
                     inverted
@@ -145,7 +147,7 @@ class SideBar extends React.Component {
                         </Menu.Menu>
                     </Menu.Item>
                 </Sidebar>
-                <Sidebar.Pusher>
+                <Sidebar.Pusher onClick={this.hideSidebar}>
                     <NavBar {...this.props} toggleVisibility={this.toggleVisibility} />
                     <Route path={`${this.props.match.url}/dashboard`} component={Dashboard} />
                     <Route path={`${this.props.match.url}/project/:project`} component={Project} />

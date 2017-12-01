@@ -480,8 +480,8 @@ class Project extends React.Component {
   	render() {
 		const { openModalAdd } = this.state; 
 		return (
-			<div style={{width: '100%', overflow: 'auto'}}>
-				<div style={{width: '1320px'}}>
+			<div style={{width: '100%', height: 'calc(100vh - 59px)', overflow: 'auto', marginTop: '-1rem'}}>
+				<div style={{ width: 1330 }}>
 				<DragDropContext 
 					onDragEnd={this.onDragEnd}
 					onDragStart={this.onDragStart}

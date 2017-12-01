@@ -34,6 +34,8 @@ class Login extends React.Component {
         this._emitChange = this
             ._emitChange
             .bind(this);
+
+        this._emitChange( { ...this.props.data.formLoginState, company_name: this.props.match.params.company } );
     }
     _handleSignin(e) {
         e.preventDefault();
@@ -41,7 +43,7 @@ class Login extends React.Component {
         if(this.state.emailValid && this.state.passwordValid) {
             this
                 .props
-                .login(this.props.data.formLoginState.email, this.props.data.formLoginState.password)
+                .login(this.props.data.formLoginState.email, this.props.data.formLoginState.password, this.props.data.formLoginState.company_name)
                 .then(response => {
                     if (response.success) {
                         this
@@ -121,8 +123,8 @@ class Login extends React.Component {
                         : ''}
                     <Form onSubmit={this._handleSignin}>
                         <Form.Field>
-                            <label htmlFor="email">Email</label>
-                            <Input
+                            <Form.Input
+                                label="Email"
                                 type="email"
                                 id="email"
                                 placeholder='example@gmail.com'
@@ -130,8 +132,8 @@ class Login extends React.Component {
                                 required />
                         </Form.Field>
                         <Form.Field>
-                            <label htmlFor="password">Password</label>
-                            <Input
+                            <Form.Input
+                                label="Password"
                                 type="password"
                                 id="password"
                                 placeholder='••••••••••'

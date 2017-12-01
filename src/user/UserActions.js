@@ -1,5 +1,6 @@
 import { UPDATE_PROFILE, UPDATE_LOADING } from './UserConstants';
 import user from '../utils/user';
+import auth from '../utils/auth';
 
 export function getUserInfo() {
     return (dispatch) => {
@@ -8,8 +9,11 @@ export function getUserInfo() {
             dispatch(setLoading(false));
             if(response.success) {
                 dispatch(updateUserInfo(response.user));
+                return response;
             }
-            return response;
+            else {
+                auth.logout();
+            }
         });
     }
 }

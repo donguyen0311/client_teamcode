@@ -1,3 +1,7 @@
+.ui.dropdown .menu>* {
+	white-space: normal !important;
+	word-wrap: break-word !important;
+}
 
 .disabled_star{
 	color: #da0b0b !important;

@@ -1,11 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Input, Menu, Segment, Button, Dropdown, Image, Icon } from 'semantic-ui-react';
+import { Input, Menu, Segment, Button, Dropdown, Image, Icon, Header, Item } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { logout } from '../auth/AuthActions';
 import Avatar from '../user/UserAvatar';
+import Notifications from '../notification/Notification';
 
-class Header extends React.Component {
+class NavBar extends React.Component {
     constructor(props) {
         super(props);
         this._logout = this._logout.bind(this);
@@ -28,10 +29,15 @@ class Header extends React.Component {
                 <Menu.Item>
                     <Input icon='search' placeholder='Search...' />
                 </Menu.Item>
+
+                <Menu.Item>
+                    <Notifications />
+                </Menu.Item>
+
                 <Menu.Item style={{paddingTop: 3.5, paddingBottom: 3.5}}>
                     <Dropdown trigger={trigger} pointing='top right' icon={null} >
                         <Dropdown.Menu>
-                            <Dropdown.Item icon='address book' text='Profile' as={Link} to={`/profile`} />
+                            <Dropdown.Item icon='address book' text='Your Profile' as={Link} to={`/profile`} />
                             {/* <Dropdown.Item icon='game' text='Editor' as={Link} to={`/editor`} /> */}
                             <Dropdown.Divider />
                             <Dropdown.Item icon='sign out' text='Sign Out' onClick={this._logout} />
@@ -75,4 +81,4 @@ const mapDispatchToProps = {
     logout
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Header);
+export default connect(mapStateToProps, mapDispatchToProps)(NavBar);

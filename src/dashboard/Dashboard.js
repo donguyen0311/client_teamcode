@@ -1,5 +1,4 @@
 import React from 'react';
-import SideBar from '../app/Sidebar';
 import { Grid, Container, Header, Segment } from 'semantic-ui-react';
 
 import {Doughnut} from 'react-chartjs-2';

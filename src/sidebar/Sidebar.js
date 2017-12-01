@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, Route } from 'react-router-dom';
+import {connect} from 'react-redux';
 import {
     Sidebar,
     Segment,
@@ -11,9 +12,10 @@ import {
     Modal,
     Dropdown
 } from 'semantic-ui-react';
+import {changeVisible} from './SidebarActions';
 import Dashboard from '../dashboard/Dashboard';
 import Project from '../project/Project';
-import NavBar from './Header';
+import NavBar from '../app/Header';
 import Estimate from '../estimate/Estimate';
 import Avatar from '../user/UserAvatar';
 import axios from 'axios';
@@ -25,11 +27,13 @@ class SideBar extends React.Component {
         this.state = {
             activeItem: sessionStorage.current_project || 'dashboard',
             projects: [],
-            visibleSidebar: false
+            // visibleSidebar: this.props.sidebar.visibleSidebar
         }
+        console.log(this.props);
     }
 
-    toggleVisibility = () => this.setState({ visibleSidebar: !this.state.visibleSidebar })
+    // toggleVisibility = () => this.setState({ visibleSidebar: !this.state.visibleSidebar })
+    toggleVisibility = () => this.props.changeVisible(!this.props.sidebar.visibleSidebar)
 
     handleItemClick = name => {
         sessionStorage.current_project = name;
@@ -39,13 +43,15 @@ class SideBar extends React.Component {
     componentWillMount() {
         user.getUserInfo().then(response => {
             console.log(response);
-            this.setState({
-                projects: response.user.belong_project
-            })
+            if (response.success) {
+                this.setState({
+                    projects: response.user.belong_project
+                });
+            }
         });
-    }    
+    } 
     render() {
-        const {activeItem} = this.state || {};
+        const {activeItem} = this.state;
         console.log(this.props);
         var trigger = (
             <Header style={{color: 'white', marginBottom: 0}} as='h1'> 
@@ -53,13 +59,12 @@ class SideBar extends React.Component {
                 {' '}{this.props.match.params.company}
             </Header>
         );
-        const { visibleSidebar } = this.state;
         return (
             <Sidebar.Pushable>
                 <Sidebar
                     as={Menu}
                     animation='push'
-                    visible={visibleSidebar}
+                    visible={this.props.sidebar.visibleSidebar}
                     vertical
                     inverted
                     style={{
@@ -150,4 +155,12 @@ class SideBar extends React.Component {
     }
 }
 
-export default SideBar;
+const mapStateToProps = (state) => {
+    return {sidebar: state.sidebarReducer};
+}
+
+const mapDispatchToProps = {
+    changeVisible
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(SideBar);

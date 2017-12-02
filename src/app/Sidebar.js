@@ -1,4 +1,5 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import { Link, Route } from 'react-router-dom';
 import {
     Sidebar,
@@ -9,15 +10,27 @@ import {
     Icon,
     Header,
     Modal,
-    Dropdown
+    Dropdown,
+    Form
 } from 'semantic-ui-react';
 import Dashboard from '../dashboard/Dashboard';
 import Project from '../project/Project';
+import ProjectNewForm from '../project/ProjectNewForm'
 import NavBar from './Header';
 import Estimate from '../estimate/Estimate';
 import Avatar from '../user/UserAvatar';
 import axios from 'axios';
+import project from '../utils/project'
 import user from '../utils/user';
+
+import DatePicker from 'react-datepicker';
+import moment from 'moment';
+import 'react-datepicker/dist/react-datepicker.css';
+
+import {
+  changeIdNewProjectForm,
+  changeProjectSaved
+} from '../project/ProjectActions'
 
 class SideBar extends React.Component {
     constructor(props) {
@@ -25,7 +38,8 @@ class SideBar extends React.Component {
         this.state = {
             activeItem: sessionStorage.current_project || 'dashboard',
             projects: [],
-            visibleSidebar: false
+            visibleSidebar: false,
+
         }
     }
 
@@ -38,15 +52,34 @@ class SideBar extends React.Component {
 
     componentWillMount() {
         user.getUserInfo().then(response => {
-            console.log(response);
             this.setState({
                 projects: response.user.belong_project
             })
         });
+        // console.log(this.props)
+        // this.setState({
+        //     projects: this.props.profileUser.profile.belong_project
+        // })
     }    
+
+    componentWillReceiveProps(nextProps){
+        // console.log(this.state.projects)
+        console.log(nextProps.projectNewFormInfos)
+
+        if(Object.keys(nextProps.projectNewFormInfos.projectSaved).length > 0){
+            let projects = [...this.state.projects]
+
+            projects.push(nextProps.projectNewFormInfos.projectSaved)
+            this.props.changeProjectSaved({})
+
+            this.setState({
+                projects: projects
+            })
+        }
+    }
+
     render() {
         const {activeItem} = this.state || {};
-        console.log(this.props);
         var trigger = (
             <Header style={{color: 'white', marginBottom: 0}} as='h1'> 
                 <Image centered circular='true' size={'small'} style={{borderRadius: '50%'}} src='https://react.semantic-ui.com/assets/images/avatar/large/patrick.png' />
@@ -89,23 +122,7 @@ class SideBar extends React.Component {
                     <Menu.Item>
                         <Menu.Header>
                             <div style={{display: 'inline-block', fontSize: 19}}>Project</div>
-                            
-                            <Modal trigger={<Icon name="add circle" size={'large'} style={{float: 'right', cursor: 'pointer'}} />} >
-                                <Header icon='archive' content='Create Project' />
-                                
-                                <Modal.Content>
-                                    <Estimate />
-                                </Modal.Content>
-
-                                <Modal.Actions>
-                                    <Button>
-                                        <Icon name='plus' /> Create
-                                    </Button>
-                                    <Button>
-                                        <Icon name='cancel' /> Cancel
-                                    </Button>
-                                </Modal.Actions>
-                            </Modal>
+                            <ProjectNewForm/>
                         </Menu.Header>
 
                         <Menu.Menu>
@@ -126,7 +143,7 @@ class SideBar extends React.Component {
                     <Menu.Item>
                         <Menu.Header>
                             <div style={{display: 'inline-block', fontSize: 19}}>Chat</div>
-                            <Icon name="add circle" size={'large'} style={{float: 'right', cursor: 'pointer'}} />
+                            <ProjectNewForm />
                         </Menu.Header>
 
                         <Menu.Menu>
@@ -150,4 +167,15 @@ class SideBar extends React.Component {
     }
 }
 
-export default SideBar;
+const mapStateToProps = (state) => {
+    return {
+        profileUser: state.userReducer,
+        projectNewFormInfos: state.projectReducer
+    };
+}
+const mapDispatchToProps = {
+    changeIdNewProjectForm,
+    changeProjectSaved
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(SideBar);

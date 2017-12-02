@@ -23,6 +23,8 @@ input.FP{
 }
 
 #estimate{
+	display: inline;
+    float: left;
 	/*background-color: #f0eed;*/
 }
 
@@ -67,4 +69,36 @@ input.FP{
 .ui.grid>.column.suitable_staff:not(.row) {
     padding-top: 0rem;
     padding-bottom: 0rem;
+}
+
+
+/*.ui.dimmer .ui.loader.new_project:before{
+	border: .2em solid rgba(0,0,0,.1);
+}
+
+.ui.dimmer .ui.loader.new_project:after{
+    border-color: #767676 transparent transparent;
+}
+
+.ui.dimmer .ui.loader.new_project{
+    color: black;
+}*/
+
+.new_project_action{
+    border-top: 1px solid rgba(34,36,38,.15);
+    padding: 1em;
+}
+
+.new_project_content{
+	padding: 2em;
+}
+
+.margin_1em{
+	margin: 1em;
+}
+
+.clearfix::after {
+    display: block;
+    clear: both;
+    content: "";
 }

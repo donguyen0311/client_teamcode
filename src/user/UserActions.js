@@ -14,6 +14,22 @@ export function getUserInfo() {
     }
 }
 
+export function getUsersInCompanyInfo(company_id) {
+    return (dispatch) => {
+
+        return user.getUsersInCompanyInfo(company_id).then(response => {
+
+            if (response.success) {
+
+                return response.users
+            }
+            else {
+                // dispatch(setErrorMessage(response.message));
+            }
+            return response;
+        });     
+    }
+}
 export function setLoading(loading) {
     return {type: UPDATE_LOADING, loading};
 }

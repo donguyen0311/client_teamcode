@@ -35,7 +35,6 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
     <Route {...rest} render={props => {
         let {loggedIn} = store.getState().authReducer;
         let {location, history} = props;
-        console.log(props);
         axios
             .get(`/api/checkCompany/${props.match.params.company}`)
             .then(response => {

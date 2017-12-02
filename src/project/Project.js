@@ -344,7 +344,6 @@ class Project extends React.Component {
 	openModalAdd = () => this.setState({ openModalAdd: true })
 
 	componentWillReceiveProps(nextProps) {
-		console.log(nextProps);
 		this.socket.emit('Task:joinRoom', nextProps.match.url);
 		axios.get('/api/projects/' + nextProps.match.params.project, {headers: { 'x-access-token': localStorage.token } })
 			.then(response => {

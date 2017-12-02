@@ -447,8 +447,7 @@ class Estimate extends React.Component {
 
         return (
         <div id="estimate">
-            <Container>
-                <Button onClick={this.show('SLOCModal')}>Tiến hành ước lượng</Button>
+                <Button type='button' color='orange' onClick={this.show('SLOCModal')}><Icon name='wizard' /> Find suitable team</Button>
                 <Modal 
                     id = "fp-modal"
                     size="fullscreen"
@@ -558,7 +557,6 @@ class Estimate extends React.Component {
                     <Button onClick={this.close('SuitableStaffsModal')} color='green'> Xong  <Icon name='checkmark' /></Button>
                 </Modal.Actions>
                 </Modal>                          
-            </Container>
         </div>
         );
     }

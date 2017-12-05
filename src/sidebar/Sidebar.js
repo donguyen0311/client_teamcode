@@ -1,9 +1,8 @@
 import React from 'react';
-import { Link, Route } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {connect} from 'react-redux';
 import {
     Sidebar,
-    Segment,
     Button,
     Menu,
     Image,
@@ -12,13 +11,8 @@ import {
     Modal,
     Dropdown
 } from 'semantic-ui-react';
-import {changeVisible} from './SidebarActions';
-import Dashboard from '../dashboard/Dashboard';
-import Project from '../project/Project';
-import NavBar from '../app/Header';
+import { changeVisible } from './SidebarActions';
 import Estimate from '../estimate/Estimate';
-import Avatar from '../user/UserAvatar';
-import axios from 'axios';
 import user from '../utils/user';
 
 class SideBar extends React.Component {
@@ -33,13 +27,14 @@ class SideBar extends React.Component {
     }
 
     // toggleVisibility = () => this.setState({ visibleSidebar: !this.state.visibleSidebar })
-    toggleVisibility = () => this.props.changeVisible(!this.props.sidebar.visibleSidebar)
+    // toggleVisibility = () => this.props.changeVisible(!this.props.sidebar.visibleSidebar)
 
     hideSidebar = () => this.props.sidebar.visibleSidebar ? this.props.changeVisible(false) : ''
 
     handleItemClick = name => {
         sessionStorage.current_project = name;
-        this.setState({activeItem: name})
+        this.setState({activeItem: name});
+        this.hideSidebar();
     }
 
     componentWillMount() {
@@ -51,10 +46,9 @@ class SideBar extends React.Component {
                 });
             }
         });
-    } 
+    }  
     render() {
         const {activeItem} = this.state;
-        console.log(this.props);
         var trigger = (
             <Header style={{color: 'white', marginBottom: 0}} as='h1'> 
                 <Image centered circular='true' size={'small'} style={{borderRadius: '50%'}} src='https://react.semantic-ui.com/assets/images/avatar/large/patrick.png' />
@@ -62,15 +56,14 @@ class SideBar extends React.Component {
             </Header>
         );
         return (
-            <Sidebar.Pushable>
                 <Sidebar
                     as={Menu}
-                    animation='overlay'
+                    animation='push'
                     visible={this.props.sidebar.visibleSidebar}
                     vertical
                     inverted
                     style={{
-                        width: 260, paddingBottom: '1em', background: 'rgb(27, 28, 29)'
+                        width: 260, paddingBottom: '1em', background: '#18222a'
                     }}
                     >
                     <Menu.Item>
@@ -91,7 +84,7 @@ class SideBar extends React.Component {
                                 active={activeItem === 'dashboard'}
                                 onClick={this.handleItemClick.bind(this, 'dashboard')}>
                                 
-                            <Icon name='dashboard' />Dashboard   
+                            <Icon name='dashboard' style={{float: 'left', marginRight: 10, marginLeft: 30}} />Dashboard   
                     </Menu.Item>
                     <Menu.Item>
                         <Menu.Header>
@@ -124,35 +117,12 @@ class SideBar extends React.Component {
                                     active={activeItem === project.project_name}
                                     onClick={this.handleItemClick.bind(this, project.project_name)}
                                     as={Link} to={`${this.props.match.url}/project/${project.project_name}`}> 
-                                    @ {project.project_name}
+                                    <Icon name='rocket' style={{float: 'left', marginRight: 10}} /> {project.project_name}
                                 </Menu.Item>
                             ))}
                         </Menu.Menu>
                     </Menu.Item>
-
-                    <Menu.Item>
-                        <Menu.Header>
-                            <div style={{display: 'inline-block', fontSize: 19}}>Chat</div>
-                            <Icon name="add circle" size={'large'} style={{float: 'right', cursor: 'pointer'}} />
-                        </Menu.Header>
-
-                        <Menu.Menu>
-                            <Menu.Item 
-                                style={{fontSize: 15}}
-                                name='rails'
-                                active={activeItem === 'rails'}
-                                onClick={this.handleItemClick}> 
-                                @ Rails
-                            </Menu.Item>
-                        </Menu.Menu>
-                    </Menu.Item>
                 </Sidebar>
-                <Sidebar.Pusher onClick={this.hideSidebar}>
-                    <NavBar {...this.props} toggleVisibility={this.toggleVisibility} />
-                    <Route path={`${this.props.match.url}/dashboard`} component={Dashboard} />
-                    <Route path={`${this.props.match.url}/project/:project`} component={Project} />
-                </Sidebar.Pusher>
-            </Sidebar.Pushable>
         );
     }
 }

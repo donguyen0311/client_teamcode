@@ -9,13 +9,13 @@ import axios from 'axios';
 // import auth from '../utils/auth';
 
 import Home from './Home';
-import SideBar from '../sidebar/Sidebar';
+import SideBarContainer from '../sidebar/SidebarContainer';
 
 import Login from '../auth/Login';
 import Register from '../auth/Register';
 
-import Dashboard from '../dashboard/Dashboard';
-import Project from '../project/Project';
+// import Dashboard from '../dashboard/Dashboard';
+// import Project from '../project/Project';
 // import Estimate from '../estimate/Estimate';
 // import CostDriver from '../estimate/CostDriver';
 // import ScaleFactor from '../estimate/ScaleFactor';
@@ -34,7 +34,7 @@ store.dispatch(changeSocket(socket));
 const PrivateRoute = ({ component: Component, ...rest }) => (
     <Route {...rest} render={props => {
         let {loggedIn} = store.getState().authReducer;
-        let {location, history} = props;
+        let {history} = props;
         console.log(props);
         axios
             .get(`/api/checkCompany/${props.match.params.company}`)
@@ -66,7 +66,7 @@ export default class App extends React.Component {
                             <Route exact path="/" component={Home}/>
                             <Route path="/signup" component={Register}/>
                             {/* <Route component={CheckAuth}/> */}
-                            <PrivateRoute path="/:company" component={SideBar} />
+                            <PrivateRoute path="/:company" component={SideBarContainer} />
                             {/* <Route path="/estimate" component={Estimate}/>
                             <Route path="/costdriver" component={CostDriver}/>
                             <Route path="/scalefactor" component={ScaleFactor}/>

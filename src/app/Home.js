@@ -17,7 +17,6 @@ class Home extends React.Component {
         this.props.history.push(`/${this.state.company}`);
     }
     render() {
-        let {location, history} = this.props;
         return (
             <div style={{height: '100vh',
                         width: '100%',

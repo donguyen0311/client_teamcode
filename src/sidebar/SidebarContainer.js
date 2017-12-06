@@ -6,6 +6,7 @@ import Project from '../project/Project';
 import NavBar from '../app/Header';
 import Estimate from '../estimate/Estimate';
 import Profile from '../user/UserProfile';
+import Activity from '../activity/Activity';
 import user from '../utils/user';
 import SideBar from './Sidebar';
 import BlockPage from './BlockPage';
@@ -25,6 +26,7 @@ class SideBarContainer extends React.Component {
                         <BlockPage />
                         <Route path={`${this.props.match.url}/dashboard`} component={Dashboard} />
                         <Route path={`${this.props.match.url}/project/:project`} component={Project} />
+                        <Route path={`${this.props.match.url}/activity/:project`} component={Activity} />
                     </div>
                 </Sidebar.Pusher>
             </Sidebar.Pushable>

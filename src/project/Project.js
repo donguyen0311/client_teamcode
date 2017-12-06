@@ -423,7 +423,7 @@ class Project extends React.Component {
 			// autoFocusQuoteId: data.autoFocusQuoteId,
 		});
 
-		this.props.socket.emit('Task:changeTaskPosition', {columns: this.state.columns, result: result });
+		this.props.socket.emit('Task:changeTaskPosition', {columns: this.state.columns, result: result, projectID: this.state.currentProject._id });
 
 
   	}
@@ -479,7 +479,7 @@ class Project extends React.Component {
 																	editTask={this.editTask} 
 																	deleteTask={this.deleteTask}
 																	formatResponsibleUser={this.formatResponsibleUser}
-																	users={this.state.currentProject.users} 
+																	users={this.state.currentProject.users}
 																/>
 															</div>
 															{provided.placeholder}
@@ -533,7 +533,7 @@ class Project extends React.Component {
 																		editTask={this.editTask} 
 																		deleteTask={this.deleteTask}
 																		formatResponsibleUser={this.formatResponsibleUser}
-																		users={this.state.currentProject.users}  
+																		users={this.state.currentProject.users}
 																	/>	
 																	
 																</div>

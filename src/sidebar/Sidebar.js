@@ -122,6 +122,25 @@ class SideBar extends React.Component {
                             ))}
                         </Menu.Menu>
                     </Menu.Item>
+                    <Menu.Item>
+                        <Menu.Header>
+                            <div style={{display: 'inline-block', fontSize: 19}}>Activity</div>
+                        </Menu.Header>
+
+                        <Menu.Menu>
+                            {this.state.projects.map(project => (
+                                <Menu.Item 
+                                    key={project._id}
+                                    style={{fontSize: 15}}
+                                    name={project.project_name + '_activity'}
+                                    active={activeItem === project.project_name + '_activity'}
+                                    onClick={this.handleItemClick.bind(this, project.project_name + '_activity')}
+                                    as={Link} to={`${this.props.match.url}/activity/${project.project_name}`}> 
+                                    <Icon name='rocket' style={{float: 'left', marginRight: 10}} /> {project.project_name}
+                                </Menu.Item>
+                            ))}
+                        </Menu.Menu>
+                    </Menu.Item>
                 </Sidebar>
         );
     }

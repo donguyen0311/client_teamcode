@@ -1,9 +1,9 @@
 import React from 'react';
-import { Popup, Dropdown, Header } from 'semantic-ui-react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { Label, Icon, Modal, Button, Form } from 'semantic-ui-react';
+import { Label, Dimmer, Loader } from 'semantic-ui-react';
 import styled, { injectGlobal } from 'styled-components';
 import TaskItem from './TaskItem';
+import ModalAddTask from './ModalAddTask';
 import {connect} from 'react-redux';
 import axios from 'axios';
 
@@ -122,6 +122,7 @@ const ContainerItemStyle = (draggableStyle, isDragging, status) => ({
 	minHeight: 80,	
 	margin: `0 0 5px 0`,
 	userSelect: 'none',
+	position: 'relative',
 	transition: 'background-color 0.1s ease',
 	/* anchor overrides */
 	color: 'rgba(0, 0, 0, 0.85)',
@@ -256,22 +257,12 @@ class Project extends React.Component {
   	constructor(props) {
 		super(props);
 		this.state = {
-			openModalAdd: false,
+			activeLoading: true,
 			columns: {TODO: [], INPROGRESS: [], CODEREVIEW: [], DONE: []},
 			// autoFocusQuoteId: ''
-			currentProject: '',
-			addTaskName: '',
-			addLevel: '',
-			addNote: '',
-			addDescription: '',
-			addResponsible: ''
+			currentProject: ''
 		};
 		this.formatResponsibleUser = this.formatResponsibleUser.bind(this);
-		this.handleChangeAddResponsible = this.handleChangeAddResponsible.bind(this);
-		this.handleChangeAddTaskName = this.handleChangeAddTaskName.bind(this);
-		this.handleChangeAddLevel = this.handleChangeAddLevel.bind(this);
-		this.handleChangeAddNote = this.handleChangeAddNote.bind(this);
-		this.handleChangeAddDescription = this.handleChangeAddDescription.bind(this);
 		this.addTask = this.addTask.bind(this);
 		this.editTask = this.editTask.bind(this);
 		this.deleteTask = this.deleteTask.bind(this);
@@ -324,38 +315,30 @@ class Project extends React.Component {
 			});
 		});
 	}
-	  
-	closeModalAdd = () => {
-		this.setState({ 
-			openModalAdd: false,
-			addTaskName: '',
-			addLevel: '',
-			addNote: '',
-			addDescription: '',
-			addResponsible: ''
-		})
-	}
-	openModalAdd = () => this.setState({ openModalAdd: true })
 
 	componentWillReceiveProps(nextProps) {
 		console.log(nextProps);
-		this.props.socket.emit('Task:joinRoom', nextProps.match.url);
-		axios.get('/api/projects/' + nextProps.match.params.project, {headers: { 'x-access-token': localStorage.token } })
-			.then(response => {
-				this.setState({
-					columns: formatTasks(response.data.project.tasks),
-					currentProject: response.data.project
-				});
-			})
-			.catch(error => {
-				console.log(error);
+		if (this.props.match.params.project !== nextProps.match.params.project) {
+			this.setState({
+				activeLoading: true
 			});
+			this.props.socket.emit('Task:joinRoom', nextProps.match.url);
+			axios.get('/api/projects/' + nextProps.match.params.project, {headers: { 'x-access-token': localStorage.token } })
+				.then(response => {
+					this.setState({
+						columns: formatTasks(response.data.project.tasks),
+						currentProject: response.data.project,
+						activeLoading: false
+					});
+				})
+				.catch(error => {
+					console.log(error);
+				});	
+		}
 		if(nextProps.profileUser.profile._id){
 			this.props.socket.emit('updateOnlineList', nextProps.profileUser.profile._id);
-		}
-		
+		}			
 	}
-
 	componentWillMount() {
 		console.log(this.props);
 		this.props.socket.emit('Task:joinRoom', this.props.match.url);
@@ -364,7 +347,8 @@ class Project extends React.Component {
 				console.log(response);
 				this.setState({
 					columns: formatTasks(response.data.project.tasks),
-					currentProject: response.data.project
+					currentProject: response.data.project,
+					activeLoading: false
 				});
 			})
 			.catch(error => {
@@ -387,52 +371,22 @@ class Project extends React.Component {
 		return userFormat;
 	}
 
-	handleChangeAddTaskName(event) {
-		this.setState({
-			addTaskName: event.target.value
-		});
-	}
-
-	handleChangeAddLevel(event) {
-		this.setState({
-			addLevel: event.target.value
-		});
-	}
-
-	handleChangeAddNote(event) {
-		this.setState({
-			addNote: event.target.value
-		});
-	}
-
-	handleChangeAddDescription(event) {
-		this.setState({
-			addDescription: event.target.value
-		});
-	}
-
-	handleChangeAddResponsible(event, { value }) {
-		this.setState({
-			addResponsible: value
-		});
-	}
-
-	addTask(status) {
+	addTask(task, status, closeModalFunc) {
 		console.log('add task');
 		console.log(this.state);
 		console.log(status);
 		this.props.socket.emit('Task:addTask', {
 			position: this.state.columns[status].length,
 			status: status,
-			task_name: this.state.addTaskName,
-			level: this.state.addLevel,
-			note: this.state.addNote,
-			description: this.state.addDescription,
-			responsible_user: this.state.addResponsible,
+			task_name: task.addTaskName,
+			level: task.addLevel,
+			note: task.addNote,
+			description: task.addDescription,
+			responsible_user: task.addResponsible,
 			belong_project: this.state.currentProject._id,
 			created_by: this.props.profileUser.profile._id
 		});
-		this.closeModalAdd();
+		closeModalFunc();
 	}
 
 	editTask(task) {
@@ -469,7 +423,7 @@ class Project extends React.Component {
 			// autoFocusQuoteId: data.autoFocusQuoteId,
 		});
 
-		this.props.socket.emit('Task:changeTaskPosition', {columns: this.state.columns, result: result });
+		this.props.socket.emit('Task:changeTaskPosition', {columns: this.state.columns, result: result, projectID: this.state.currentProject._id });
 
 
   	}
@@ -478,9 +432,12 @@ class Project extends React.Component {
 	// But in this example everything is just done in one place for simplicity
 
   	render() {
-		const { openModalAdd } = this.state; 
+		console.log(this.state.activeLoading);
 		return (
 			<div style={{width: '100%', height: 'calc(100vh - 59px)', overflow: 'auto', marginTop: '-1rem'}}>
+				<Dimmer active={this.state.activeLoading} inverted>
+					<Loader inverted>Loading</Loader>
+				</Dimmer>
 				<div style={{ width: 1330 }}>
 				<DragDropContext 
 					onDragEnd={this.onDragEnd}
@@ -511,7 +468,7 @@ class Project extends React.Component {
 											{this.state.columns['TODO'].map(task => (
 												<Draggable type="TASK" key={task._id} draggableId={task._id} >
 													{(provided, snapshot) => (
-														<div>
+														<div>														
 															<div
 																ref={provided.innerRef}
 																style={ContainerItemStyle(provided.draggableStyle, snapshot.isDragging, 'todo')}
@@ -522,7 +479,7 @@ class Project extends React.Component {
 																	editTask={this.editTask} 
 																	deleteTask={this.deleteTask}
 																	formatResponsibleUser={this.formatResponsibleUser}
-																	users={this.state.currentProject.users} 
+																	users={this.state.currentProject.users}
 																/>
 															</div>
 															{provided.placeholder}
@@ -532,35 +489,7 @@ class Project extends React.Component {
 											))}		
 											{provided.placeholder}
 											</div>
-											<Modal open={openModalAdd} onClose={this.closeModalAdd} trigger={<div onClick={this.openModalAdd} style={{height: 60, width: 'auto', border: '3px dashed #999', lineHeight: '50px', borderRadius: 5, textAlign: 'center', color: '#999', cursor: 'pointer'}}><Icon name="add circle" size={'big'} /></div>} size='mini' closeIcon>
-												<Header icon='hashtag' content='Add Task'/>
-												<Modal.Content>
-													<Form onSubmit={this.addTask.bind(this, 'TODO')}>
-														<Form.Field>
-															<Form.Input label="Task Name" placeholder='Task Name' onChange={this.handleChangeAddTaskName} required />
-														</Form.Field>
-														<Form.Field>
-															<Form.Input type="number" label="Level" placeholder='Level' onChange={this.handleChangeAddLevel} required />
-														</Form.Field>
-														<Form.Field>
-															<Form.TextArea label="Note" placeholder='Note' onChange={this.handleChangeAddNote} required />
-														</Form.Field>
-														<Form.Field>
-															<Form.TextArea label="Description" placeholder='Description' onChange={this.handleChangeAddDescription} required />
-														</Form.Field>
-														<Form.Field>
-															<label>Responsible</label>
-															<Dropdown placeholder='Responsible User' fluid multiple selection 
-																options={this.formatResponsibleUser(this.state.currentProject.users)}
-																onChange={this.handleChangeAddResponsible} />
-														</Form.Field>
-														<Button color='green' size='tiny' type='submit'>
-															<Icon name='checkmark'/>
-															Add
-														</Button>
-													</Form>
-												</Modal.Content>
-											</Modal>
+											<ModalAddTask addTask={this.addTask} formatResponsibleUser={this.formatResponsibleUser} currentProject={this.state.currentProject} />
 										</ContainerList>
 									</WrapperList>
 								)}
@@ -604,7 +533,7 @@ class Project extends React.Component {
 																		editTask={this.editTask} 
 																		deleteTask={this.deleteTask}
 																		formatResponsibleUser={this.formatResponsibleUser}
-																		users={this.state.currentProject.users}  
+																		users={this.state.currentProject.users}
 																	/>	
 																	
 																</div>
@@ -730,7 +659,7 @@ class Project extends React.Component {
 						</Container>
 					</Wrapper>		
 				</DragDropContext>
-				</div>
+				</div>			
 			</div>
 		);
   	}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Input, Menu, Segment, Button, Dropdown, Image, Icon, Header, Item, Label, Loader } from 'semantic-ui-react';
+import { Dropdown, Icon, Header, Item, Label, Loader } from 'semantic-ui-react';
 import axios from 'axios';
 import TimeAgo from 'react-timeago';
 
@@ -155,7 +155,7 @@ class Notifications extends React.Component {
         );
         return (
             <Dropdown trigger={trigger} pointing='top right' inline icon={null} onOpen={this.getNotification} onClose={this.handleCloseNotification}>
-                <Dropdown.Menu style={{minWidth: 400}}>
+                <Dropdown.Menu style={{minWidth: 400, right: -7.5}}>
                     <Dropdown.Header>Notifications</Dropdown.Header>
                     <Dropdown.Menu scrolling onScroll={this.handleScroll}>
                         {(this.state.notificationList.length > 0) ? (

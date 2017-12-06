@@ -18,7 +18,9 @@ class Avatar extends React.Component {
 
 
 const mapStateToProps = (state) => {
-    return {data: state.userReducer};
+    return {
+		data: state.userReducer
+	};
 }
 
 const mapDispatchToProps = {

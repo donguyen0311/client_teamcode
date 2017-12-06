@@ -2,16 +2,10 @@ import React from 'react';
 import {
     Dropdown,
     Icon,
-    Input,
-    Menu,
     Header,
     Container,
     Label,
-    Popup,
-    Card,
     Image,
-    Progress,
-    Divider,
     Button,
     Modal,
     Form,
@@ -30,11 +24,7 @@ class TaskItem extends React.Component {
 			editDescription: this.props.data.description,
 			editResponsible: this.props.data.responsible_user.map(user => user._id)
         }
-		this.handleChangeEditResponsible = this.handleChangeEditResponsible.bind(this);
-		this.handleChangeEditTaskName = this.handleChangeEditTaskName.bind(this);
-		this.handleChangeEditLevel = this.handleChangeEditLevel.bind(this);
-		this.handleChangeEditNote = this.handleChangeEditNote.bind(this);
-        this.handleChangeEditDescription = this.handleChangeEditDescription.bind(this);
+        this.handleChangeEdit = this.handleChangeEdit.bind(this);
         this.editTask = this.editTask.bind(this);
         this.deleteTask = this.deleteTask.bind(this);
     }
@@ -72,34 +62,10 @@ class TaskItem extends React.Component {
         return `${monthNames[monthIndex]} ${day} ${year} ${hours}:${minutes}:${seconds}`;
     }
 
-    handleChangeEditTaskName(event) {
-		this.setState({
-			editTaskName: event.target.value
-		});
-	}
-
-	handleChangeEditLevel(event) {
-		this.setState({
-			editLevel: event.target.value
-		});
-	}
-
-	handleChangeEditNote(event) {
-		this.setState({
-			editNote: event.target.value
-		});
-	}
-
-	handleChangeEditDescription(event) {
-		this.setState({
-			editDescription: event.target.value
-		});
-	}
-
-	handleChangeEditResponsible(event, { value }) {
-		this.setState({
-			editResponsible: value
-		});
+    handleChangeEdit(event, {name, value}) {
+        this.setState({
+			[name]: value
+        });
     }
     
     closeModalEdit = () => {
@@ -126,6 +92,16 @@ class TaskItem extends React.Component {
     deleteTask() {
         this.props.deleteTask({ _id: this.props.data._id });
         this.closeModalDelete();
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            editTaskName: nextProps.data.task_name,
+			editLevel: nextProps.data.level,
+			editNote: nextProps.data.note,
+			editDescription: nextProps.data.description,
+			editResponsible: nextProps.data.responsible_user.map(user => user._id)
+        })
     }
 
     render() {
@@ -197,7 +173,7 @@ class TaskItem extends React.Component {
                                                     </Table.Cell>
                                                     <Table.Cell>
                                                         <Label as='a' image size='small'>
-                                                            <img src={this.props.data.created_by.image}/> {this.props.data.created_by.email}
+                                                            <img alt={this.props.data.created_by.email} src={this.props.data.created_by.image}/> {this.props.data.created_by.email}
                                                         </Label>
                                                     </Table.Cell>
                                                 </Table.Row>
@@ -212,7 +188,7 @@ class TaskItem extends React.Component {
                                                             .responsible_user
                                                             .map(user => (
                                                                 <Label key={user._id} as='a' image size='tiny'>
-                                                                    <img src={user.image}/> {user.email}
+                                                                    <img alt={user.email} src={user.image}/> {user.email}
                                                                 </Label>
                                                             ))}
                                                     </Table.Cell>
@@ -242,23 +218,24 @@ class TaskItem extends React.Component {
                                     <Modal.Content>
                                         <Form onSubmit={this.editTask}>
                                             <Form.Field>
-                                                <Form.Input label="Task Name" placeholder='Task Name' defaultValue={this.props.data.task_name} onChange={this.handleChangeEditTaskName} required />
+                                                <Form.Input label="Task Name" placeholder='Task Name' name='editTaskName' value={this.state.editTaskName} onChange={this.handleChangeEdit} required />
                                             </Form.Field>
                                             <Form.Field>
-                                                <Form.Input type="number" label="Level"  placeholder='Level' defaultValue={this.props.data.level} onChange={this.handleChangeEditLevel} required />
+                                                <Form.Input type="number" label="Level"  placeholder='Level' name='editLevel' value={this.state.editLevel} onChange={this.handleChangeEdit} required />
                                             </Form.Field>
                                             <Form.Field>
-                                                <Form.TextArea label="Note" placeholder='Note' defaultValue={this.props.data.note} onChange={this.handleChangeEditNote} required />
+                                                <Form.TextArea label="Note" placeholder='Note' name='editNote' value={this.state.editNote} onChange={this.handleChangeEdit} required />
                                             </Form.Field>
                                             <Form.Field>
-                                                <Form.TextArea label="Description" placeholder='Description' defaultValue={this.props.data.description} onChange={this.handleChangeEditDescription} required />
+                                                <Form.TextArea label="Description" placeholder='Description' name='editDescription' value={this.state.editDescription} onChange={this.handleChangeEdit} required />
                                             </Form.Field>
                                             <Form.Field>
                                                 <label>Responsible</label>
                                                 <Dropdown placeholder='Responsible User' fluid multiple selection 
-                                                    defaultValue={this.props.data.responsible_user.map(user => user._id)}
+                                                    value={this.state.editResponsible}
+                                                    name='editResponsible'
                                                     options={this.props.formatResponsibleUser(this.props.users)}
-                                                    onChange={this.handleChangeEditResponsible} />
+                                                    onChange={this.handleChangeEdit} />
                                             </Form.Field>
                                             <Button color='green' size='tiny' type='submit'>
                                                 <Icon name='checkmark'/>
@@ -294,7 +271,7 @@ class TaskItem extends React.Component {
                 </Container>
                 {this.props.data.responsible_user.map(user => (
                     <Label key={user._id} as='a' image size='mini'>
-                        <img src={user.image}/>
+                        <img alt={user.email} src={user.image}/>
                         {user.email}
                     </Label>
                 ))}

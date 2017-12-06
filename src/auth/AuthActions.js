@@ -11,15 +11,15 @@ import {
 } from './AuthConstants';
 import auth from '../utils/auth';
 
-export function login(email, password) {
+export function login(email, password, company_name) {
     return (dispatch) => {
         dispatch(setErrorMessage(''));
         dispatch(sendingRequest(true));
-        if (anyElementsEmpty(email, password)) {
+        if (anyElementsEmpty(email, password, company_name)) {
             dispatch(sendingRequest(false));
             return;
         }
-        return auth.login(email, password).then(response => {
+        return auth.login(email, password, company_name).then(response => {
             dispatch(sendingRequest(false));
             if (response.success) {
                 dispatch(setAuthState(true));
@@ -36,19 +36,20 @@ export function login(email, password) {
     }
 }
 
-export function register(email, username, password, confirm_password) {
+export function register(company_name, email, username, password, confirm_password) {
     return (dispatch) => {
         dispatch(setErrorMessage(''));
         dispatch(sendingRequest(true));
-        if (anyElementsEmpty(email, username, password, confirm_password)) {
+        if (anyElementsEmpty(company_name, email, username, password, confirm_password)) {
             dispatch(sendingRequest(false));
             return;
         }
-        return auth.register(email, username, password, confirm_password).then(response => {
+        return auth.register(company_name, email, username, password, confirm_password).then(response => {
             dispatch(sendingRequest(false));
             if(response.success) {
                 dispatch(setAuthState(true));
                 dispatch(changeRegisterForm({
+                    company_name: "",
                     email: "",
                     username: "",
                     password: "",

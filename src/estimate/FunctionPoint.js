@@ -1,14 +1,9 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {
-    Container,
     Dropdown,
-    Input,
     Icon,
-    Menu,
-    Label,
     Table,
-    Rating,
     Popup,
     Grid,
     Statistic
@@ -99,9 +94,6 @@ class FunctionPoint extends React.Component {
             this.caculateAndDisplaySLOC(totalFP, this.selectedLanguage);
         }
     render() {
-
-            
-            const NOMINAL_RATING_VALUE = 2;
             const fpHelpTable = 
                 <Table celled>
                     <Table.Header>

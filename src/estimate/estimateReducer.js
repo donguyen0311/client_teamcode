@@ -2,7 +2,8 @@ import {
 	CHANGE_EAF,
 	CHANGE_SCALE_FACTORS,
 	CHANGE_FUNCTION_POINT,
-	CHANGE_KLOC
+	CHANGE_KLOC,
+    CHANGE_ESTIMATED_RESULT
 } from './estimateConstants'
 
 const initialState = {
@@ -15,7 +16,28 @@ const initialState = {
 	},
 	FUNCTION_POINT:{
 
-	}
+	},
+    estimatedResult:{
+        months: 0,
+        cost: 0,
+        persons: 0,
+        suitableStaffs: [],
+        original:{
+            PMs: 0,
+            TDEV: 0,
+            PM: 0,
+            effortPM:0
+        },
+        ceil:{
+            PMs: 0,
+            TDEV: 0,
+            PM: 0,
+            effortPM:0
+        },
+        projectCostPerMonth: 0,
+        projectCost: 0,
+
+    }
 };
 
 export function estimateReducer(state = initialState, action) {
@@ -39,6 +61,11 @@ export function estimateReducer(state = initialState, action) {
             return {
                 ...state,
                 KLOC: action.newState
+            };
+        case CHANGE_ESTIMATED_RESULT:
+            return {
+                ...state,
+                estimatedResult: action.newState
             };
         default:
             return state;

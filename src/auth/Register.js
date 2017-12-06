@@ -11,15 +11,18 @@ import {
     Message
 } from 'semantic-ui-react';
 import {register, changeRegisterForm} from './AuthActions';
+import axios from 'axios';
 
 class Register extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            companynameErrorMessage: '',
             emailErrorMessage: '',
             usernameErrorMessage: '',
             passwordErrorMessage: '',
             confirmPasswordErrorMessage: '',
+            companynameValid: '',
             emailValid: '',
             usernameValid: '',
             passwordValid: '',
@@ -30,16 +33,18 @@ class Register extends React.Component {
         this._changeUsername = this._changeUsername.bind(this);
         this._changePassword = this._changePassword.bind(this);
         this._changeConfirmPassword = this._changeConfirmPassword.bind(this);
+        this._changeCompanyName = this._changeCompanyName.bind(this);
         this._handleSignup = this._handleSignup.bind(this);
         this._emitChange = this._emitChange.bind(this);
     }
     _handleSignup(e) {
         e.preventDefault();
         this.setState({submitSignup: true});
-        if(this.state.emailValid && this.state.usernameValid && this.state.passwordValid && this.state.confirmPasswordValid) {
+        if(this.state.emailValid && this.state.usernameValid && this.state.passwordValid && this.state.confirmPasswordValid && this.state.companynameValid) {
             this
                 .props
-                .register(  this.props.data.formRegisterState.email, 
+                .register(  this.props.data.formRegisterState.company_name,
+                            this.props.data.formRegisterState.email, 
                             this.props.data.formRegisterState.username, 
                             this.props.data.formRegisterState.password, 
                             this.props.data.formRegisterState.confirm_password)
@@ -48,7 +53,7 @@ class Register extends React.Component {
                         this
                             .props
                             .history
-                            .push('/dashboard');
+                            .push(this.props.match.url);
                     }
                 })
         }
@@ -135,6 +140,39 @@ class Register extends React.Component {
         };
         this._emitChange(newState);
     }
+
+    _checkCompanyName = async (e) => {
+        this.setState({submitSignup: false});
+        let response = await axios.get(`/api/checkCompany/${e.target.value}`);
+        let checkCompany = response.data.success;
+        if (checkCompany) {
+            this.setState({
+                companynameValid: false,
+                companynameErrorMessage: 'Your company name is already taken.'
+            });
+        }
+    }
+
+    _changeCompanyName(e) {
+        this.setState({submitSignup: false});     
+        if(e.target.value.length > 3 && e.target.value.length < 50) {
+            this.setState({
+                companynameValid: true,
+                companynameErrorMessage: ''
+            });
+        }
+        else {
+            this.setState({
+                companynameValid: false,
+                companynameErrorMessage: 'Your company name too short or too long.'
+            });
+        }
+        var newState = {
+            ...this.props.data.formRegisterState,
+            company_name: e.target.value
+        };
+        this._emitChange(newState);
+    }
     _emitChange(newState) {
         this.props.changeRegisterForm(newState);
     }
@@ -148,16 +186,17 @@ class Register extends React.Component {
                     margin: '0 auto'
                 }}>
                     <Header as='h2'>Sign Up</Header>
-                    {(( this.state.emailValid === false || 
+                    {(( this.state.companynameValid === false ||
+                        this.state.emailValid === false || 
                         this.state.usernameValid === false || 
                         this.state.passwordValid === false || 
                         this.state.confirmPasswordValid === false) && this.state.submitSignup)
                         ? <Message key={"1"}
                                 error
                                 header='There was some errors with your submission'
-                                list={[this.state.emailErrorMessage, this.state.usernameErrorMessage, this.state.passwordErrorMessage, this.state.confirmPasswordErrorMessage]}/>
+                                list={[this.state.emailErrorMessage, this.state.usernameErrorMessage, this.state.passwordErrorMessage, this.state.confirmPasswordErrorMessage, this.state.companynameErrorMessage]}/>
                         : ''}
-                    {(this.props.data.errorMessage && this.state.emailValid && this.state.usernameValid && this.state.passwordValid && this.state.confirmPasswordValid && this.state.submitSignup)
+                    {(this.props.data.errorMessage && this.state.companynameValid && this.state.emailValid && this.state.usernameValid && this.state.passwordValid && this.state.confirmPasswordValid && this.state.submitSignup)
                         ? <Message key={"2"}
                                 error
                                 header='There was some errors with your submission'
@@ -166,20 +205,19 @@ class Register extends React.Component {
                     <Form
                         onSubmit={this._handleSignup}>
                         <Form.Field>
-                            <label htmlFor="email">Email</label>
-                            <Input type="email" id="email" placeholder='example@gmail.com' onChange={this._changeEmail} required/>
+                            <Form.Input label="Company Name" type="text" id="company" placeholder='demo' onChange={this._changeCompanyName} onBlur={this._checkCompanyName} required/>
                         </Form.Field>
                         <Form.Field>
-                            <label htmlFor="username">Username</label>
-                            <Input type="text" id="username" placeholder='donguyen' onChange={this._changeUsername} required/>
+                            <Form.Input label="Email" type="email" id="email" placeholder='example@gmail.com' onChange={this._changeEmail} required/>
                         </Form.Field>
                         <Form.Field>
-                            <label htmlFor="password">Password</label>
-                            <Input type="password" id="password" placeholder='••••••••••' onChange={this._changePassword} required/>
+                            <Form.Input label="Username" type="text" id="username" placeholder='donguyen' onChange={this._changeUsername} required/>
                         </Form.Field>
                         <Form.Field>
-                            <label htmlFor="confirm_password">Confirm Password</label>
-                            <Input type="password" id="confirm_password" placeholder='••••••••••' onChange={this._changeConfirmPassword} required/>
+                            <Form.Input label="Password" type="password" id="password" placeholder='••••••••••' onChange={this._changePassword} required/>
+                        </Form.Field>
+                        <Form.Field>
+                            <Form.Input label="Comfirm Password" type="password" id="confirm_password" placeholder='••••••••••' onChange={this._changeConfirmPassword} required/>
                         </Form.Field>
                         <Form.Field>
                             <Checkbox label='I agree to the Terms and Conditions'/>

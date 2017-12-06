@@ -2,7 +2,8 @@ import {
     CHANGE_EAF,
     CHANGE_SCALE_FACTORS,
     CHANGE_FUNCTION_POINT,
-    CHANGE_KLOC
+    CHANGE_KLOC,
+    CHANGE_ESTIMATED_RESULT
 } from './estimateConstants'
 
 import estimate from '../utils/estimate'
@@ -21,6 +22,14 @@ export function changeFunctionPoint(newState) {
 
 export function changeKLOC(newState) {
     return {type: CHANGE_KLOC, newState};
+}
+
+export function changeEstimatedResult(newState) {
+    return {type: CHANGE_ESTIMATED_RESULT, newState};
+}
+
+export function changeSuitableStaffs(newState) {
+    return {type: CHANGE_ESTIMATED_RESULT, newState};
 }
 
 export function getSuitableStaffs(requirement) {

@@ -20,6 +20,7 @@ import {
 
 class TaskItem extends React.Component {
     constructor(props) {
+
         super(props);
         this.state = {
             openModalEdit: false,
@@ -211,7 +212,7 @@ class TaskItem extends React.Component {
                                                             .responsible_user
                                                             .map(user => (
                                                                 <Label key={user._id} as='a' image size='tiny'>
-                                                                    <img src={this.props.data.created_by.image}/> {this.props.data.created_by.email}
+                                                                    <img src={user.image}/> {user.email}
                                                                 </Label>
                                                             ))}
                                                     </Table.Cell>

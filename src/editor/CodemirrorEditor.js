@@ -2,8 +2,8 @@ import React from 'react';
 import {Segment, Menu, Dropdown, Icon} from 'semantic-ui-react';
 import CodeMirror from 'react-codemirror';
 
-const io = require('socket.io-client');
-const socket = io();
+// const io = require('socket.io-client');
+// const socket = io();
 
 require('codemirror/lib/codemirror.css');
 require('codemirror/addon/lint/lint.css');

@@ -2,28 +2,20 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {
     Button,
-    Container,
-    Divider,
     Grid,
     Input,
     Label,
     Modal,
-    Header,
     Icon,
     Transition,
-    Step,
-    Image,
-    Statistic,
-    Rating,
-    Table
+    Step
 } from 'semantic-ui-react';
+
 import {
     SCALE_FACTORS,
     NOMINAL_RATING_VALUE,
     EAF,
-    COEFFICIENT,
-    FUNCTION_POINT,
-    FUNCTION_POINT_TO_SLOC
+    COEFFICIENT
  } from '../app/COCOMO.js'
  
 import CostDriver from './CostDriver';
@@ -32,73 +24,108 @@ import FunctionPoint from './FunctionPoint';
 
 import {
     changeKLOC,
-    getSuitableStaffs
+    getSuitableStaffs,
+    changeEstimatedResult
 } from './estimateActions'
+
+import {
+    changeResponsibleUser,
+    changeFindTeamBugdetError,
+    setAcceptSuggestionStatus,
+    changeProjectWillCreate
+} from '../project/ProjectActions'
+
+import SuitableStaffsView from './SuitableStaffsView';
+import SuggestSuitableStaffsView from './SuggestSuitableStaffsView';
+import CocomoStatisticsTable from './CocomoStatisticsTable';
+import EstimatedStatistics from './EstimatedStatistics';
+
+const NOT_DECIDED = -1, ACCEPTED = 1, DECLINED = 0;
 
 class Estimate extends React.Component {
     constructor(props) {
         super(props);
-        this.estimate = this.estimate.bind(this);
-        this.onInputSLOCChange = this.onInputSLOCChange.bind(this);
-        this.caculateEAF = this.caculateEAF.bind(this);
+        this.estimate             = this.estimate.bind(this);
+        this.onInputSLOCChange    = this.onInputSLOCChange.bind(this);
+        this.caculateEAF          = this.caculateEAF.bind(this);
         this.caculateScaleFactors = this.caculateScaleFactors.bind(this);
-        
+        // this.responseSuggest      = this.responseSuggest.bind(this);
 
     }
     estimate(){
 
         let currentState;
-        currentState = {...this.state}
-        currentState.modal['SLOCModal'] = false
-        currentState.modal['ScaleFactorModal'] = false
-        currentState.modal['CostDriverModal'] = false
-        currentState.modal['SuitableStaffsModal'] = true
-        this.setState(currentState)
+        currentState                              = {...this.state};
+        currentState.modal['SLOCModal']           = false;
+        currentState.modal['ScaleFactorModal']    = false;
+        currentState.modal['CostDriverModal']     = false;
+        currentState.modal['SuitableStaffsModal'] = true;
+        // currentState.isDeclineSuggest             = false;
+        this.setState(currentState);
 
-        var E = COEFFICIENT.B+0.01*(this.caculateScaleFactors(this.props.input_project));
-
+        var E    = COEFFICIENT.B+0.01*(this.caculateScaleFactors(this.props.estimateReducer));
+        
         //persons-months nominal schedule
-        var PMns = COEFFICIENT.A * Math.pow(this.props.input_project.KLOC,E) * this.caculateEAF(this.props.input_project);
-
+        var PMns = COEFFICIENT.A * Math.pow(this.props.estimateReducer.KLOC,E) * this.caculateEAF(this.props.estimateReducer);
+        
         //persons-months
-        var PMs = COEFFICIENT.A * Math.pow(this.props.input_project.KLOC,E) * this.caculateEAF(this.props.input_project);
-
+        var PMs  = COEFFICIENT.A * Math.pow(this.props.estimateReducer.KLOC,E) * this.caculateEAF(this.props.estimateReducer);
+        
         // time development
         var TDEV = COEFFICIENT.C * Math.pow(PMns,(COEFFICIENT.D+0.2*(E-COEFFICIENT.B)));
-
+        
         //total person need (person count)
-        var PM = PMs / TDEV;
+        var PM   = PMs / TDEV;
 
-        currentState = {...this.state}
-        currentState.estimatedResult.original.PMs = PMs;
-        currentState.estimatedResult.original.TDEV = TDEV;
-        currentState.estimatedResult.original.PM = PM;
+        //months in the form as real number
+        var durationBeginToDeadline = this.props.projectReducer.projectWillCreate.duration;
 
-        currentState.estimatedResult.ceil.PMs = Math.ceil(PMs);
-        currentState.estimatedResult.ceil.TDEV = Math.ceil(TDEV);
-        currentState.estimatedResult.ceil.PM = Math.ceil(PM);
-        this.setState(currentState)
+        var effortPM = 0;
+        //deadline duration is less than estimate duration
+        if(durationBeginToDeadline < Math.ceil(TDEV))
+        {
+            //person per month base on deadline of project
+            effortPM = PMs / durationBeginToDeadline;
+            // console.log('effort', PMs);
+        }
 
-        // document.getElementById("PMs").innerHTML = PMs;
-        // document.getElementById("TDEV").innerHTML = TDEV;
-        // document.getElementById("PM").innerHTML = PM;
-
-        currentState = {...this.state}
+        currentState = {...this.state};
         this.props.getSuitableStaffs({
-          person_month: this.state.estimatedResult.ceil.PM,
-          analyst_capability: (this.props.input_project.EAF.ACAP == undefined) ? NOMINAL_RATING_VALUE : parseInt(this.props.input_project.EAF.ACAP),
-          programmer_capability: (this.props.input_project.EAF.PCAP == undefined) ? NOMINAL_RATING_VALUE : parseInt(this.props.input_project.EAF.PCAP),
-          application_experience: (this.props.input_project.EAF.APEX == undefined) ? NOMINAL_RATING_VALUE : parseInt(this.props.input_project.EAF.APEX),
-          platform_experience: (this.props.input_project.EAF.PLEX == undefined) ? NOMINAL_RATING_VALUE : parseInt(this.props.input_project.EAF.PLEX),
-          language_and_toolset_experience: (this.props.input_project.EAF.LTEX == undefined) ? NOMINAL_RATING_VALUE : parseInt(this.props.input_project.EAF.LTEX),
+          person_month: (effortPM != 0) ? Math.ceil(effortPM) : Math.ceil(PM),
+          analyst_capability: (this.props.estimateReducer.EAF.ACAP === undefined) ? NOMINAL_RATING_VALUE : parseInt(this.props.estimateReducer.EAF.ACAP),
+          programmer_capability: (this.props.estimateReducer.EAF.PCAP === undefined) ? NOMINAL_RATING_VALUE : parseInt(this.props.estimateReducer.EAF.PCAP),
+          application_experience: (this.props.estimateReducer.EAF.APEX === undefined) ? NOMINAL_RATING_VALUE : parseInt(this.props.estimateReducer.EAF.APEX),
+          platform_experience: (this.props.estimateReducer.EAF.PLEX === undefined) ? NOMINAL_RATING_VALUE : parseInt(this.props.estimateReducer.EAF.PLEX),
+          language_and_toolset_experience: (this.props.estimateReducer.EAF.LTEX === undefined) ? NOMINAL_RATING_VALUE : parseInt(this.props.estimateReducer.EAF.LTEX),
         })
         .then((response) => {
-            let data = response.data
-            // console.log(data)
-            currentState.suitableStaffs = data.suitableStaffs
-            currentState.estimatedResult.projectCost = data.projectCost
-            this.setState(currentState)
-        })
+            let data = response.data;
+            let projectCost = data.projectCostPerMonth*Math.ceil(TDEV);
+
+            currentState.isGetSuitableStaffDone      = true;
+            
+            this.setState(currentState);
+
+            this.props.changeEstimatedResult({
+                months        : Math.ceil(TDEV),
+                persons       : Math.ceil(PM),
+                suitableStaffs: data.suitableStaffs,
+                original:{
+                    PMs: PMs,
+                    TDEV: TDEV,
+                    PM: PM,
+                    effortPM: effortPM > 0 ? effortPM : 0
+                },
+                ceil:{
+                    PMs: Math.ceil(PMs),
+                    TDEV: Math.ceil(TDEV),
+                    PM: Math.ceil(PM),
+                    effortPM: effortPM > 0 ? Math.ceil(effortPM) : 0
+                },
+                projectCostPerMonth: data.projectCostPerMonth,
+                projectCost: projectCost
+            });
+        });
     }
 
     caculateEAF(){
@@ -106,8 +133,8 @@ class Estimate extends React.Component {
         
         EAF.forEach((factor, factor_index) => {
             let factor_name = Object.keys(factor)[0];
-            let rating_level = this.props.input_project.EAF[factor_name];
-            if(rating_level != undefined)
+            let rating_level = this.props.estimateReducer.EAF[factor_name];
+            if(rating_level !== undefined)
             {
                 let rating_value = factor[factor_name].rating[rating_level].value;
                 EAF_value *= rating_value;
@@ -122,9 +149,9 @@ class Estimate extends React.Component {
         
         SCALE_FACTORS.forEach((factor, factor_index) => {
             let factor_name = Object.keys(factor)[0];
-            let rating_level = this.props.input_project.SCALE_FACTORS[factor_name];
+            let rating_level = this.props.estimateReducer.SCALE_FACTORS[factor_name];
             
-            if(rating_level != undefined)
+            if(rating_level !== undefined)
             {
                 let rating_value = factor[factor_name].rating[rating_level].value;
                 scale_factors_value += rating_value;
@@ -144,67 +171,73 @@ class Estimate extends React.Component {
         if (!(isNaN(SLOC)) && (SLOC >= 0) )
             this.props.changeKLOC(element.target.value/1000);
     }
+
     state = { 
         modal: {
-            SLOCModal: false,
-            ScaleFactorModal: false,
-            CostDriverModal: false,
+            SLOCModal          : false,
+            ScaleFactorModal   : false,
+            CostDriverModal    : false,
             SuitableStaffsModal: false  
         },
         transition:{
-            fpVisible: false,
+            fpVisible  : false,
             fpAnimation: 'drop'
         },
         input:{
           slocInput: false
         },
         suitableStaffs:[],
-        estimatedResult: {
-            original:{
-                PMs: 0,
-                TDEV: 0,
-                PM: 0
-            },
-            ceil:{
-                PMs: 0,
-                TDEV: 0,
-                PM: 0
-            },
-            projectCost: 0,
-        },
-        stickyRef: {}
+        isGetSuitableStaffDone: false,
+        isEstimatedBudgetError: false,
+        isDeclineSuggest: false
     }
+
     show = element => () => {
+        if(element != 'SuitableStaffsModal')
+        {
+            this.props.setAcceptSuggestionStatus(NOT_DECIDED);
+        }
         // this.setState({[element]: true })  
         if(element != 'SLOCModal')
         {
           let currentState;
-          if (this.props.input_project.KLOC == 0)
+          if (this.props.estimateReducer.KLOC == 0)
           {
-            currentState = {...this.state}
-            currentState.input.slocInput = true
-            this.setState(currentState)
+            currentState                 = {...this.state};
+            currentState.input.slocInput = true;
+            this.setState(currentState);
             if(!this.state.transition.fpVisible)
-              document.querySelectorAll('#sloc')[0].focus()
+              document.querySelectorAll('#sloc')[0].focus();
             return
           }
           else
           {
-
-            currentState = {...this.state}
-            currentState.input.slocInput = false
-            this.setState(currentState)
+            currentState                 = {...this.state};
+            currentState.input.slocInput = false;
+            this.setState(currentState);
           }
+
+          
 
         }
         else
-        {
-            
+        {   
+            //isSLOCModal
+            this.setState({isGetSuitableStaffDone: false});
+
+            // let budget = document.querySelectorAll('input[name="budget"]')[0].value;
+            //check budget & deadline is entered
+            if(this.props.projectReducer.projectWillCreate.budget == 0)
+            {
+                this.props.changeFindTeamBugdetError(true);
+                document.querySelectorAll('input[name="budget"]')[0].focus();
+                return;
+            }
             if(!this.state.transition.fpVisible)
             {
             
                 setTimeout(() =>{
-                    document.querySelectorAll('#sloc')[0].value = this.props.input_project.KLOC * 1000
+                    document.querySelectorAll('#sloc')[0].value = this.props.estimateReducer.KLOC * 1000
                 },100);
               
             }
@@ -214,40 +247,55 @@ class Estimate extends React.Component {
         {
             let currentState;
             if(modal_name == element){
-                currentState = {...this.state}
-                currentState.modal[modal_name] = true
-                this.setState(currentState)
+                currentState                   = {...this.state};
+                currentState.modal[modal_name] = true;
+                this.setState(currentState);
             }
             else{
-                currentState = {...this.state}
-                currentState.modal[modal_name] = false
-                this.setState(currentState)
+                currentState                   = {...this.state};
+                currentState.modal[modal_name] = false;
+                this.setState(currentState);
             }
         }   
         // if(element == 'SLOCModal')  
           // document.querySelectorAll('#sloc').focus()
     }
+
     close = element => () => {
-        let currentState = {...this.state}
-        currentState.modal[element] = false
-        this.setState(currentState)
+        if(element == 'SuitableStaffsModal'){
+            this.props.changeResponsibleUser(this.props.estimateReducer.estimatedResult.suitableStaffs.map(user=>user._id));
+            if(this.props.projectReducer.acceptSuggestionStatus == ACCEPTED)
+            {
+                this.props.changeProjectWillCreate(Object.assign(
+                    {...this.props.projectReducer.projectWillCreate},
+                    {budget:this.props.estimateReducer.estimatedResult.projectCost}
+                ));
+                
+                let budgetInput = document.querySelectorAll('input[name="budget"]')[0];
+                if(budgetInput !== undefined)
+                    budgetInput.value=this.props.estimateReducer.estimatedResult.projectCost;
+            }
+        }
+        let currentState            = {...this.state};
+        currentState.modal[element] = false;
+        this.setState(currentState);
     }
+
     handleVisibility = transition_name => () => {
-        let currentState = {...this.state}
-        currentState.transition[transition_name] = !this.state.transition[transition_name] 
-        this.setState(currentState)
+        let currentState                         = {...this.state};
+        currentState.transition[transition_name] = !this.state.transition[transition_name];
+        this.setState(currentState);
 
         // hidden sloc error message
-        currentState = {...this.state}
-        currentState.input.slocInput = false
-        this.setState(currentState)
+        currentState                 = {...this.state};
+        currentState.input.slocInput = false;
+        this.setState(currentState);
     }
+
     render() {
         const { SLOCModal, CostDriverModal, ScaleFactorModal, SuitableStaffsModal } = this.state.modal
         const { fpVisible, fpAnimation } = this.state.transition
         const { slocInput } = this.state.input
-        const { suitableStaffs } = this.state.suitableStaffs
-        const { stickyRef } = this.state.stickyRef
         const estimateStep = 
               <Step.Group >
                 <Step active = {SLOCModal} completed ={!SLOCModal} onClick={this.show('SLOCModal')}>
@@ -285,166 +333,6 @@ class Estimate extends React.Component {
                 </Step>
               </Step.Group>
 
-
-        const suitableStaffsView = this.state.suitableStaffs.map((staff, staffIndex) => {
-            return (
-          <Grid.Column className="suitable_staff">
-            <Grid.Row>
-                <Grid.Column>
-                    <Image className="margin_top_7" src={`/images/users/${staff.gender ? 'male' : 'female'}/${Math.round(Math.random()*14+1)}.jpg`} width="173" height="173" centered/>
-                </Grid.Column>
-            </Grid.Row>
-            <Grid.Row className="suitable_staff_content">
-                <Grid.Column>
-                    <Grid columns={2} className="no_margin">
-                        <Grid.Row>
-                            <Grid.Column width={13} className="no_padding">
-                                <p className="suitable_staff_name">{staff.lastname+' '+staff.firstname}</p>
-                            </Grid.Column>
-                            <Grid.Column textAlign="right" width={3} className="no_padding">
-                                <Icon name={staff.gender ? 'man' : 'woman'} size="large" color={staff.gender ? 'blue' : 'pink'}/>
-                            </Grid.Column>
-                        </Grid.Row>
-                    </Grid>
-                    <Grid.Row>
-                      <Grid.Column className="no_padding">
-                        <p><Icon name="money" />Lương: {staff.salary}<Icon name="usd" /></p>
-                      </Grid.Column>
-                    </Grid.Row>
-                    <Grid.Row>
-                        <Grid columns={2} className="no_margin">
-                            <Grid.Row>
-                                <Grid.Column className="no_padding">
-                                    <p><Icon name="write" />ACAP: {staff.analyst_capability+1}<Rating maxRating={1} defaultRating={1} icon='star' size='mini' disabled/></p>
-                                    <p><Icon name="code" />PCAP: {staff.programmer_capability+1}<Rating maxRating={1} defaultRating={1} icon='star' size='mini' disabled/></p>
-                                </Grid.Column>
-                                <Grid.Column className="no_padding">
-                                    <p><Icon name="edit" />APEX: {staff.application_experience+1}<Rating maxRating={1} defaultRating={1} icon='star' size='mini' disabled/></p>
-                                    <p><Icon name="cloud upload" size="medium" />PLEX: {staff.platform_experience+1}<Rating maxRating={1} defaultRating={1} icon='star' size='mini' disabled/></p>
-                                    <p><Icon name="wrench" size="medium" />LTEX: {staff.language_and_toolset_experience+1}<Rating maxRating={1} defaultRating={1} icon='star' size='mini' disabled/></p>
-                                </Grid.Column>
-                            </Grid.Row>
-                        </Grid>
-                    </Grid.Row>
-                    <Divider section className="no_margin"/>
-                    <Grid className="no_margin">
-                        <Grid.Row>
-                            <Grid.Column textAlign="center">
-                                <Button color='blue'>Thông tin cá nhân</Button>
-                            </Grid.Column>
-                        </Grid.Row>
-                    </Grid>
-                </Grid.Column>
-            </Grid.Row>
-          </Grid.Column>
-            )
-        })
-
-        const estimatedStatistics = 
-            <Grid columns={1} className="estimated_statistics_fixed">
-                <Grid.Row textAlign="center">
-                    <Grid.Column textAlign="center">
-                      <Header as='h2'>Thông số dự án</Header>
-                      <Statistic>
-                        <Statistic.Value>
-                          {this.state.estimatedResult.ceil.TDEV} <Icon name="calendar"/>
-                        </Statistic.Value>
-                        <Statistic.Label>Tháng</Statistic.Label>
-                      </Statistic>
-
-                      <Statistic>
-                        <Statistic.Value>
-                          {this.state.estimatedResult.ceil.PM} <Icon name={this.state.estimatedResult.ceil.PM > 1 ? 'users':'user'}/>
-                        </Statistic.Value>
-                        <Statistic.Label>Người/Tháng</Statistic.Label>
-                      </Statistic>
-
-                      <Statistic>
-                        <Statistic.Value>
-                          {this.state.estimatedResult.projectCost} <Icon name="usd"/>
-                        </Statistic.Value>
-                        <Statistic.Label>Chi Phí/Tháng</Statistic.Label>
-                      </Statistic>
-                    </Grid.Column>
-                </Grid.Row>
-                <Grid.Row textAlign="left">
-                    <Grid.Column textAlign="left">
-                      <Table celled>
-                        <Table.Header>
-                          <Table.Row>
-                            <Table.HeaderCell>Tiêu chí về nhân lực</Table.HeaderCell>
-                            <Table.HeaderCell>Đánh giá</Table.HeaderCell>
-                            <Table.HeaderCell>Khả năng</Table.HeaderCell>
-                          </Table.Row>
-                        </Table.Header>
-
-                        <Table.Body>
-                          <Table.Row>
-                            <Table.Cell><Icon name='write' /> Analyst Capability <code>(ACAP)</code></Table.Cell>
-                            <Table.Cell textAlign="center">
-                              {(this.props.input_project.EAF.ACAP == undefined) ? NOMINAL_RATING_VALUE : (parseInt(this.props.input_project.EAF.ACAP)+1) }
-                              <Rating maxRating={1} defaultRating={1} icon='star' size='mini' disabled/>
-                            </Table.Cell>
-                            <Table.Cell>
-                              {EAF.find(factor => Object.keys(factor) == 'ACAP')['ACAP'].rating[
-                                (this.props.input_project.EAF.ACAP == undefined) ? NOMINAL_RATING_VALUE : this.props.input_project.EAF.ACAP
-                                ].description}
-                            </Table.Cell>
-                          </Table.Row>
-                          <Table.Row>
-                            <Table.Cell><Icon name='code' /> Programmer Capability (PCAP)</Table.Cell>
-                            <Table.Cell textAlign="center">
-                              {(this.props.input_project.EAF.PCAP == undefined) ? NOMINAL_RATING_VALUE : (parseInt(this.props.input_project.EAF.PCAP)+1) }
-                              <Rating maxRating={1} defaultRating={1} icon='star' size='mini' disabled/>
-                            </Table.Cell>
-                            <Table.Cell>
-                              {EAF.find(factor => Object.keys(factor) == 'PCAP')['PCAP'].rating[
-                                (this.props.input_project.EAF.PCAP == undefined) ? NOMINAL_RATING_VALUE : this.props.input_project.EAF.PCAP
-                                ].description}
-                            </Table.Cell>
-                          </Table.Row>
-                          <Table.Row>
-                            <Table.Cell><Icon name='edit' /> Application Experience (APEX)</Table.Cell>
-                            <Table.Cell textAlign="center">
-                              {(this.props.input_project.EAF.APEX == undefined) ? NOMINAL_RATING_VALUE : (parseInt(this.props.input_project.EAF.APEX)+1) }
-                              <Rating maxRating={1} defaultRating={1} icon='star' size='mini' disabled/>
-                            </Table.Cell>
-                            <Table.Cell>
-                              {EAF.find(factor => Object.keys(factor) == 'APEX')['APEX'].rating[
-                                (this.props.input_project.EAF.APEX == undefined) ? NOMINAL_RATING_VALUE : this.props.input_project.EAF.APEX
-                                ].description}
-                            </Table.Cell>
-                          </Table.Row>
-                          <Table.Row>
-                            <Table.Cell><Icon name='cloud upload' /> Platform Experience (PLEX)</Table.Cell>
-                            <Table.Cell textAlign="center">
-                              {(this.props.input_project.EAF.PLEX == undefined) ? NOMINAL_RATING_VALUE : (parseInt(this.props.input_project.EAF.PLEX)+1) }
-                              <Rating maxRating={1} defaultRating={1} icon='star' size='mini' disabled/>
-                            </Table.Cell>
-                            <Table.Cell>
-                              {EAF.find(factor => Object.keys(factor) == 'PLEX')['PLEX'].rating[
-                                (this.props.input_project.EAF.PLEX == undefined) ? NOMINAL_RATING_VALUE : this.props.input_project.EAF.PLEX
-                                ].description}
-                            </Table.Cell>
-                          </Table.Row>
-                          <Table.Row>
-                            <Table.Cell><Icon name='wrench' /> Language & Tool Experience (LTEX)</Table.Cell>
-                            <Table.Cell textAlign="center">
-                              {(this.props.input_project.EAF.LTEX == undefined) ? NOMINAL_RATING_VALUE : (parseInt(this.props.input_project.EAF.LTEX)+1) }
-                              <Rating maxRating={1} defaultRating={1} icon='star' size='mini' disabled/>
-                            </Table.Cell>
-                            <Table.Cell>
-                              {EAF.find(factor => Object.keys(factor) == 'LTEX')['LTEX'].rating[
-                                (this.props.input_project.EAF.LTEX == undefined) ? NOMINAL_RATING_VALUE : this.props.input_project.EAF.LTEX
-                                ].description}
-                            </Table.Cell>
-                          </Table.Row>                           
-                        </Table.Body>
-                      </Table>
-                    </Grid.Column>
-                </Grid.Row>
-            </Grid>
-
         return (
         <div id="estimate">
                 <Button type='button' color='orange' onClick={this.show('SLOCModal')}><Icon name='wizard' /> Find suitable team</Button>
@@ -452,6 +340,8 @@ class Estimate extends React.Component {
                     id = "fp-modal"
                     size="fullscreen"
                     open={SLOCModal} onClose={this.close('SLOCModal')}
+                    closeOnDimmerClick={false}
+                    closeOnDocumentClick={false}
                     >
                 <Modal.Header>{estimateStep}</Modal.Header>
                 <Modal.Content className="estimate_maxHeight" scrolling>
@@ -499,6 +389,8 @@ class Estimate extends React.Component {
                     id = "scale-driver-modal"
                     size="fullscreen"
                     open={ScaleFactorModal} onClose={this.close('ScaleFactorModal')}
+                    closeOnDimmerClick={false}
+                    closeOnDocumentClick={false}
                     >
                 <Modal.Header>{estimateStep}</Modal.Header>
                 <Modal.Content className="estimate_maxHeight" scrolling>
@@ -516,6 +408,8 @@ class Estimate extends React.Component {
                     id = "cost-driver-modal"
                     size="fullscreen"
                     open={CostDriverModal} onClose={this.close('CostDriverModal')}
+                    closeOnDimmerClick={false}
+                    closeOnDocumentClick={false}
                     >
                 <Modal.Header>{estimateStep}</Modal.Header>
                 <Modal.Content className="estimate_maxHeight" scrolling>
@@ -533,19 +427,24 @@ class Estimate extends React.Component {
                     id = "suitable-staff-modal"
                     size="fullscreen"
                     open={SuitableStaffsModal} onClose={this.close('SuitableStaffsModal')}
+                    closeOnDimmerClick={false}
+                    closeOnDocumentClick={false}
                     >
                 <Modal.Header>{estimateStep}</Modal.Header>
                 <Modal.Content id="suitable_staff_content" className="estimate_maxHeight" scrolling>
                   <Modal.Description>
+                    
                     <Grid columns={2}>
-                        <Grid.Row>
-                            <Grid.Column>
-                                <Grid columns={3}>
-                                    {suitableStaffsView}
-                                </Grid>
+                        <Grid.Row textAlign="center">
+                            <Grid.Column textAlign="left">
+                                <SuggestSuitableStaffsView />
+                                <SuitableStaffsView/>
                             </Grid.Column>
-                            <Grid.Column >
-                                {estimatedStatistics}
+                            <Grid.Column textAlign="center">
+                                <div className="estimated_statistics_fixed">
+                                    <EstimatedStatistics />
+                                    <CocomoStatisticsTable />
+                                </div>
                             </Grid.Column>
                         </Grid.Row>
                     </Grid>
@@ -554,7 +453,10 @@ class Estimate extends React.Component {
                 <Modal.Actions>
                     <Button onClick={this.show('SLOCModal')} > <Icon name='repeat' color='black'/> Thử lại </Button>
                     <Button onClick={this.show('CostDriverModal')} > <Icon name='left chevron' /> Quay lại </Button>
-                    <Button onClick={this.close('SuitableStaffsModal')} color='green'> Xong  <Icon name='checkmark' /></Button>
+                    <Button onClick={this.close('SuitableStaffsModal')} color='green' 
+                        disabled={(!this.state.isGetSuitableStaffDone) ||  (this.props.projectReducer.acceptSuggestionStatus == NOT_DECIDED)}>
+                        <Icon name='checkmark' /> Xong
+                    </Button>
                 </Modal.Actions>
                 </Modal>                          
         </div>
@@ -566,12 +468,20 @@ class Estimate extends React.Component {
 
 
 const mapStateToProps = (state) => {
-    return {input_project: state.estimateReducer};
+    return {
+        estimateReducer: state.estimateReducer,
+        projectReducer: state.projectReducer
+    };
 }
 
 const mapDispatchToProps = {
     changeKLOC,
-    getSuitableStaffs
+    getSuitableStaffs,
+    changeResponsibleUser,
+    changeEstimatedResult,
+    changeFindTeamBugdetError,
+    setAcceptSuggestionStatus,
+    changeProjectWillCreate
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Estimate);

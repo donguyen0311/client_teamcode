@@ -9,27 +9,27 @@ import axios from 'axios';
 // import auth from '../utils/auth';
 
 import Home from './Home';
-import SideBar from './Sidebar';
+import SideBar from '../sidebar/Sidebar';
+
+import Login from '../auth/Login';
+import Register from '../auth/Register';
 
 import Dashboard from '../dashboard/Dashboard';
 import Project from '../project/Project';
-import Editor from '../editor/Editor';
-import Login from '../auth/Login';
-import Register from '../auth/Register';
-import Estimate from '../estimate/Estimate';
-import CostDriver from '../estimate/CostDriver';
-import ScaleFactor from '../estimate/ScaleFactor';
-import FunctionPoint from '../estimate/FunctionPoint';
+// import Estimate from '../estimate/Estimate';
+// import CostDriver from '../estimate/CostDriver';
+// import ScaleFactor from '../estimate/ScaleFactor';
+// import FunctionPoint from '../estimate/FunctionPoint';
 
 import rootReducer from './reducers';
+import { changeSocket } from './socket';
+
+const io = require('socket.io-client');
+const socket = io();
 
 const store = createStore(rootReducer, composeWithDevTools(applyMiddleware(thunk)));
 
-const Projects = (props) => {
-    return (
-        <Project {...props} />
-    )
-}
+store.dispatch(changeSocket(socket));
 
 const PrivateRoute = ({ component: Component, ...rest }) => (
     <Route {...rest} render={props => {
@@ -38,6 +38,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
         axios
             .get(`/api/checkCompany/${props.match.params.company}`)
             .then(response => {
+                console.log(response);
                 if(!response.data.success) {
                     history.push('/');
                 }
@@ -65,10 +66,10 @@ export default class App extends React.Component {
                             <Route path="/signup" component={Register}/>
                             {/* <Route component={CheckAuth}/> */}
                             <PrivateRoute path="/:company" component={SideBar} />
-                            <Route path="/estimate" component={Estimate}/>
+                            {/* <Route path="/estimate" component={Estimate}/>
                             <Route path="/costdriver" component={CostDriver}/>
                             <Route path="/scalefactor" component={ScaleFactor}/>
-                            <Route path="/fp" component={FunctionPoint}/>
+                            <Route path="/fp" component={FunctionPoint}/> */}
                         </Switch>
                     </div>
                 </Provider>

@@ -7,8 +7,8 @@ import {ReflexContainer, ReflexSplitter, ReflexElement} from 'react-reflex';
 import CodeMirrorEditor from './CodemirrorEditor';
 require('react-reflex/styles.css');
 
-const io = require('socket.io-client');  
-const socket = io();
+// const io = require('socket.io-client');  
+// const socket = io();
 
 class Editor extends React.Component {
     constructor(props) {

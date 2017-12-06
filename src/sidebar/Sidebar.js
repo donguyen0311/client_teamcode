@@ -13,13 +13,14 @@ import {
     Dropdown,
     Form
 } from 'semantic-ui-react';
+import {changeVisible} from './SidebarActions';
 import Dashboard from '../dashboard/Dashboard';
 import Project from '../project/Project';
 import ProjectNewForm from '../project/ProjectNewForm'
-import NavBar from './Header';
-import Estimate from '../estimate/Estimate';
+import NavBar from '../app/Header';
+
 import Avatar from '../user/UserAvatar';
-import axios from 'axios';
+
 import project from '../utils/project'
 import user from '../utils/user';
 
@@ -38,12 +39,15 @@ class SideBar extends React.Component {
         this.state = {
             activeItem: sessionStorage.current_project || 'dashboard',
             projects: [],
-            visibleSidebar: false,
-
+            // visibleSidebar: this.props.sidebar.visibleSidebar
         }
+        
     }
 
-    toggleVisibility = () => this.setState({ visibleSidebar: !this.state.visibleSidebar })
+    // toggleVisibility = () => this.setState({ visibleSidebar: !this.state.visibleSidebar })
+    toggleVisibility = () => this.props.changeVisible(!this.props.sidebar.visibleSidebar)
+
+    hideSidebar = () => this.props.sidebar.visibleSidebar ? this.props.changeVisible(false) : ''
 
     handleItemClick = name => {
         sessionStorage.current_project = name;
@@ -64,7 +68,7 @@ class SideBar extends React.Component {
 
     componentWillReceiveProps(nextProps){
         // console.log(this.state.projects)
-        console.log(nextProps.projectNewFormInfos)
+        
 
         if(Object.keys(nextProps.projectNewFormInfos.projectSaved).length > 0){
             let projects = [...this.state.projects]
@@ -86,13 +90,12 @@ class SideBar extends React.Component {
                 {' '}{this.props.match.params.company}
             </Header>
         );
-        const { visibleSidebar } = this.state;
         return (
             <Sidebar.Pushable>
                 <Sidebar
                     as={Menu}
-                    animation='push'
-                    visible={visibleSidebar}
+                    animation='overlay'
+                    visible={this.props.sidebar.visibleSidebar}
                     vertical
                     inverted
                     style={{
@@ -157,7 +160,7 @@ class SideBar extends React.Component {
                         </Menu.Menu>
                     </Menu.Item>
                 </Sidebar>
-                <Sidebar.Pusher>
+                <Sidebar.Pusher onClick={this.hideSidebar}>
                     <NavBar {...this.props} toggleVisibility={this.toggleVisibility} />
                     <Route path={`${this.props.match.url}/dashboard`} component={Dashboard} />
                     <Route path={`${this.props.match.url}/project/:project`} component={Project} />
@@ -170,12 +173,14 @@ class SideBar extends React.Component {
 const mapStateToProps = (state) => {
     return {
         profileUser: state.userReducer,
-        projectNewFormInfos: state.projectReducer
+        projectNewFormInfos: state.projectReducer,
+        sidebar: state.sidebarReducer
     };
 }
 const mapDispatchToProps = {
     changeIdNewProjectForm,
-    changeProjectSaved
+    changeProjectSaved,
+    changeVisible
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SideBar);

@@ -1,11 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {
-    Sidebar,
-    Segment,
     Button,
-    Menu,
-    Image,
     Icon,
     Header,
     Modal,
@@ -14,30 +10,36 @@ import {
     Input,
     Label,
     Loader,
-    Dimmer
 } from 'semantic-ui-react';
 
 import Estimate from '../estimate/Estimate';
-import user from '../utils/user'
+
 import project from '../utils/project'
 
 import {getUsersInCompanyInfo} from '../user/UserActions'
 import {
   changeUserNewProjectForm,
   changeIdNewProjectForm,
-  changeProjectSaved
+  changeProjectSaved,
+  changeProjectWillCreate,
+  changeFindTeamBugdetError,
+  changeResponsibleUser,
 } from '../project/ProjectActions'
 
 import SweetAlert from 'sweetalert2-react';
 import DatePicker from 'react-datepicker';
-import moment from 'moment';
+
 import 'react-datepicker/dist/react-datepicker.css';
 import 'sweetalert2/dist/sweetalert2.css';
+
+import moment from 'moment';
+import 'moment-duration-format';
 
 
 class ProjectNewForm extends React.Component {
     constructor(props) {
       super(props);
+
       this.state = {
         projectInfos:{
             'project_name': '',
@@ -268,24 +270,23 @@ class ProjectNewForm extends React.Component {
           text: 'Wordpress'
         },
         ]
-      }
+      };
 
-      this.handleChange = this.handleChange.bind(this)
-      this.getUsersInCompanyInfo = this.getUsersInCompanyInfo.bind(this)
-      this.onInputChange = this.onInputChange.bind(this)
-      this.onMutipleChoiceChange = this.onMutipleChoiceChange.bind(this)
-      this.onNewProjectFormSubmit = this.onNewProjectFormSubmit.bind(this)
-      this.open = this.open.bind(this)
-      this.close = this.close.bind(this)
-      this.onAddItem = this.onAddItem.bind(this)
+      this.handleChange = this.handleChange.bind(this);
+      this.getUsersInCompanyInfo = this.getUsersInCompanyInfo.bind(this);
+      this.onInputChange = this.onInputChange.bind(this);
+      this.onMutipleChoiceChange = this.onMutipleChoiceChange.bind(this);
+      this.onNewProjectFormSubmit = this.onNewProjectFormSubmit.bind(this);
+      this.open = this.open.bind(this);
+      this.close = this.close.bind(this);
     }
 
     updateCreateByBelongCompany(){
-      let currentState = {...this.state}
-      currentState.projectInfos['created_by'] = this.props.profileUser.profile._id
-      currentState.projectInfos['users'].push(this.state.projectInfos.created_by)
-      currentState.projectInfos['belong_company'] = this.props.profileUser.profile.current_company._id
-      this.setState(currentState)
+      let currentState = {...this.state};
+      currentState.projectInfos['created_by'] = this.props.profileUser.profile._id;
+      currentState.projectInfos['users'].push(this.state.projectInfos.created_by);
+      currentState.projectInfos['belong_company'] = this.props.profileUser.profile.current_company._id;
+      this.setState(currentState);
 
       // 'belong_company' : this.props.profileUser.profile.current_company._id,
       // 'created_by' : this.props.profileUser.profile._id,
@@ -306,42 +307,68 @@ class ProjectNewForm extends React.Component {
 
     getUsersInCompanyInfo()
     {
-      let company_id = this.props.profileUser.profile.current_company._id
+      let company_id = this.props.profileUser.profile.current_company._id;
       this.props.getUsersInCompanyInfo(company_id)
       .then((users) =>
       {
-        let currentState = {...this.state}
-        currentState.usersAvailableInCompany = this.formatUsersInCompany(users)
-        currentState.isGetUsersInfoDone = true
-        this.setState(currentState)
+        let currentState = {...this.state};
+        currentState.usersAvailableInCompany = this.formatUsersInCompany(users);
+        currentState.isGetUsersInfoDone = true;
+        this.setState(currentState); 
       })
     }
 
     handleChange(date) {
 
-      let currentState = {...this.state}
-      currentState.startDate = date
-      currentState.projectInfos.deadline = date._d
-      this.setState(currentState)
+      let currentState = {...this.state};
+      currentState.startDate = date;
+      currentState.projectInfos.deadline = date._d;
+      this.setState(currentState);
+
+      this.props.changeProjectWillCreate(
+        Object.assign({...this.props.projectNewFormInfos.projectWillCreate},
+          {
+            deadline: date._d,
+            duration: this.durationMonthFormat(date._d)
+          }
+        )
+      );
     }
 
     onMutipleChoiceChange(event,data)
     {
       // console.log(event.target.value)
-      var elementName = data.name
-      let currentState = {...this.state}
-      currentState.projectInfos[elementName] = data.value
-      this.setState(currentState)
+      var elementName = data.name;
+      let currentState = {...this.state};
+      currentState.projectInfos[elementName] = data.value;
+      this.setState(currentState);
       // console.log(data.placeholder)
       // console.log(data.value)
       // data.value.push('wordpress')
     }
     onInputChange(element){
       // console.log(element)
-      var elementName = element.target.getAttribute('name')
-      let currentState = {...this.state}
-      currentState.projectInfos[elementName] = element.target.value
-      this.setState(currentState)
+      var elementName = element.target.getAttribute('name');
+      let currentState = {...this.state};
+      let value = element.target.value;
+      currentState.projectInfos[elementName] = value;
+      this.setState(currentState);
+
+      if(elementName == 'budget')
+      {
+        if(value > 0)
+        {
+          this.props.changeFindTeamBugdetError(false);
+        }
+
+        this.props.changeProjectWillCreate(
+          Object.assign({...this.props.projectNewFormInfos.projectWillCreate},
+            {
+              budget: element.target.value
+            }
+          )
+        );
+      }
     }
 
     onNewProjectFormSubmit(){
@@ -349,50 +376,68 @@ class ProjectNewForm extends React.Component {
       if(!this.state.isCreatingProject){
         this.setState({
           isCreatingProject: true
-        })
-        this.updateCreateByBelongCompany()
+        });
+        this.updateCreateByBelongCompany();
         project.newProject(this.state.projectInfos)
         .then(response => {
           //console.log(response)
           this.setState({
             isCreatingProject: false
-          })
+          });
           this.setState({
             openModal: false
-          })
+          });
           
           // this.props.changeUserNewProjectForm(response.projectSaved.users)
           // this.props.changeIdNewProjectForm(response.projectSaved._id)
-          this.props.changeProjectSaved(response.projectSaved)
+          this.props.changeProjectSaved(response.projectSaved);
 
           this.setState({
             sweetalert: true
-          })
+          });
           setTimeout(() => {
             this.setState({
               sweetalert: false
             })
-          },1500)
+          },1500);
         })
         
       }
     }
     open(){
-      this.getUsersInCompanyInfo()
+
+      this.props.changeResponsibleUser([]);
+      this.props.changeProjectWillCreate({
+          budget: 0,
+          deadline: new Date(),
+          duration: 0
+      });
+      this.getUsersInCompanyInfo();
       this.setState({
         openModal: true
-      })
+      });
+      
+      // let budgetInput = document.querySelectorAll('input[name="budget"]')[0];
+      
+      // if(budgetInput !== undefined){
+      //   budgetInput.value = this.props.projectReducer.projectWillCreate.budget;
+      // }
     }
     close(){
       this.setState({
         openModal: false
-      })
+      });
     }
 
-    onAddItem(event, data){
-      console.log(data.value)
+    durationMonthFormat(deadline){
+        //hieu so
+        let now = new Date();
+        let difference = moment(deadline,"DD/MM/YYYY HH:mm:ss").diff(moment(now,"DD/MM/YYYY HH:mm:ss"));
+        if(difference > 0){
+            return moment.duration(difference,'ms').format('M',10);
+        }
+        return 0;
     }
-
 
     render() {
         const openModal = this.state.openModal
@@ -419,7 +464,7 @@ class ProjectNewForm extends React.Component {
               <Modal.Content scrolling className="new_project_content">
                   
                   <Form.Field>
-                    <Form.Input label='Project Name' name='project_name' placeholder='Project Name'  required 
+                    <Form.Input label='Project Name' name='project_name' placeholder='Project Name' autoFocus required 
                       onChange={this.onInputChange}
                     />
                   </Form.Field>
@@ -433,10 +478,11 @@ class ProjectNewForm extends React.Component {
                         onChange={this.onInputChange}
                         required
                       />
+                      {this.props.projectNewFormInfos.findTeamBudgetError && <Label basic color='red' pointing>Please enter a value</Label>}
                   </Form.Field>
                   <Form.Field className="required">
                       <label>Deadline</label>
-                      <DatePicker selected={this.state.startDate} onChange={this.handleChange} required
+                      <DatePicker selected={this.state.startDate} required
                         name='deadline'
                         dateFormat="DD/MM/YYYY"
                         onChange={this.handleChange}
@@ -459,13 +505,20 @@ class ProjectNewForm extends React.Component {
                   <Form.Field className="required">
                       <label>Responsible</label>
                       {
-                        this.state.isGetUsersInfoDone ? 
-                        <Dropdown placeholder='Responsible User' fluid multiple selection search
+                        
+                        this.state.isGetUsersInfoDone ? ( this.props.projectNewFormInfos.responsible_user.length > 0 ? 
+                        <Dropdown key={123} placeholder='Responsible User' fluid multiple selection search
                           options={this.state.usersAvailableInCompany} required
-                          name='users'
+                          name='users1'
                           onChange={this.onMutipleChoiceChange}
-
+                          defaultValue={this.props.projectNewFormInfos.responsible_user}
+                          /> : 
+                          <Dropdown key={456} placeholder='Responsible User' fluid multiple selection search
+                          options={this.state.usersAvailableInCompany} required
+                          name='users2'
+                          onChange={this.onMutipleChoiceChange}
                           />
+                          )
                           :
                           <Loader active inline='centered' className="new_project"/>
                       }
@@ -504,7 +557,10 @@ const mapDispatchToProps = {
     getUsersInCompanyInfo,
     changeUserNewProjectForm,
     changeIdNewProjectForm,
-    changeProjectSaved
+    changeProjectSaved,
+    changeProjectWillCreate,
+    changeFindTeamBugdetError,
+    changeResponsibleUser,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProjectNewForm);

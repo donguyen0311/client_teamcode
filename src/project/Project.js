@@ -1,5 +1,4 @@
 import React from 'react';
-import SideBar from '../app/Sidebar';
 import { Popup, Dropdown, Header } from 'semantic-ui-react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { Label, Icon, Modal, Button, Form } from 'semantic-ui-react';
@@ -7,11 +6,6 @@ import styled, { injectGlobal } from 'styled-components';
 import TaskItem from './TaskItem';
 import {connect} from 'react-redux';
 import axios from 'axios';
-
-const io = require('socket.io-client');
-// axios.get('/donguyen').then(response => {
-// 	console.log(response);
-// })
 
 // fake data generator
 const getItems = count =>
@@ -283,9 +277,9 @@ class Project extends React.Component {
 		this.deleteTask = this.deleteTask.bind(this);
 		this.onDragEnd = this.onDragEnd.bind(this);
 		this.onDragStart = this.onDragStart.bind(this);
-		this.socket = io();
 
-		this.socket.on('Task:updateTaskPosition', (response) => {
+		this.props.socket.on('Task:updateTaskPosition', (response) => {
+			console.log(response);
 			// dropped nowhere
 			if (!response.destination) {
 				return;
@@ -305,7 +299,7 @@ class Project extends React.Component {
 				// autoFocusQuoteId: data.autoFocusQuoteId,
 			});
 		});
-		this.socket.on('Task:updateAddTask', (response) => {
+		this.props.socket.on('Task:updateAddTask', (response) => {
 			console.log(response);
 			var columns = this.state.columns;
 			columns[response.status].push(response);
@@ -313,7 +307,7 @@ class Project extends React.Component {
 				columns: columns
 			});
 		});
-		this.socket.on('Task:updateEditTask', (response) => {
+		this.props.socket.on('Task:updateEditTask', (response) => {
 			console.log(response);
 			var columns = this.state.columns;
 			columns[response.status][response.position] = response;
@@ -321,7 +315,7 @@ class Project extends React.Component {
 				columns: columns
 			});
 		});
-		this.socket.on('Task:updateDeleteTask', (response) => {
+		this.props.socket.on('Task:updateDeleteTask', (response) => {
 			console.log(response);
 			var columns = this.state.columns;
 			columns[response.status].splice(response.position, 1);
@@ -344,7 +338,8 @@ class Project extends React.Component {
 	openModalAdd = () => this.setState({ openModalAdd: true })
 
 	componentWillReceiveProps(nextProps) {
-		this.socket.emit('Task:joinRoom', nextProps.match.url);
+		console.log(nextProps);
+		this.props.socket.emit('Task:joinRoom', nextProps.match.url);
 		axios.get('/api/projects/' + nextProps.match.params.project, {headers: { 'x-access-token': localStorage.token } })
 			.then(response => {
 				this.setState({
@@ -355,10 +350,15 @@ class Project extends React.Component {
 			.catch(error => {
 				console.log(error);
 			});
+		if(nextProps.profileUser.profile._id){
+			this.props.socket.emit('updateOnlineList', nextProps.profileUser.profile._id);
+		}
+		
 	}
+
 	componentWillMount() {
 		console.log(this.props);
-		this.socket.emit('Task:joinRoom', this.props.match.url);
+		this.props.socket.emit('Task:joinRoom', this.props.match.url);
 		axios.get('/api/projects/' + this.props.match.params.project, {headers: { 'x-access-token': localStorage.token } })
 			.then(response => {
 				console.log(response);
@@ -370,6 +370,9 @@ class Project extends React.Component {
 			.catch(error => {
 				console.log(error);
 			});
+		if(this.props.profileUser.profile._id) {
+			this.props.socket.emit('updateOnlineList', this.props.profileUser.profile._id);
+		}
 	}
 
 	formatResponsibleUser(users = []) {
@@ -418,7 +421,7 @@ class Project extends React.Component {
 		console.log('add task');
 		console.log(this.state);
 		console.log(status);
-		this.socket.emit('Task:addTask', {
+		this.props.socket.emit('Task:addTask', {
 			position: this.state.columns[status].length,
 			status: status,
 			task_name: this.state.addTaskName,
@@ -433,12 +436,12 @@ class Project extends React.Component {
 	}
 
 	editTask(task) {
-		this.socket.emit('Task:editTask', task);
+		this.props.socket.emit('Task:editTask', task);
 	}
 
 	deleteTask(task) {
 		console.log(task);
-		this.socket.emit('Task:deleteTask', task);
+		this.props.socket.emit('Task:deleteTask', task);
 	}
 
   	onDragStart(initial) {
@@ -466,7 +469,7 @@ class Project extends React.Component {
 			// autoFocusQuoteId: data.autoFocusQuoteId,
 		});
 
-		this.socket.emit('Task:changeTaskPosition', {columns: this.state.columns, result: result });
+		this.props.socket.emit('Task:changeTaskPosition', {columns: this.state.columns, result: result });
 
 
   	}
@@ -477,8 +480,8 @@ class Project extends React.Component {
   	render() {
 		const { openModalAdd } = this.state; 
 		return (
-			<div style={{width: '100%', overflow: 'auto'}}>
-				<div style={{width: '1320px'}}>
+			<div style={{width: '100%', height: 'calc(100vh - 59px)', overflow: 'auto', marginTop: '-1rem'}}>
+				<div style={{ width: 1330 }}>
 				<DragDropContext 
 					onDragEnd={this.onDragEnd}
 					onDragStart={this.onDragStart}
@@ -734,7 +737,10 @@ class Project extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-    return {profileUser: state.userReducer};
+    return {
+		profileUser: state.userReducer,
+		socket: state.socketReducer.socket
+	};
 }
 
 export default connect(mapStateToProps)(Project);

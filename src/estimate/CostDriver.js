@@ -1,11 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {
-	Icon,
-	Menu,
-	Label,
 	Table,
-	Rating,
 	Popup
 } from 'semantic-ui-react';
 import {

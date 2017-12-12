@@ -3,7 +3,9 @@ import {
     CHANGE_SCALE_FACTORS,
     CHANGE_FUNCTION_POINT,
     CHANGE_KLOC,
-    CHANGE_ESTIMATED_RESULT
+    CHANGE_ESTIMATED_RESULT,
+    CHANGE_BRUTEFORCE_STAFFS,
+    CHANGE_STAFF_REQUIREMENTS
 } from './estimateConstants'
 
 import estimate from '../utils/estimate'
@@ -32,6 +34,14 @@ export function changeSuitableStaffs(newState) {
     return {type: CHANGE_ESTIMATED_RESULT, newState};
 }
 
+export function changeBruteforceStaffs(newState) {
+    return {type: CHANGE_BRUTEFORCE_STAFFS, newState};
+}
+
+export function changeStaffRequirements(newState) {
+    return {type: CHANGE_STAFF_REQUIREMENTS, newState};
+}
+
 export function getSuitableStaffs(requirement) {
     return (dispatch) => {
     	//co anh huong dispacth gi k ko
@@ -47,6 +57,30 @@ export function getSuitableStaffs(requirement) {
                 //     password: ""
                 // }));
                 return response.suitableStaff
+            }
+            else {
+                // dispatch(setErrorMessage(response.message));
+            }
+            return response;
+        });     
+    }
+}
+
+export function getBruteforceStaffs(requirement) {
+    return (dispatch) => {
+        //co anh huong dispacth gi k ko
+        // dispatch(setErrorMessage(''));
+        // dispatch(sendingRequest(true));
+        return estimate.getBruteforceStaffs(requirement).then(response => {
+            //nó khong có response luôn chứ ko phải là 
+            // dispatch(sendingRequest(false));
+            if (response.success) {
+                // dispatch(setAuthState(true));
+                // dispatch(changeLoginForm({
+                //     email: "",
+                //     password: ""
+                // }));
+                return response.bruteforceStaffs
             }
             else {
                 // dispatch(setErrorMessage(response.message));

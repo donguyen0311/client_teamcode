@@ -110,3 +110,20 @@ input.FP{
 #suggest_suitable_staffs_view{
 	margin-bottom: 3vh;
 }
+
+.estimate_step{
+	max-width: 15.2vw;
+    padding: 0.4em 0.8em !important;
+}
+
+.estimate_step .title{
+	font-size: 1.1em !important;
+}
+
+.estimate_step .content{
+	width: 10vw !important;
+}
+
+.estimate_step .icon{
+	font-size: 1.7em !important;
+}

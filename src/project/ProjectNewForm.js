@@ -27,10 +27,11 @@ import {
 } from '../project/ProjectActions'
 
 import SweetAlert from 'sweetalert2-react';
-import DatePicker from 'react-datepicker';
-
-import 'react-datepicker/dist/react-datepicker.css';
 import 'sweetalert2/dist/sweetalert2.css';
+
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+
 
 import moment from 'moment';
 import 'moment-duration-format';
@@ -462,7 +463,6 @@ class ProjectNewForm extends React.Component {
             <Header icon='archive' content='Create Project' />
             <Form id="new_project" onSubmit={this.onNewProjectFormSubmit}>
               <Modal.Content scrolling className="new_project_content">
-                  
                   <Form.Field>
                     <Form.Input label='Project Name' name='project_name' placeholder='Project Name' autoFocus required 
                       onChange={this.onInputChange}

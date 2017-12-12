@@ -5,6 +5,7 @@ import { userReducer } from '../user/userReducer';
 import { socketReducer } from '../app/socket';
 import { estimateReducer } from '../estimate/estimateReducer';
 import { projectReducer } from '../project/projectReducer';
+import { estimateViewReducer } from '../estimate/modal/redux/EstimateViewReducer';
 
 export default combineReducers({
     authReducer,
@@ -12,5 +13,6 @@ export default combineReducers({
     estimateReducer,
     projectReducer,
     sidebarReducer,
-    socketReducer
+    socketReducer,
+    estimateViewReducer
 });

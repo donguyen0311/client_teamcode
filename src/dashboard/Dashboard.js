@@ -3,6 +3,8 @@ import { Grid, Container, Header, Segment } from 'semantic-ui-react';
 
 import {Doughnut} from 'react-chartjs-2';
 
+import BruteforceStaffs from '../estimate/BruteforceStaffs';
+
 export default class Dashboard extends React.Component {
     constructor(props) {
         super(props);  
@@ -44,6 +46,7 @@ export default class Dashboard extends React.Component {
           }
         return (    
             <Grid style={{marginLeft: 250, marginTop: 0}}>
+                <BruteforceStaffs />
                 <Grid.Row>
                     <Grid.Column mobile={8} tablet={4} computer={3}>
                         <Segment>

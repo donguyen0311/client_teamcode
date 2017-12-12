@@ -35,7 +35,7 @@ class CocomoStatisticsTable extends React.Component {
                           <Table.Row>
                             <Table.Cell><Icon name='write' /> Analyst Capability <code>(ACAP)</code></Table.Cell>
                             <Table.Cell textAlign="center">
-                              {(this.props.estimateReducer.EAF.ACAP === undefined) ? NOMINAL_RATING_VALUE : (parseInt(this.props.estimateReducer.EAF.ACAP)+1) }
+                              {(this.props.estimateReducer.EAF.ACAP === undefined) ? NOMINAL_RATING_VALUE+1 : (parseInt(this.props.estimateReducer.EAF.ACAP)+1) }
                               <Rating maxRating={1} defaultRating={1} icon='star' size='mini' disabled/>
                             </Table.Cell>
                             <Table.Cell>
@@ -47,7 +47,7 @@ class CocomoStatisticsTable extends React.Component {
                           <Table.Row>
                             <Table.Cell><Icon name='code' /> Programmer Capability (PCAP)</Table.Cell>
                             <Table.Cell textAlign="center">
-                              {(this.props.estimateReducer.EAF.PCAP === undefined) ? NOMINAL_RATING_VALUE : (parseInt(this.props.estimateReducer.EAF.PCAP)+1) }
+                              {(this.props.estimateReducer.EAF.PCAP === undefined) ? NOMINAL_RATING_VALUE+1 : (parseInt(this.props.estimateReducer.EAF.PCAP)+1) }
                               <Rating maxRating={1} defaultRating={1} icon='star' size='mini' disabled/>
                             </Table.Cell>
                             <Table.Cell>
@@ -59,7 +59,7 @@ class CocomoStatisticsTable extends React.Component {
                           <Table.Row>
                             <Table.Cell><Icon name='edit' /> Application Experience (APEX)</Table.Cell>
                             <Table.Cell textAlign="center">
-                              {(this.props.estimateReducer.EAF.APEX === undefined) ? NOMINAL_RATING_VALUE : (parseInt(this.props.estimateReducer.EAF.APEX)+1) }
+                              {(this.props.estimateReducer.EAF.APEX === undefined) ? NOMINAL_RATING_VALUE+1 : (parseInt(this.props.estimateReducer.EAF.APEX)+1) }
                               <Rating maxRating={1} defaultRating={1} icon='star' size='mini' disabled/>
                             </Table.Cell>
                             <Table.Cell>
@@ -71,7 +71,7 @@ class CocomoStatisticsTable extends React.Component {
                           <Table.Row>
                             <Table.Cell><Icon name='cloud upload' /> Platform Experience (PLEX)</Table.Cell>
                             <Table.Cell textAlign="center">
-                              {(this.props.estimateReducer.EAF.PLEX === undefined) ? NOMINAL_RATING_VALUE : (parseInt(this.props.estimateReducer.EAF.PLEX)+1) }
+                              {(this.props.estimateReducer.EAF.PLEX === undefined) ? NOMINAL_RATING_VALUE+1 : (parseInt(this.props.estimateReducer.EAF.PLEX)+1) }
                               <Rating maxRating={1} defaultRating={1} icon='star' size='mini' disabled/>
                             </Table.Cell>
                             <Table.Cell>
@@ -83,7 +83,7 @@ class CocomoStatisticsTable extends React.Component {
                           <Table.Row>
                             <Table.Cell><Icon name='wrench' /> Language & Tool Experience (LTEX)</Table.Cell>
                             <Table.Cell textAlign="center">
-                              {(this.props.estimateReducer.EAF.LTEX === undefined) ? NOMINAL_RATING_VALUE : (parseInt(this.props.estimateReducer.EAF.LTEX)+1) }
+                              {(this.props.estimateReducer.EAF.LTEX === undefined) ? NOMINAL_RATING_VALUE+1 : (parseInt(this.props.estimateReducer.EAF.LTEX)+1) }
                               <Rating maxRating={1} defaultRating={1} icon='star' size='mini' disabled/>
                             </Table.Cell>
                             <Table.Cell>

@@ -81,14 +81,18 @@ class Estimate extends React.Component {
         var durationBeginToDeadline = this.props.projectReducer.projectWillCreate.duration;
 
         var effortPM = 0;
-        //deadline duration is less than estimate duration
-        if(durationBeginToDeadline < Math.ceil(TDEV))
-        {
-            //person per month base on deadline of project
-            effortPM = PMs / durationBeginToDeadline;
-            // console.log('effort', PMs);
+        if(durationBeginToDeadline > 0){
+            
+            //deadline duration is less than estimate duration
+            if(durationBeginToDeadline < Math.ceil(TDEV))
+            {
+                //person per month base on deadline of project
+                effortPM = PMs / durationBeginToDeadline;
+                // console.log('effort', PMs);
+            }
         }
-
+        console.log('effort',PMs);
+        console.log('tedv',TDEV);
         currentState = {...this.state};
         this.props.getSuitableStaffs({
           person_month: (effortPM != 0) ? Math.ceil(effortPM) : Math.ceil(PM),
@@ -100,7 +104,7 @@ class Estimate extends React.Component {
         })
         .then((response) => {
             let data = response.data;
-            let projectCost = data.projectCostPerMonth*Math.ceil(TDEV);
+            let projectCost = data.projectCostPerMonth* ((effortPM != 0) ? Math.ceil(durationBeginToDeadline) : Math.ceil(TDEV));
 
             currentState.isGetSuitableStaffDone      = true;
             

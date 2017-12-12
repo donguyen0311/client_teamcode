@@ -1,7 +1,4 @@
 import React from 'react';
-
-import { Link } from 'react-router-dom';
-
 import {connect} from 'react-redux';
 import { Link, Route } from 'react-router-dom';
 import {
@@ -148,12 +145,7 @@ class SideBar extends React.Component {
                     </Menu.Item>
                     <Menu.Item>
                         <Menu.Header>
-<<<<<<< HEAD
-                            <div style={{display: 'inline-block', fontSize: 19}}>Chat</div>
-                            <ProjectNewForm />
-=======
                             <div style={{display: 'inline-block', fontSize: 19}}>Activity</div>
->>>>>>> 488281cf3125dc73f1c7fc565d7f6daa18a95b4b
                         </Menu.Header>
 
                         <Menu.Menu>

@@ -27,26 +27,11 @@ class EstimatedStatistics extends React.Component {
                       <Header as='h3'>Thông số ban đầu</Header>
                       <Statistic size="tiny">
                         <Statistic.Value>
-                          {Math.ceil(this.props.projectReducer.projectWillCreate.duration)} <Icon name="calendar"/>
+                          {Math.round(this.props.projectReducer.projectWillCreate.duration*100)/100} <Icon name="calendar"/>
                         </Statistic.Value>
                         <Statistic.Label>Tháng</Statistic.Label>
                       </Statistic>
 
-                      <Statistic size="tiny">
-                        <Statistic.Value>
-                          {(this.props.projectReducer.acceptSuggestionStatus == ACCEPTED) ?                           
-                            <CountUp 
-                              start={this.props.projectReducer.projectWillCreate.budget} 
-                              end={this.props.estimateReducer.estimatedResult.projectCost}
-                              duration={2}
-                              useEasing={true}
-                              className="pulse animated"
-                            /> :
-                            this.props.projectReducer.projectWillCreate.budget
-                          } <Icon name='usd'/>
-                        </Statistic.Value>
-                        <Statistic.Label>Ngân sách</Statistic.Label>
-                      </Statistic>
                     </Grid.Column>
 
                     <Grid.Column textAlign="center">
@@ -54,9 +39,7 @@ class EstimatedStatistics extends React.Component {
                       <Statistic size="tiny">
                         <Statistic.Value>
                           {
-                            this.props.estimateReducer.estimatedResult.ceil.effortPM != 0 ? 
-                              Math.ceil(this.props.projectReducer.projectWillCreate.duration) :
-                              this.props.estimateReducer.estimatedResult.ceil.TDEV 
+                            Math.round(this.props.projectReducer.projectWillCreate.duration*100)/100
                           } <Icon name="calendar"/>
                         </Statistic.Value>
                         <Statistic.Label>Tháng</Statistic.Label>
@@ -65,9 +48,7 @@ class EstimatedStatistics extends React.Component {
                       <Statistic size="tiny">
                         <Statistic.Value>
                           {
-                            this.props.estimateReducer.estimatedResult.ceil.effortPM != 0 ? 
-                              this.props.estimateReducer.estimatedResult.ceil.effortPM :
-                              this.props.estimateReducer.estimatedResult.ceil.PM
+                            this.props.estimateReducer.estimatedResult.suitableStaffs.length
                           } <Icon name='users'/>
                         </Statistic.Value>
                         <Statistic.Label>Người</Statistic.Label>
@@ -75,14 +56,17 @@ class EstimatedStatistics extends React.Component {
 
                       <Statistic size="tiny">
                         <Statistic.Value>
-                          {this.props.estimateReducer.estimatedResult.projectCostPerMonth} <Icon name="usd"/>
+                          {Math.round(this.props.estimateReducer.estimatedResult.projectCostPerMonth*100)/100} <Icon name="usd"/>
                         </Statistic.Value>
                         <Statistic.Label>Chi Phí/Tháng</Statistic.Label>
                       </Statistic>
 
                       <Statistic size="tiny">
                         <Statistic.Value>
-                          {this.props.estimateReducer.estimatedResult.projectCost} <Icon name="usd"/>
+                          {
+                            Math.round((Math.round(this.props.estimateReducer.estimatedResult.projectCostPerMonth*100)/100) *
+                            Math.round(this.props.projectReducer.projectWillCreate.duration*100)/100)/100
+                          } <Icon name="usd"/>
                         </Statistic.Value>
                         <Statistic.Label>Tổng chi phí</Statistic.Label>
                       </Statistic>

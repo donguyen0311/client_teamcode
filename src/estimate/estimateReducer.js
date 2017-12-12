@@ -3,7 +3,9 @@ import {
 	CHANGE_SCALE_FACTORS,
 	CHANGE_FUNCTION_POINT,
 	CHANGE_KLOC,
-    CHANGE_ESTIMATED_RESULT
+    CHANGE_ESTIMATED_RESULT,
+    CHANGE_BRUTEFORCE_STAFFS,
+    CHANGE_STAFF_REQUIREMENTS
 } from './estimateConstants'
 
 const initialState = {
@@ -17,6 +19,9 @@ const initialState = {
 	FUNCTION_POINT:{
 
 	},
+    staffRequirements:{
+
+    },
     estimatedResult:{
         months: 0,
         cost: 0,
@@ -37,7 +42,8 @@ const initialState = {
         projectCostPerMonth: 0,
         projectCost: 0,
 
-    }
+    },
+    bruteforceStaffs:[]
 };
 
 export function estimateReducer(state = initialState, action) {
@@ -66,6 +72,16 @@ export function estimateReducer(state = initialState, action) {
             return {
                 ...state,
                 estimatedResult: action.newState
+            };
+        case CHANGE_BRUTEFORCE_STAFFS:
+            return {
+                ...state,
+                bruteforceStaffs: action.newState
+            };
+        case CHANGE_STAFF_REQUIREMENTS:
+            return {
+                ...state,
+                staffRequirements: action.newState
             };
         default:
             return state;

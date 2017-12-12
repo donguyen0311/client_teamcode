@@ -16,7 +16,8 @@ import {
 import {changeVisible} from './SidebarActions';
 import Dashboard from '../dashboard/Dashboard';
 import Project from '../project/Project';
-import ProjectNewForm from '../project/ProjectNewForm'
+import ProjectNewForm from '../project/ProjectNewForm';
+import Estimate from '../estimate/Estimate';
 import NavBar from '../app/Header';
 
 import Avatar from '../user/UserAvatar';
@@ -126,7 +127,7 @@ class SideBar extends React.Component {
                     <Menu.Item>
                         <Menu.Header>
                             <div style={{display: 'inline-block', fontSize: 19}}>Project</div>
-                            <ProjectNewForm/>
+                            <Estimate/>
                         </Menu.Header>
 
                         <Menu.Menu>

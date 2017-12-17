@@ -49,7 +49,7 @@ class Login extends React.Component {
                         this
                             .props
                             .history
-                            .push(this.props.match.url);
+                            .push(this.props.match.url + '/dashboard');
                     }
                 });
         }    

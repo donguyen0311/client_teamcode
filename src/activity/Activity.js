@@ -84,9 +84,6 @@ class Activity extends React.Component {
     }
 
     handleScroll(event) {
-        // console.log(event.currentTarget.scrollHeight);
-        // console.log(event.currentTarget.scrollTop);
-        //if (false) {
         if (event.currentTarget.scrollTop + 300 === event.currentTarget.scrollHeight && !this.state.blockRequest && !this.state.activeLoader) { // end of nitification, load more
             this.setState({
                 activeLoader: true
@@ -124,82 +121,72 @@ class Activity extends React.Component {
       }
 
     render() {
-        const chartDataLine = {
-            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-            datasets: [
-                {
-                    label: 'Activity',
-                    fill: false,
-                    lineTension: 0.1,
-                    backgroundColor: 'rgba(75,192,192,0.4)',
-                    borderColor: 'rgba(75,192,192,1)',
-                    borderCapStyle: 'butt',
-                    borderDash: [],
-                    borderDashOffset: 0.0,
-                    borderJoinStyle: 'miter',
-                    pointBorderColor: 'rgba(75,192,192,1)',
-                    pointBackgroundColor: '#fff',
-                    pointBorderWidth: 1,
-                    pointHoverRadius: 5,
-                    pointHoverBackgroundColor: 'rgba(75,192,192,1)',
-                    pointHoverBorderColor: 'rgba(220,220,220,1)',
-                    pointHoverBorderWidth: 2,
-                    pointRadius: 1,
-                    pointHitRadius: 10,
-                    data: [65, 59, 80, 81, 56, 55, 40]
-                }
-            ]
-        }
-        const lineOptions = {
-            legend: {
-                display: true,
-                position: 'top'
-            },
-            title: {
-                display: true,
-                text: 'Project 1',
-                fontSize: 20
-            },
-            responsive: true,
-            maintainAspectRatio: false
-        }
+        // const chartDataLine = {
+        //     labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+        //     datasets: [
+        //         {
+        //             label: 'Activity',
+        //             fill: false,
+        //             lineTension: 0.1,
+        //             backgroundColor: 'rgba(75,192,192,0.4)',
+        //             borderColor: 'rgba(75,192,192,1)',
+        //             borderCapStyle: 'butt',
+        //             borderDash: [],
+        //             borderDashOffset: 0.0,
+        //             borderJoinStyle: 'miter',
+        //             pointBorderColor: 'rgba(75,192,192,1)',
+        //             pointBackgroundColor: '#fff',
+        //             pointBorderWidth: 1,
+        //             pointHoverRadius: 5,
+        //             pointHoverBackgroundColor: 'rgba(75,192,192,1)',
+        //             pointHoverBorderColor: 'rgba(220,220,220,1)',
+        //             pointHoverBorderWidth: 2,
+        //             pointRadius: 1,
+        //             pointHitRadius: 10,
+        //             data: [65, 59, 80, 81, 56, 55, 40]
+        //         }
+        //     ]
+        // }
+        // const lineOptions = {
+        //     legend: {
+        //         display: true,
+        //         position: 'top'
+        //     },
+        //     title: {
+        //         display: true,
+        //         text: 'Project 1',
+        //         fontSize: 20
+        //     },
+        //     responsive: true,
+        //     maintainAspectRatio: false
+        // }
 
-        const chartDataDoughnut = {
-            labels: ["To Do", "In Progress", "Code Review", "Done"],
-            datasets: [
-                {
-                    label: "My First dataset",
-                    backgroundColor: ['rgb(181, 204, 24)', 'rgb(33, 133, 208)', 'rgb(219, 40, 40)', 'rgb(33, 186, 69)'],
-                    data: this.rand(32, 100, 4)
-                }
-            ]
-        }
-        const doughnutOptions = {
-            legend: {
-                display: true,
-                position: 'left'
-            },
-            title: {
-                display: true,
-                text: 'Project 1',
-                fontSize: 20
-            }
-        }
+        // const chartDataDoughnut = {
+        //     labels: ["To Do", "In Progress", "Code Review", "Done"],
+        //     datasets: [
+        //         {
+        //             label: "My First dataset",
+        //             backgroundColor: ['rgb(181, 204, 24)', 'rgb(33, 133, 208)', 'rgb(219, 40, 40)', 'rgb(33, 186, 69)'],
+        //             data: this.rand(32, 100, 4)
+        //         }
+        //     ]
+        // }
+        // const doughnutOptions = {
+        //     legend: {
+        //         display: true,
+        //         position: 'left'
+        //     },
+        //     title: {
+        //         display: true,
+        //         text: 'Project 1',
+        //         fontSize: 20
+        //     }
+        // }
         return (
             <div style={{width: '100%', height: 'calc(100vh - 59px)', overflow: 'auto', marginTop: '-1rem', fontSize: 18}}>
                 <Dimmer active={this.state.activeLoading} inverted>
                     <Loader inverted>Loading</Loader>
                 </Dimmer>
-                
-                <div style={{width: '100%', height: 'calc(100vh - 450px)', position: 'relative'}}>
-                    <div style={{width: '70%', height: 'calc(100vh - 450px)', display: 'inline-block' }}>
-                        <Line data={chartDataLine} options={lineOptions} />
-                    </div>
-                    <div style={{width: '30%', height: 'calc(100vh - 450px)', display: 'inline-block'}}>
-                        <Doughnut data={chartDataDoughnut} options={doughnutOptions}/>
-                    </div>
-                    
-                </div>
                 <div style={{width: '100%', bottom: 0, position: 'absolute'}}>
                     <Header attached='top' size='medium'>Activities Log</Header>
                     <Segment loading={this.state.activeLoader} attached style={{height: 300, overflow: 'auto', padding: 0, paddingTop: 10}} onScroll={this.handleScroll}>

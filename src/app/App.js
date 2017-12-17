@@ -2,7 +2,7 @@ import React from 'react';
 import {createStore, applyMiddleware} from 'redux';
 import {Provider} from 'react-redux';
 import thunk from 'redux-thunk';
-import {BrowserRouter, Route, Switch} from 'react-router-dom';
+import {BrowserRouter, Route, Switch, HashRouter} from 'react-router-dom';
 import {composeWithDevTools} from 'redux-devtools-extension';
 import axios from 'axios';
 
@@ -58,22 +58,17 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
 export default class App extends React.Component {
     render() {
         return (
-            <BrowserRouter>
+            <HashRouter>
                 <Provider store={store}>
                     <div style={{height: '100%'}}>
                         <Switch>
                             <Route exact path="/" component={Home}/>
                             <Route path="/signup" component={Register}/>
-                            {/* <Route component={CheckAuth}/> */}
                             <PrivateRoute path="/:company" component={SideBarContainer} />
-                            {/* <Route path="/estimate" component={Estimate}/>
-                            <Route path="/costdriver" component={CostDriver}/>
-                            <Route path="/scalefactor" component={ScaleFactor}/>
-                            <Route path="/fp" component={FunctionPoint}/> */}
                         </Switch>
                     </div>
                 </Provider>
-            </BrowserRouter>
+            </HashRouter>
         );
     }
 }

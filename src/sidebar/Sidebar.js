@@ -22,7 +22,7 @@ import NavBar from '../app/Header';
 
 import Avatar from '../user/UserAvatar';
 
-import project from '../utils/project'
+import project from '../utils/project';
 
 import user from '../utils/user';
 

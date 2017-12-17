@@ -3,6 +3,19 @@
 	word-wrap: break-word !important;
 }
 
+.ui.menu .ui.dropdown .menu>.item.noseen {
+	background: #edf2fa !important;
+}
+
+.ui.menu .ui.dropdown .menu>.item.seen {
+	background: #fff !important;
+}
+
+.ui.menu .ui.dropdown .menu>.item:hover {
+	background: rgba(0,0,0,.05)!important;
+    color: rgba(0,0,0,.95)!important;
+}
+
 .disabled_star{
 	color: #da0b0b !important;
 	text-shadow: 0 -1px 0 #a50303,-1px 0 0 #a50303,0 1px 0 #a50303,1px 0 0 #a50303!important;

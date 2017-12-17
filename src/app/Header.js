@@ -32,7 +32,7 @@ class NavBar extends React.Component {
         const NavRight = this.props.auth.loggedIn ? (
             <Menu.Menu position='right'>
                 <Menu.Item style={{paddingLeft: 0, paddingRight: 0}}>
-                    <Notifications />
+                    <Notifications {...this.props} />
                 </Menu.Item>
                 <Menu.Item style={{paddingTop: 3.5, paddingBottom: 3.5}}>
                     <Dropdown trigger={trigger} pointing='top right' icon={null} >

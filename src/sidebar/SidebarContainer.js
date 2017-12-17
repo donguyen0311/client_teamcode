@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route } from 'react-router-dom';
+import { Route, Switch, Redirect } from 'react-router-dom';
 import { Sidebar, Dimmer } from 'semantic-ui-react';
 import Dashboard from '../dashboard/Dashboard';
 import Project from '../project/Project';
@@ -24,9 +24,12 @@ class SideBarContainer extends React.Component {
                     <NavBar {...this.props} />
                     <div>
                         <BlockPage />
-                        <Route path={`${this.props.match.url}/dashboard`} component={Dashboard} />
-                        <Route path={`${this.props.match.url}/project/:project`} component={Project} />
-                        <Route path={`${this.props.match.url}/activity/:project`} component={Activity} />
+                        {/* <Redirect from={`${this.props.match.url}/`} to={`${this.props.match.url}/dashboard`}/> */}
+                        <Switch>
+                            <Route path={`${this.props.match.url}/dashboard`} component={Dashboard} />
+                            <Route path={`${this.props.match.url}/project/:project`} component={Project} />
+                            <Route path={`${this.props.match.url}/activity/:project`} component={Activity} />
+                        </Switch>
                     </div>
                 </Sidebar.Pusher>
             </Sidebar.Pushable>

@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
       Notification.requestPermission();
   });
   
-function notifyMe(title, body, timeout = 10000, icon = 'https://freeiconshop.com/wp-content/uploads/edd/notification-flat.png') {
+function notifyMe(title, body, link, timeout = 10000, icon = 'https://freeiconshop.com/wp-content/uploads/edd/notification-flat.png') {
     if (!Notification) {
         alert('Desktop notifications not available in your browser. Try Chromium.'); 
         return;
@@ -21,9 +21,9 @@ function notifyMe(title, body, timeout = 10000, icon = 'https://freeiconshop.com
             icon: icon,
             body: body,
         });
-        // notification.onclick = function () {
-        //     window.open("http://stackoverflow.com/a/13328397/1269037");      
-        // }; 
+        notification.onclick = function () {
+            window.open("localhost:3000" + link);      
+        }; 
         setTimeout(notification.close.bind(notification), timeout);
     }
 }
@@ -44,6 +44,7 @@ class Notifications extends React.Component {
         this.getNotification = this.getNotification.bind(this);
         this.updateAllNotificationStatus = this.updateAllNotificationStatus.bind(this);
         this.handleCloseNotification = this.handleCloseNotification.bind(this);
+        this.updateNotificationStatusAfterClick = this.updateNotificationStatusAfterClick.bind(this);
         this.handleScroll = this.handleScroll.bind(this);
 
         this.props.socket.on('Notification:updateNotification', (notificationItem) => {
@@ -51,7 +52,8 @@ class Notifications extends React.Component {
                 notificationList: [notificationItem, ...this.state.notificationList],
                 newNotification: this.state.newNotification + 1
             });
-            notifyMe(notificationItem.title, notificationItem.content);
+            let link = `/#/${this.props.match.params.company}/project/${notificationItem.link}`;
+            notifyMe(notificationItem.title, notificationItem.content, link);
             //console.log("you have a new notification", notificationItem);
         });
     }
@@ -94,6 +96,21 @@ class Notifications extends React.Component {
                     newNotification: response.data.notifications
                 });
                 console.log(response);
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    }
+
+    updateNotificationStatusAfterClick(id, status, link) {
+        axios
+            .put(`/api/notifications/${id}/status/${status}`, {}, {headers: { 'x-access-token': localStorage.token } })
+            .then(response => {
+                this.setState({
+                    newNotification: response.data.notifications
+                }); 
+                console.log(response);
+                this.props.history.push(`/${this.props.match.params.company}/project/${link}`)
             })
             .catch(error => {
                 console.log(error);
@@ -160,7 +177,10 @@ class Notifications extends React.Component {
                     <Dropdown.Menu scrolling onScroll={this.handleScroll}>
                         {(this.state.notificationList.length > 0) ? (
                             this.state.notificationList.map((notification) => (
-                                <Dropdown.Item key={notification._id}> 
+                                <Dropdown.Item 
+                                    key={notification._id} 
+                                    className={notification.status === 2 ? 'seen' : 'noseen'}
+                                    onClick={this.updateNotificationStatusAfterClick.bind(this, notification._id, 2, notification.link)}> 
                                     <Item.Group>
                                         <Item style={{padding: 0}}>
                                             <Item.Content>

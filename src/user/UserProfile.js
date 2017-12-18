@@ -27,7 +27,6 @@ class Profile extends React.Component {
         this.updateProfile = this.updateProfile.bind(this);
         this.updateAvatar = this.updateAvatar.bind(this);
         this.createElementUpload = this.createElementUpload.bind(this);
-        this.updateAvatar = this.updateAvatar.bind(this);
     }
 
     formatDropdownValue(arrayValue) {
@@ -60,7 +59,11 @@ class Profile extends React.Component {
     }
 
     handleAddition(e, { name, value }) {
-        let mapName = {worked_at: 'workedAtOptions', studied_at: 'studiedAtOptions', language_programming: 'languageProgrammingOptions'};
+        let mapName = {
+            worked_at: 'workedAtOptions', 
+            studied_at: 'studiedAtOptions', 
+            language_programming: 'languageProgrammingOptions'
+        };
         this.setState({
             [ mapName[name] ]: [{ text: value, value }, ...this.state[ mapName[name] ]],
         });

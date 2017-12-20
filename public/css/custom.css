@@ -127,3 +127,15 @@ input.FP{
 .estimate_step .icon{
 	font-size: 1.7em !important;
 }
+
+#suitable_staff_content .ui.statistic+.ui.statistic {
+    margin: 0 0 0 0.7em;
+}
+
+.datetime_picker_inline{
+	display: inline-block !important;
+}
+
+.margin-top-2{
+	margin-top: 2vh;
+}

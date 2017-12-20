@@ -32,6 +32,13 @@ class EstimatedStatistics extends React.Component {
                         <Statistic.Label>Tháng</Statistic.Label>
                       </Statistic>
 
+                      <Statistic size="tiny">
+                        <Statistic.Value>
+                          {this.props.estimateReducer.KLOC*1000} <Icon name="file text outline"/>
+                        </Statistic.Value>
+                        <Statistic.Label>SLOC</Statistic.Label>
+                      </Statistic>
+
                     </Grid.Column>
 
                     <Grid.Column textAlign="center">
@@ -64,8 +71,8 @@ class EstimatedStatistics extends React.Component {
                       <Statistic size="tiny">
                         <Statistic.Value>
                           {
-                            Math.round((Math.round(this.props.estimateReducer.estimatedResult.projectCostPerMonth*100)/100) *
-                            Math.round(this.props.projectReducer.projectWillCreate.duration*100)/100)/100
+                            Math.round(((Math.round(this.props.estimateReducer.estimatedResult.projectCostPerMonth*100)/100) *
+                            (Math.round(this.props.projectReducer.projectWillCreate.duration*100)/100))*100)/100
                           } <Icon name="usd"/>
                         </Statistic.Value>
                         <Statistic.Label>Tổng chi phí</Statistic.Label>

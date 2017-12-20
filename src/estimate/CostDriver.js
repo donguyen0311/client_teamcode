@@ -2,7 +2,8 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {
 	Table,
-	Popup
+	Popup,
+	Label
 } from 'semantic-ui-react';
 import {
 	EAF
@@ -94,7 +95,7 @@ class CostDriver extends React.Component {
     			return (
 
     				<Table.Row>
-
+    					
 				        <Table.Cell width={1}>{Object.keys(factor)}</Table.Cell>
 				        <Table.Cell width={6}>{factor[Object.keys(factor)].description}</Table.Cell>
 				        <Table.Cell width={4}>

@@ -61,7 +61,8 @@ class Estimate extends React.Component {
         this.onInputSLOCChange    = this.onInputSLOCChange.bind(this);
         this.caculateEAF          = this.caculateEAF.bind(this);
         this.caculateScaleFactors = this.caculateScaleFactors.bind(this);
-        this.handleDateChange     = this.handleDateChange.bind(this);
+        this.handleStartDateChange  = this.handleStartDateChange.bind(this);
+        this.handleEndDateChange  = this.handleEndDateChange.bind(this);
         this.allUserAbilityCases = this.allUserAbilityCases.bind(this);
 
     }
@@ -224,7 +225,7 @@ class Estimate extends React.Component {
 
         },
         transition:{
-            fpVisible  : false,
+            fpVisible  : true,
             fpAnimation: 'drop'
         },
         input:{
@@ -232,7 +233,8 @@ class Estimate extends React.Component {
         },
         suitableStaffs:[],
         time:{
-            deadline: moment().add(3,'months')
+            start_day: moment(),
+            end_day: moment().add(3,'months')
         },
         isGetSuitableStaffDone: false,
         isEstimatedBudgetError: false,
@@ -331,27 +333,44 @@ class Estimate extends React.Component {
         this.setState(currentState);
     }
 
-    handleDateChange(date) {
+    handleStartDateChange(date) {
 
       let currentState = {...this.state};
-      currentState.time.deadline = date;
+      currentState.time.start_day = date;
       // currentState.projectInfos.deadline = date._d;
       this.setState(currentState);
       
       this.props.changeProjectWillCreate(
         Object.assign({...this.props.projectReducer.projectWillCreate},
           {
-            deadline: date._d,
-            duration: this.durationMonthFormat(date._d)
+            start_day: date._d,
+            duration: this.durationMonthFormat(date._d,this.state.time.end_day)
           }
         )
       );
     }
 
-    durationMonthFormat(deadline){
+    handleEndDateChange(date) {
+
+      let currentState = {...this.state};
+      currentState.time.end_day = date;
+      // currentState.projectInfos.deadline = date._d;
+      this.setState(currentState);
+      
+      this.props.changeProjectWillCreate(
+        Object.assign({...this.props.projectReducer.projectWillCreate},
+          {
+            end_day: date._d,
+            duration: this.durationMonthFormat(this.state.time.start_day,date._d)
+          }
+        )
+      );
+    }
+
+    durationMonthFormat(fromDate,toDate){
         //hieu so
-        let now = new Date();
-        let difference = moment(deadline,"DD/MM/YYYY HH:mm:ss").diff(moment(now,"DD/MM/YYYY HH:mm:ss"));
+        // let now = new Date();
+        let difference = moment(toDate,"DD/MM/YYYY HH:mm:ss").diff(moment(fromDate,"DD/MM/YYYY HH:mm:ss"));
         if(difference > 0){
             return moment.duration(difference,'ms').format('M',10);
         }
@@ -479,22 +498,22 @@ class Estimate extends React.Component {
                     <Grid columns={2}>
                         <Grid.Column width={8}>
                             <Form.Field className="required">
-                                {/*<label>Ngày bắt đầu dự án</label>
-                                <DatePicker required selected={this.state.time.now}
+                                <label>Ngày bắt đầu dự án</label>
+                                <DatePicker required selected={this.state.time.start_day}
                                     name='start_date'
                                     dateFormat="DD/MM/YYYY"
-                                    // onChange={this.handleChange}
-                                  />*/}
+                                    onChange={this.handleStartDateChange}
+                                  />
                               </Form.Field>
                         </Grid.Column>
 
                         <Grid.Column width={8}>
                             <Form.Field className="required">
                                 <label>Ngày kết thúc dự án</label>
-                                <DatePicker required selected={this.state.time.deadline}
-                                    name='start_date'
+                                <DatePicker required selected={this.state.time.end_day}
+                                    name='end_day'
                                     dateFormat="DD/MM/YYYY"
-                                    onChange={this.handleDateChange}
+                                    onChange={this.handleEndDateChange}
                                   />
                               </Form.Field>
                         </Grid.Column>

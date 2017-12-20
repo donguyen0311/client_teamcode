@@ -15,7 +15,8 @@ const initialState = {
 	},
     projectWillCreate:{
         budget: 0,
-        deadline: new Date(),
+        start_day: new Date(),
+        end_day: new Date(),
         duration: 0
     },
 	responsible_user: [],

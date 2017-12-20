@@ -1,5 +1,4 @@
 import React from 'react';
-
 import {connect} from 'react-redux';
 import { Link } from 'react-router-dom';
 import {
@@ -23,7 +22,7 @@ import NavBar from '../app/Header';
 
 import Avatar from '../user/UserAvatar';
 
-import project from '../utils/project'
+import project from '../utils/project';
 
 import user from '../utils/user';
 

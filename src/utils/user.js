@@ -11,7 +11,7 @@ var user = {
             });
     },
     getUsersInCompanyInfo(company_id) {
-        return axios.get('/api/users/company/'+company_id, {headers: { 'x-access-token': localStorage.token } })
+        return axios.get('/api/users/company/'+ company_id, {headers: { 'x-access-token': localStorage.token } })
             .then(response => {
                 return response.data;
             })

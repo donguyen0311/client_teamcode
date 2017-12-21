@@ -739,12 +739,16 @@ export const FUNCTION_POINT = [
 ];
 
 export const FUNCTION_POINT_TO_SLOC = {
-	'c': 128,
-	'c++': 29,
+	'c': 99,
+	'c++': 53,
+	'c#': 59,
+	'html': 40,
+	'.net': 60,
 	'pascal': 91,
 	'prolog': 64,
 	'php': 67,
-	'java': 31,
+	'java': 53,
+	'javascript': 53,
 	'oop': 30,
 	'4gl': 20
 };

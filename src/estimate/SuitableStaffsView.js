@@ -6,7 +6,8 @@ import {
     Icon,
     Rating,
     Image,
-    Divider
+    Divider,
+    Accordion
 } from 'semantic-ui-react';
 
 const NOT_DECIDED = -1, ACCEPTED = 1, DECLINED = 0;
@@ -14,6 +15,17 @@ class SuitableStaffsView extends React.Component {
     constructor(props) {
         super(props);
     }
+
+    state = { activeIndex: 0 }
+
+    handleClick = (e, titleProps) => {
+        const { index } = titleProps;
+        const { activeIndex } = this.state;
+        const newIndex = activeIndex === index ? -1 : index;
+
+        this.setState({ activeIndex: newIndex });
+    }
+
     render() {
          const suitableStaffs = 
          this.props.estimateReducer.estimatedResult.suitableStaffs.map((staff, staffIndex) => {
@@ -69,14 +81,18 @@ class SuitableStaffsView extends React.Component {
           </Grid.Column>
             )
         });
+         const { activeIndex } = this.state
          return(
+
             <div>
-                {
-                    (this.props.projectReducer.acceptSuggestionStatus != DECLINED) &&
-                        <Grid columns={3}>
-                            {suitableStaffs}
-                        </Grid>
-                }
+                {/*<Button.Group>
+                    <Button color='blue'><Icon name="dollar"/>Chi phí thấp</Button>
+                    <Button color='blue'><Icon name="calendar"/>Làm nhanh nhất</Button>
+                    <Button color='blue'>Blue</Button>
+                </Button.Group>*/}
+                <Grid columns={3}>
+                    {suitableStaffs}
+                </Grid>
             </div>
             )
     }

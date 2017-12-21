@@ -2,6 +2,8 @@ import React from 'react';
 import { Table, Image, Button, Modal, Form, Dropdown, Header, Input, Label } from 'semantic-ui-react';
 import axios from 'axios';
 import _ from 'lodash';
+import SweetAlert from 'sweetalert2-react';
+import 'sweetalert2/dist/sweetalert2.css';
 
 let skills_description = {
     analyst_capability: [
@@ -128,16 +130,20 @@ class ModalEditUserSkills extends React.Component {
             platform_experience: this.props.user.platform_experience,
             language_and_toolset_experience: this.props.user.language_and_toolset_experience,
             salary: this.props.user.salary,
+            admin: this.props.user.admin,
             analystCapabilityOptions: skills_description.analyst_capability,
             programmerCapabilityOptions: skills_description.programmer_capability,
             applicationExperienceOptions: skills_description.application_experience,
             platformExperienceOptions: skills_description.platform_experience,
-            languageAndToolsetExperienceOptions: skills_description.language_and_toolset_experience
-            
+            languageAndToolsetExperienceOptions: skills_description.language_and_toolset_experience,
+            showAlert: false,
+            contentAlert: '',
+            typeAlert: 'success'     
         };
         this.handleChange = this.handleChange.bind(this);
         this.changeView = this.changeView.bind(this);
         this.updateProfile = this.updateProfile.bind(this);
+        this.showAlert = this.showAlert.bind(this);
     }
     
     changeView(state) {
@@ -173,18 +179,47 @@ class ModalEditUserSkills extends React.Component {
             application_experience: this.state.application_experience,
             platform_experience: this.state.platform_experience,
             language_and_toolset_experience: this.state.language_and_toolset_experience,
-            salary: this.state.salary
+            salary: this.state.salary,
+            admin: this.state.admin
         }, {
             headers: { 'x-access-token': localStorage.token }
         }).then(response => {
             if(response.data.success) {
-                this.changeView('view');
+                if(response.data.success) {
+                    this.showAlert('Update Successful.', 'success', 2000);
+                    this.changeView('view');
+                } else {
+                    this.showAlert('Update Failed.', 'error', 2000);
+                }
             }
         });
     }
 
+    showAlert(content, type, timeout) {
+        this.setState({
+            showAlert: true,
+            typeAlert: type,
+            contentAlert: content
+        });
+        setTimeout(() => {
+            this.setState({
+                showAlert: false,
+                typeAlert: 'success',
+                contentAlert: ''
+            });
+        }, timeout);
+    }
+
     render() {
         return (
+            <div>
+                <SweetAlert
+                    show={this.state.showAlert}
+                    title={this.state.typeAlert === 'success' ? 'Success!' : 'Error!'}
+                    text={this.state.contentAlert}
+                    type={this.state.typeAlert}
+                    showConfirmButton = {false}
+                />
             <Modal size={'small'} closeIcon trigger={<Button color='teal'>View & Edit</Button>} >
                 <Modal.Header>
                     <Header size='small' icon='hashtag' content='View & Edit User Skills'/>
@@ -234,6 +269,14 @@ class ModalEditUserSkills extends React.Component {
                                             </Table.Cell>
                                             <Table.Cell>
                                                 {this.props.user.username}
+                                            </Table.Cell>
+                                        </Table.Row>
+                                        <Table.Row>
+                                            <Table.Cell>
+                                                <h4>Admin</h4>
+                                            </Table.Cell>
+                                            <Table.Cell>
+                                                {this.props.user.admin === 1 ? "Yes" : "No"}
                                             </Table.Cell>
                                         </Table.Row>
                                         <Table.Row>
@@ -389,6 +432,17 @@ class ModalEditUserSkills extends React.Component {
                                             </Table.Row>
                                             <Table.Row>
                                                 <Table.Cell>
+                                                    <h4>Admin</h4>
+                                                </Table.Cell>
+                                                <Table.Cell> 
+                                                    <Form.Group inline style={{marginBottom: 0}}>
+                                                        <Form.Radio label='Yes' name='admin' value={1} checked={this.state.admin === 1} onChange={this.handleChange} />
+                                                        <Form.Radio label='No' name='admin' value={0} checked={this.state.admin === 0} onChange={this.handleChange} />
+                                                    </Form.Group>
+                                                </Table.Cell>
+                                            </Table.Row>
+                                            <Table.Row>
+                                                <Table.Cell>
                                                     <h4>Salary</h4>
                                                 </Table.Cell>
                                                 <Table.Cell>
@@ -490,6 +544,7 @@ class ModalEditUserSkills extends React.Component {
                     }
                 </Modal.Content>
             </Modal>
+            </div>
         )
     }
 }

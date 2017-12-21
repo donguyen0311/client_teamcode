@@ -12,6 +12,7 @@ import {
     Dropdown,
     Form
 } from 'semantic-ui-react';
+import auth from '../utils/auth';
 
 import {changeVisible} from './SidebarActions';
 import Dashboard from '../dashboard/Dashboard';
@@ -59,9 +60,13 @@ class SideBar extends React.Component {
 
     componentWillMount() {
         user.getUserInfo().then(response => {
-            this.setState({
-                projects: response.user.belong_project
-            })
+            if(response.success) {
+                this.setState({
+                    projects: response.user.belong_project
+                });
+            } else {
+                auth.logout();
+            }
         });
         // console.log(this.props)
         // this.setState({
@@ -69,19 +74,19 @@ class SideBar extends React.Component {
         // })
     }    
 
-    componentWillReceiveProps(nextProps){
+    componentWillReceiveProps(nextProps) {
         // console.log(this.state.projects)
         
 
         if(Object.keys(nextProps.projectNewFormInfos.projectSaved).length > 0){
-            let projects = [...this.state.projects]
+            let projects = [...this.state.projects];
 
             projects.push(nextProps.projectNewFormInfos.projectSaved)
-            this.props.changeProjectSaved({})
+            this.props.changeProjectSaved({});
 
             this.setState({
                 projects: projects
-            })
+            });
         }
     }
 
@@ -115,15 +120,17 @@ class SideBar extends React.Component {
                         </Dropdown>
                         
                     </Menu.Item>
-                    <Menu.Item style={{fontSize: 19, fontWeight: 'bold'}} 
-                                as={Link} 
-                                to={`${this.props.match.url}/dashboard`}
-                                name={'dashboard'}
-                                active={activeItem === 'dashboard'}
-                                onClick={this.handleItemClick.bind(this, 'dashboard')}>
-                                
-                            <Icon name='dashboard' style={{float: 'left', marginRight: 10, marginLeft: 30}} />Dashboard   
-                    </Menu.Item>
+                    {this.props.profileUser.profile.admin === 1 ? (
+                        <Menu.Item style={{fontSize: 19, fontWeight: 'bold'}} 
+                                    as={Link} 
+                                    to={`${this.props.match.url}/dashboard`}
+                                    name={'dashboard'}
+                                    active={activeItem === 'dashboard'}
+                                    onClick={this.handleItemClick.bind(this, 'dashboard')}>
+                                    
+                                <Icon name='dashboard' style={{float: 'left', marginRight: 10, marginLeft: 30}} />Dashboard   
+                        </Menu.Item>
+                    ) : ""}
                     <Menu.Item>
                         <Menu.Header>
                             <div style={{display: 'inline-block', fontSize: 19}}>Project</div>

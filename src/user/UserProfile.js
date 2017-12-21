@@ -4,6 +4,8 @@ import { getUserInfo } from './UserActions';
 import { Table, Image, Button, Modal, Form, Dropdown } from 'semantic-ui-react';
 import { updateUserInfo } from './UserActions';
 import axios from 'axios';
+import SweetAlert from 'sweetalert2-react';
+import 'sweetalert2/dist/sweetalert2.css';
 
 class Profile extends React.Component {
     constructor(props) {
@@ -11,6 +13,7 @@ class Profile extends React.Component {
         this.state = {
             stateView: true,
             stateEdit: false,
+            stateEditPassword: false,
             workedAtOptions: [...this.formatDropdownValue(this.props.data.profile.worked_at)],
             studiedAtOptions: [...this.formatDropdownValue(this.props.data.profile.studied_at)],
             languageProgrammingOptions: [...this.formatDropdownValue(this.props.data.profile.language_programming)],
@@ -19,7 +22,13 @@ class Profile extends React.Component {
             gender: this.props.data.profile.gender,
             worked_at: this.props.data.profile.worked_at,
             studied_at: this.props.data.profile.studied_at,
-            language_programming: this.props.data.profile.language_programming
+            language_programming: this.props.data.profile.language_programming,
+            old_password: '',
+            new_password: '',
+            confirm_password: '',
+            showAlert: false,
+            contentAlert: '',
+            typeAlert: 'success' 
         };
         this.handleChange = this.handleChange.bind(this);
         this.changeView = this.changeView.bind(this);
@@ -27,6 +36,8 @@ class Profile extends React.Component {
         this.updateProfile = this.updateProfile.bind(this);
         this.updateAvatar = this.updateAvatar.bind(this);
         this.createElementUpload = this.createElementUpload.bind(this);
+        this.updatePassword = this.updatePassword.bind(this);
+        this.showAlert = this.showAlert.bind(this);
     }
 
     formatDropdownValue(arrayValue) {
@@ -41,11 +52,19 @@ class Profile extends React.Component {
         if (state === 'edit') {
             this.setState({
                 stateView: false,
+                stateEditPassword: false,
                 stateEdit: true
             });
         } else if (state === 'view') {
             this.setState({
                 stateView: true,
+                stateEditPassword: false,
+                stateEdit: false
+            });
+        } else if (state === 'edit_pass') {
+            this.setState({
+                stateView: false,
+                stateEditPassword: true,
                 stateEdit: false
             });
         }
@@ -80,8 +99,33 @@ class Profile extends React.Component {
         }, {
             headers: { 'x-access-token': localStorage.token }
         }).then(response => {
-            this.props.updateUserInfo(response.data.user);
-            this.changeView('view');
+            if(response.data.success) {
+                this.props.updateUserInfo(response.data.user);
+                this.showAlert('Update Successful.', 'success', 2000);
+                this.changeView('view');
+            } else {
+                this.showAlert('Update Failed.', 'error', 2000);
+                console.log(response);
+            }
+        });
+    }
+
+    updatePassword() {
+        // check password before submitting
+        axios.put(`/api/users/${this.props.data.profile._id}?change_password=true`, {
+            old_password: this.state.old_password,
+            new_password: this.state.new_password,
+            confirm_password: this.state.confirm_password
+        }, {
+            headers: { 'x-access-token': localStorage.token }
+        }).then(response => {
+            if(response.data.success) {
+                this.showAlert('Update Successful.', 'success', 2000);
+                this.changeView('edit');
+            } else {
+                this.showAlert('Update Failed.', 'error', 2000);
+                console.log(response);
+            }
         });
     }
 
@@ -115,9 +159,31 @@ class Profile extends React.Component {
         upload.click();
     }
 
+    showAlert(content, type, timeout) {
+        this.setState({
+            showAlert: true,
+            typeAlert: type,
+            contentAlert: content
+        });
+        setTimeout(() => {
+            this.setState({
+                showAlert: false,
+                typeAlert: 'success',
+                contentAlert: ''
+            });
+        }, timeout);
+    }
+
     render() {
         if (this.state.stateView) {
             return [
+                <SweetAlert key={'alert'}
+                    show={this.state.showAlert}
+                    title={this.state.typeAlert === 'success' ? 'Success!' : 'Error!'}
+                    text={this.state.contentAlert}
+                    type={this.state.typeAlert}
+                    showConfirmButton = {false}
+                />,
                 <Image key={'avatar_profile'} wrapped size='medium' src={this.props.data.profile.image} />,
                 <Modal.Description key={'info_profile_table'}>
                     <Table basic='very'>           
@@ -206,6 +272,13 @@ class Profile extends React.Component {
         }
         if (this.state.stateEdit) {
             return [
+                <SweetAlert key={'alert'}
+                    show={this.state.showAlert}
+                    title={this.state.typeAlert === 'success' ? 'Success!' : 'Error!'}
+                    text={this.state.contentAlert}
+                    type={this.state.typeAlert}
+                    showConfirmButton = {false}
+                />,
                 <Image key={'avatar_profile_edit'} wrapped size='medium' style={{cursor: 'pointer'}} src={this.props.data.profile.image} onClick={this.updateAvatar} />,
                 <Modal.Description key={'info_profile_table_edit'}>
                     <Form onSubmit={this.updateProfile}>
@@ -259,7 +332,10 @@ class Profile extends React.Component {
                                         <h4>Password</h4>
                                     </Table.Cell>
                                     <Table.Cell> 
-                                        <Form.Input name='password' type='password' value={'*************'} readOnly />
+                                        <Form.Group>    
+                                            <Form.Input name='password' type='password' value={'*************'} readOnly />
+                                            <Form.Button color='red' icon='setting' content='Change' type='button' onClick={this.changeView.bind(this, 'edit_pass')}></Form.Button>
+                                        </Form.Group>
                                     </Table.Cell>
                                 </Table.Row>
                                 <Table.Row>
@@ -324,6 +400,58 @@ class Profile extends React.Component {
                                         <Form.Group widths='equal'>
                                             <Button fluid type='submit' color='green' >Update</Button>
                                             <Button fluid type='button' onClick={this.changeView.bind(this, 'view')}>View Profile</Button>
+                                        </Form.Group>
+                                    </Table.Cell>
+                                </Table.Row>                 
+                            </Table.Body>
+                        </Table>
+                    </Form>
+                </Modal.Description>
+            ];
+        }
+        if (this.state.stateEditPassword) {
+            return [
+                <SweetAlert key={'alert'}
+                    show={this.state.showAlert}
+                    title={this.state.typeAlert === 'success' ? 'Success!' : 'Error!'}
+                    text={this.state.contentAlert}
+                    type={this.state.typeAlert}
+                    showConfirmButton = {false}
+                />,
+                <Image key={'avatar_profile_edit_password'} wrapped size='medium' src={this.props.data.profile.image} />,
+                <Modal.Description key={'info_profile_table_edit'}>
+                    <Form onSubmit={this.updatePassword}>
+                        <Table basic='very'>           
+                            <Table.Body>
+                                <Table.Row>
+                                    <Table.Cell width={3}>
+                                        <h4>Old Password</h4>
+                                    </Table.Cell>
+                                    <Table.Cell>
+                                        <Form.Input name='old_password' type='password'  onChange={this.handleChange} />
+                                    </Table.Cell>
+                                </Table.Row>
+                                <Table.Row>
+                                    <Table.Cell>
+                                        <h4>New Password</h4>
+                                    </Table.Cell>
+                                    <Table.Cell>
+                                        <Form.Input name='new_password' type='password' onChange={this.handleChange} />  
+                                    </Table.Cell>
+                                </Table.Row>
+                                <Table.Row>
+                                    <Table.Cell>
+                                        <h4>Confirm Password</h4>
+                                    </Table.Cell>
+                                    <Table.Cell>
+                                        <Form.Input name='confirm_password' type='password' onChange={this.handleChange} />  
+                                    </Table.Cell>
+                                </Table.Row>
+                                <Table.Row>
+                                    <Table.Cell colSpan='2'>
+                                        <Form.Group widths='equal'>
+                                            <Button fluid type='submit' color='green'>Update Password</Button>
+                                            <Button fluid type='button' onClick={this.changeView.bind(this, 'edit')}>Back</Button>
                                         </Form.Group>
                                     </Table.Cell>
                                 </Table.Row>                 

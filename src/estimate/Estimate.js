@@ -36,21 +36,22 @@ import {
     changeResponsibleUser,
     changeFindTeamBugdetError,
     setAcceptSuggestionStatus,
-    changeProjectWillCreate
+    changeProjectWillCreate,
+    setProjectCreatedStatus
 } from '../project/ProjectActions'
 
+import StaffAfforableTimeline from './timeline/StaffAfforableTimeline';
+import ProjectNewForm from '../project/ProjectNewForm';
 import SuitableStaffsView from './SuitableStaffsView';
 import SuggestSuitableStaffsView from './SuggestSuitableStaffsView';
 import CocomoStatisticsTable from './CocomoStatisticsTable';
 import EstimatedStatistics from './EstimatedStatistics';
 import BruteforceStaffs from './BruteforceStaffs';
-
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
 import moment from 'moment';
 import 'moment-duration-format';
-
 
 const NOT_DECIDED = -1, ACCEPTED = 1, DECLINED = 0;
 
@@ -64,6 +65,8 @@ class Estimate extends React.Component {
         this.handleStartDateChange  = this.handleStartDateChange.bind(this);
         this.handleEndDateChange  = this.handleEndDateChange.bind(this);
         this.allUserAbilityCases = this.allUserAbilityCases.bind(this);
+        this.closeTimeline = this.closeTimeline.bind(this);
+        this.openTimeline = this.openTimeline.bind(this);
 
     }
     estimate(){
@@ -72,7 +75,7 @@ class Estimate extends React.Component {
         currentState.modal['SLOCModal']           = false;
         currentState.modal['ScaleFactorModal']    = false;
         currentState.modal['CostDriverModal']     = false;
-        currentState.modal['SuitableStaffsModal'] = true;
+        currentState.modal['SuitableStaffsModal'] = false;
         // currentState.isDeclineSuggest             = false;
         this.setState(currentState);
 
@@ -108,13 +111,17 @@ class Estimate extends React.Component {
                 // console.log('effort', PMs);
             }
         }
+
         console.log('effort',PMs);
         console.log('tedv',TDEV);
         console.log('durationBeginToDeadline', durationBeginToDeadline);
         console.log('projectDurationToCompleteHours',PMs*152);
+        // console.log('performanceTable',this.allUserAbilityCases());
         currentState = {...this.state};
         let requirements = {
-            person_month: 6,
+            // person_month: 6,
+            start_day: this.props.projectReducer.projectWillCreate.start_day,
+            end_day: this.props.projectReducer.projectWillCreate.end_day,
             personMonths: PMs,
             performanceTable: this.allUserAbilityCases(),
             projectDuration: durationBeginToDeadline,
@@ -151,9 +158,19 @@ class Estimate extends React.Component {
                     PM: Math.ceil(PM),
                     effortPM: effortPM > 0 ? Math.ceil(effortPM) : 0
                 },
-                projectCostPerMonth: data.projectCostPerMonth,
-                projectCost: projectCost
+                // projectCostPerMonth: data.projectCostPerMonth,
+                totalProjectCost: data.totalProjectCost,
+                totalTimeTeamAfforable: data.totalTimeTeamAfforable
             });
+
+            this.props.changeProjectWillCreate(
+                Object.assign({...this.props.projectReducer.projectWillCreate},
+                    {
+                        budget: Math.round(data.totalProjectCost*100)/100,
+                        users: data.suitableStaffs.map(user => user._id)
+                    }
+                )
+            );
         });
         this.props.getBruteforceStaffs(requirements)
         .then((response) => {
@@ -221,8 +238,8 @@ class Estimate extends React.Component {
             ScaleFactorModal   : false,
             CostDriverModal    : false,
             SuitableStaffsModal: false,
-            SummaryProjectModal: false
-
+            SummaryProjectModal: false,
+            StaffAfforableTimelineModal: false
         },
         transition:{
             fpVisible  : true,
@@ -242,13 +259,31 @@ class Estimate extends React.Component {
     }
 
     show = element => () => {
-        if(element != 'SuitableStaffsModal')
+        if(element == 'ProjectTimeModal')
         {
-            this.props.setAcceptSuggestionStatus(NOT_DECIDED);
+            this.props.changeProjectWillCreate(
+                Object.assign(
+                    {...this.props.projectReducer.projectWillCreate},
+                    {
+                        duration: this.durationMonthFormat(this.props.projectReducer.projectWillCreate.start_day,
+                                                    this.props.projectReducer.projectWillCreate.end_day)
+                    }
+                )
+            );
+            this.props.setProjectCreatedStatus(false);
         }
-        // this.setState({[element]: true })  
-        if(element != 'SLOCModal')
+        if(element == 'SuitableStaffsModal')
         {
+            this.estimate();
+        }
+        // if(element != 'SuitableStaffsModal')
+        // {
+        //     this.props.setAcceptSuggestionStatus(NOT_DECIDED);
+        // }
+        // this.setState({[element]: true })  
+        if(element != 'SLOCModal' && element != 'ProjectTimeModal')
+        {
+            
           let currentState;
           if (this.props.estimateReducer.KLOC == 0)
           {
@@ -256,18 +291,20 @@ class Estimate extends React.Component {
             currentState.input.slocInput = true;
             this.setState(currentState);
             if(!this.state.transition.fpVisible)
-              document.querySelectorAll('#sloc')[0].focus();
-            return
+            {
+                if(document.querySelectorAll('#sloc')[0] !== undefined)
+                {
+                    document.querySelectorAll('#sloc')[0].focus();
+                }
+            }
+            return false;
           }
           else
           {
             currentState                 = {...this.state};
             currentState.input.slocInput = false;
             this.setState(currentState);
-          }
-
-          
-
+          }    
         }
         else
         {   
@@ -278,14 +315,15 @@ class Estimate extends React.Component {
             {
             
                 setTimeout(() =>{
-                    document.querySelectorAll('#sloc')[0].value = this.props.estimateReducer.KLOC * 1000
+                    if(document.querySelectorAll('#sloc')[0] !== undefined)
+                        document.querySelectorAll('#sloc')[0].value = this.props.estimateReducer.KLOC * 1000;
                 },100);
               
             }
         }
-
         for(let modal_name in this.state.modal)
         {
+            // console.log(modal_name);
             let currentState;
             if(modal_name == element){
                 currentState                   = {...this.state};
@@ -300,6 +338,20 @@ class Estimate extends React.Component {
         }   
         // if(element == 'SLOCModal')  
           // document.querySelectorAll('#sloc').focus()
+    }
+   
+    closeTimeline = element  => () =>
+    {
+        let currentState            = {...this.state};
+        currentState.modal[element] = false;
+        this.setState(currentState);
+    }
+
+    openTimeline = element  => () =>
+    {
+        let currentState            = {...this.state};
+        currentState.modal[element] = true;
+        this.setState(currentState);
     }
 
     close = element => () => {
@@ -414,7 +466,8 @@ class Estimate extends React.Component {
 
 
     render() {
-        const { SLOCModal, CostDriverModal, ScaleFactorModal, SuitableStaffsModal, ProjectTimeModal, SummaryProjectModal } = this.state.modal
+
+        const { SLOCModal, CostDriverModal, ScaleFactorModal, SuitableStaffsModal, ProjectTimeModal, SummaryProjectModal, StaffAfforableTimelineModal } = this.state.modal
         const { fpVisible, fpAnimation } = this.state.transition
         const { slocInput } = this.state.input
         const estimateStep = 
@@ -458,7 +511,7 @@ class Estimate extends React.Component {
                 </Step>
 
                 <Step active = {SuitableStaffsModal} completed={((ProjectTimeModal == false) && (SLOCModal == false) && (ScaleFactorModal == false) && (CostDriverModal == false) && (SuitableStaffsModal == false)) ? true : false}
-                    onClick={this.estimate}
+                    onClick={this.show('SuitableStaffsModal')}
                     className="estimate_step">
                   <Icon name='trophy' size='large'/>
                   <Step.Content>
@@ -565,7 +618,7 @@ class Estimate extends React.Component {
                             }
                             {
                               slocInput &&
-                              <Label basic color='red' pointing='left'>Hãy nhập số lượng SLOC</Label>
+                              <Label basic color='red' pointing='left'>{fpVisible ? 'Hãy nhập ít nhất một Function Point' : 'Hãy nhập số lượng SLOC'}</Label>
                             }
                         </Grid.Column>
                   </Grid>
@@ -573,7 +626,7 @@ class Estimate extends React.Component {
                 </Modal.Content>
                 <Modal.Actions>
                     <Button onClick={this.show('ProjectTimeModal')} > <Icon name='left chevron' /> Quay lại  </Button>
-                    <Button onClick={this.show('ScaleFactorModal')} primary> Tiếp <Icon name='right chevron' /></Button>
+                    <Button onClick={this.show('ScaleFactorModal')} primary disabled={!this.props.functionPointReducer.isFunctionPointDone && fpVisible}> Tiếp <Icon name='right chevron' /></Button>
                 </Modal.Actions>
                 </Modal>
 
@@ -645,15 +698,58 @@ class Estimate extends React.Component {
                   </Modal.Description>
                 </Modal.Content>
                 <Modal.Actions>
-                    <Button onClick={this.show('SLOCModal')} > <Icon name='repeat' color='black'/> Thử lại </Button>
+                    <Button onClick={this.show('ProjectTimeModal')} > <Icon name='repeat' color='black'/> Thử lại </Button>
                     <Button onClick={this.show('CostDriverModal')} > <Icon name='left chevron' /> Quay lại </Button>
-                    <Button onClick={this.close('SuitableStaffsModal')} color='green' 
-                        disabled={(!this.state.isGetSuitableStaffDone) ||  (this.props.projectReducer.acceptSuggestionStatus == NOT_DECIDED)}>
-                        <Icon name='checkmark' /> Xong
+                    <Button onClick={this.openTimeline('StaffAfforableTimelineModal')} color='orange'> Dòng thời gian nhân viên <Icon name='clock' /></Button>
+                    <Button onClick={this.show('SummaryProjectModal')} color='green' 
+                        disabled={(!this.state.isGetSuitableStaffDone)}>
+                        <Icon name='checkmark' /> Chấp nhận nhân viên
                     </Button>
                 </Modal.Actions>
                 </Modal>             
                 
+                <Modal 
+                    id = "summary-project-modal"
+                    size="fullscreen"
+                    open={SummaryProjectModal} onClose={this.close('SummaryProjectModal')}
+                    closeOnDimmerClick={false}
+                    closeOnDocumentClick={false}
+                    className="estimate_modal"
+                    >
+                <Modal.Header>{estimateStep}</Modal.Header>
+                <Modal.Content className="estimate_maxHeight" scrolling>
+                  <Modal.Description>
+                    <ProjectNewForm />
+                  </Modal.Description>
+                </Modal.Content>
+                <Modal.Actions>
+                    <Button onClick={this.show('SuitableStaffsModal')} > <Icon name='left chevron' /> Quay lại </Button>
+                    <Button 
+                        onClick={() => {
+                                this.close('SummaryProjectModal');
+                                document.getElementById('create_new_project').click();
+                            }
+                        }
+                        primary> Tạo dự án <Icon name='right chevron' /></Button>
+                </Modal.Actions>
+                </Modal>
+
+                <Modal 
+                    id = "staff-afforable-timeline-modal"
+                    size="fullscreen"
+                    open={StaffAfforableTimelineModal} onClose={this.closeTimeline('StaffAfforableTimelineModal')}
+                    className="estimate_modal"
+                    >
+                <Modal.Header>Dòng thời gian làm việc</Modal.Header>
+                <Modal.Content className="estimate_maxHeight" scrolling>
+                  <Modal.Description>
+                    <StaffAfforableTimeline className="padding-left-right-2"/>
+                  </Modal.Description>
+                </Modal.Content>
+                <Modal.Actions>
+                    <Button onClick={this.closeTimeline('StaffAfforableTimelineModal')} > <Icon name='remove' /> Đóng </Button>
+                </Modal.Actions>
+                </Modal>
         </div>
         );
     }
@@ -665,7 +761,8 @@ class Estimate extends React.Component {
 const mapStateToProps = (state) => {
     return {
         estimateReducer: state.estimateReducer,
-        projectReducer: state.projectReducer
+        projectReducer: state.projectReducer,
+        functionPointReducer: state.functionPointReducer
     };
 }
 
@@ -679,7 +776,8 @@ const mapDispatchToProps = {
     changeProjectWillCreate,
     changeStaffRequirements,
     getBruteforceStaffs,
-    changeBruteforceStaffs
+    changeBruteforceStaffs,
+    setProjectCreatedStatus
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Estimate);

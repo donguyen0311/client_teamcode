@@ -10,6 +10,7 @@ import {
     Input,
     Label,
     Loader,
+    Grid
 } from 'semantic-ui-react';
 
 import Estimate from '../estimate/Estimate';
@@ -24,6 +25,7 @@ import {
   changeProjectWillCreate,
   changeFindTeamBugdetError,
   changeResponsibleUser,
+  setProjectCreatedStatus
 } from '../project/ProjectActions'
 
 import SweetAlert from 'sweetalert2-react';
@@ -52,6 +54,11 @@ class ProjectNewForm extends React.Component {
             'created_by' : this.props.profileUser.profile._id,
             'users': []
         },
+        estimatedResult:{
+          budget: 0,
+          start_day: new Date(),
+          end_day: new Date(),
+        },
         dropdownSelected: [],
         openModal: false,
         sweetalert: false,
@@ -59,6 +66,7 @@ class ProjectNewForm extends React.Component {
         isCreatingProject: false,
         isGetUsersInfoDone: false,
         usersAvailableInCompany:[],
+        defaultDropdownStaffs: [],
         programming_language: [
         {
           key: '.net',
@@ -282,11 +290,43 @@ class ProjectNewForm extends React.Component {
       this.close = this.close.bind(this);
     }
 
+    componentDidMount()
+    {
+      // console.log(this.formatUsersInCompany(this.props.estimateReducer.estimatedResult.suitableStaffs).map(user => user._id));
+      this.getUsersInCompanyInfo();
+      this.setState({
+        estimatedResult:{
+          budget: this.props.estimateReducer.estimatedResult.budget,
+          start_day: this.props.projectReducer.projectWillCreate.start_day,
+          end_day: this.props.projectReducer.projectWillCreate.end_day
+        },
+        defaultDropdownStaffs: this.props.estimateReducer.estimatedResult.suitableStaffs.map(user => user._id)
+      });
+      this.props.changeProjectWillCreate(
+        Object.assign(
+          {...this.props.projectReducer.projectWillCreate},
+          {
+            'belong_company' : this.props.profileUser.profile.current_company._id,
+            'created_by' : this.props.profileUser.profile._id
+          }
+        )
+      );
+    }
+
+    componentWillReceiveProps(nextProps)
+    {
+      // this.setState({defaultDropdownStaffs: this.formatUsersInCompany(this.props.estimateReducer.estimatedResult.suitableStaffs)});
+    }
+
     updateCreateByBelongCompany(){
       let currentState = {...this.state};
       currentState.projectInfos['created_by'] = this.props.profileUser.profile._id;
-      currentState.projectInfos['users'].push(this.state.projectInfos.created_by);
       currentState.projectInfos['belong_company'] = this.props.profileUser.profile.current_company._id;
+      currentState.projectInfos['users'] = [];
+      this.props.estimateReducer.estimatedResult.suitableStaffs.map(user => {
+        currentState.projectInfos['users'].push(user._id);  
+      });
+      // currentState.projectInfos['users'].push(this.state.projectInfos.created_by);
       this.setState(currentState);
 
       // 'belong_company' : this.props.profileUser.profile.current_company._id,
@@ -303,15 +343,18 @@ class ProjectNewForm extends React.Component {
           image: { avatar: true, src: user.image }
         })
       }
+      // console.log(userFormat);
       return userFormat;
     }
 
     getUsersInCompanyInfo()
     {
       let company_id = this.props.profileUser.profile.current_company._id;
+      // console.log(company_id);
       this.props.getUsersInCompanyInfo(company_id)
       .then((users) =>
       {
+        // console.log(users);
         let currentState = {...this.state};
         currentState.usersAvailableInCompany = this.formatUsersInCompany(users);
         currentState.isGetUsersInfoDone = true;
@@ -327,7 +370,7 @@ class ProjectNewForm extends React.Component {
       this.setState(currentState);
 
       this.props.changeProjectWillCreate(
-        Object.assign({...this.props.projectNewFormInfos.projectWillCreate},
+        Object.assign({...this.props.projectReducer.projectWillCreate},
           {
             deadline: date._d,
             duration: this.durationMonthFormat(date._d)
@@ -363,12 +406,40 @@ class ProjectNewForm extends React.Component {
         }
 
         this.props.changeProjectWillCreate(
-          Object.assign({...this.props.projectNewFormInfos.projectWillCreate},
+          Object.assign({...this.props.projectReducer.projectWillCreate},
             {
               budget: element.target.value
             }
           )
         );
+      }
+
+      if(elementName == 'project_name')
+      {
+        if(document.querySelectorAll('input[name="project_name"]')[0] !== undefined)
+        {
+          this.props.changeProjectWillCreate(
+            Object.assign({...this.props.projectReducer.projectWillCreate},
+              {
+                project_name: document.querySelectorAll('input[name="project_name"]')[0].value
+              }
+            )
+          );
+        }
+      }
+
+      if(elementName == 'description')
+      {
+        if(document.querySelectorAll('textarea[name="description"]')[0] !== undefined)
+        {
+          this.props.changeProjectWillCreate(
+            Object.assign({...this.props.projectReducer.projectWillCreate},
+              {
+                description: document.querySelectorAll('textarea[name="description"]')[0].value
+              }
+            )
+          );
+        }
       }
     }
 
@@ -378,10 +449,20 @@ class ProjectNewForm extends React.Component {
         this.setState({
           isCreatingProject: true
         });
-        this.updateCreateByBelongCompany();
-        project.newProject(this.state.projectInfos)
+        // this.updateCreateByBelongCompany();
+        // console.log('this.props.projectReducer.projectWillCreate.end_day.utc().format()',this.props.projectReducer.projectWillCreate.end_day.utc().format());
+        // console.log('this.props.projectReducer.projectWillCreate.start_day',this.props.projectReducer.projectWillCreate.start_day);
+
+        // console.log(this.props.projectReducer.projectWillCreate);
+        let projectInfos = this.props.projectReducer.projectWillCreate;
+        delete projectInfos["duration"];
+        projectInfos.start_day = projectInfos.start_day.utc().format();
+        projectInfos.end_day = projectInfos.end_day.utc().format();
+        projectInfos.suitableStaffs = this.props.estimateReducer.estimatedResult.suitableStaffs;
+        console.log(projectInfos);
+        project.newProject(projectInfos)
         .then(response => {
-          //console.log(response)
+          console.log(response);
           this.setState({
             isCreatingProject: false
           });
@@ -392,6 +473,8 @@ class ProjectNewForm extends React.Component {
           // this.props.changeUserNewProjectForm(response.projectSaved.users)
           // this.props.changeIdNewProjectForm(response.projectSaved._id)
           this.props.changeProjectSaved(response.projectSaved);
+
+          this.props.setProjectCreatedStatus(true);
 
           this.setState({
             sweetalert: true
@@ -444,103 +527,109 @@ class ProjectNewForm extends React.Component {
         const openModal = this.state.openModal
         const sweetalert = this.state.sweetalert
         return(
-          <i>
-          <SweetAlert
-            show={sweetalert}
-            title="Success!"
-            text="Project has been created"
-            type='success'
-            showConfirmButton = {false}
-          />
-          <Icon name="add circle" size={'large'} style={{float: 'right', cursor: 'pointer'}} 
-             onClick={this.open}/>
-          <Modal
-            closeOnDimmerClick={false}
-            closeOnDocumentClick={false}
-            open={openModal}
-            onClose={this.close}
-            >
-            <Header icon='archive' content='Create Project' />
-            <Form id="new_project" onSubmit={this.onNewProjectFormSubmit}>
-              <Modal.Content scrolling className="new_project_content">
-                  <Form.Field>
-                    <Form.Input label='Project Name' name='project_name' placeholder='Project Name' autoFocus required 
-                      onChange={this.onInputChange}
-                    />
-                  </Form.Field>
-                  <Form.Field className="required">
-                      <label>Budget</label>
-                      <Input
-                        label={{ basic: true, content: '$' }}
-                        labelPosition='right'
-                        placeholder='Budget for this project'
-                        name='budget'
-                        onChange={this.onInputChange}
-                        required
+          <div>
+            <SweetAlert
+              show={sweetalert}
+              title="Success!"
+              text="Project has been created"
+              type='success'
+              showConfirmButton = {false}
+            />
+            <Form id="new_project" className="new-project-form" onSubmit={this.onNewProjectFormSubmit}>
+              <Form.Field>
+                <Form.Input label='Tên dự án' name='project_name' placeholder='Tên dự án' autoFocus required 
+                  onChange={this.onInputChange}
+                />
+              </Form.Field>
+              <Form.Field className="required">
+                  <label>Ngân sách</label>
+                  <Input
+                    label={{ basic: true, content: '$' }}
+                    className="text-bold"
+                    labelPosition='right'
+                    placeholder='Ngân sách cho dự án này'
+                    name='budget'
+                    disabled={true}
+                    onChange={this.onInputChange}
+                    value={Math.round(this.props.estimateReducer.estimatedResult.totalProjectCost*100)/100}
+                    required
+                  />
+                  {this.props.projectReducer.findTeamBudgetError && <Label basic color='red' pointing>Please enter a value</Label>}
+              </Form.Field>
+              <Grid columns={2}>
+                <Grid.Row>
+                  <Grid.Column width={8}>
+                    <Form.Field className="required">
+                        <label>Ngày bắt dầu dự án</label>
+                        <DatePicker selected={moment(this.props.projectReducer.projectWillCreate.start_day)} required
+                          className="text-bold"
+                          name='start_day'
+                          dateFormat="DD/MM/YYYY"
+                          onChange={this.handleChange}
+                          disabled={true}
+                        />
+                    </Form.Field>
+                  </Grid.Column>
+                  <Grid.Column width={8}>
+                    <Form.Field className="required">
+                        <label>Ngày kết thúc dự án</label>
+                        <DatePicker selected={moment(this.props.projectReducer.projectWillCreate.end_day)} required
+                          className="text-bold"
+                          name='end_day'
+                          dateFormat="DD/MM/YYYY"
+                          onChange={this.handleChange}
+                          disabled={true}
+                        />
+                    </Form.Field>
+                  </Grid.Column>
+                </Grid.Row>
+              </Grid>
+              <Form.Field>
+                  <label className="padding-top-1">Mô tả</label>
+                  <Form.TextArea placeholder='Mô tả' 
+                    name='description'
+                    onChange={this.onInputChange}
+                  />
+              </Form.Field>
+              {/*<Form.Field className="required">
+                  <label>Programming Language/Skills</label>
+                  <Dropdown id="language_programming" placeholder='Programming Language' fluid multiple selection search
+                    options={this.state.programming_language} required
+                    name='language_programming'
+                    onChange={this.onMutipleChoiceChange}
                       />
-                      {this.props.projectNewFormInfos.findTeamBudgetError && <Label basic color='red' pointing>Please enter a value</Label>}
-                  </Form.Field>
-                  <Form.Field className="required">
-                      <label>Deadline</label>
-                      <DatePicker selected={this.state.startDate} required
-                        name='deadline'
-                        dateFormat="DD/MM/YYYY"
-                        onChange={this.handleChange}
+              </Form.Field>*/}
+              <Form.Field className="required">
+                  <label>Nhân viên tham gia</label>
+                  {
+                    this.state.isGetUsersInfoDone ? ( this.props.estimateReducer.estimatedResult.suitableStaffs.length > 0 ? 
+                    <Dropdown key={123} placeholder='Nhân viên tham gia' fluid multiple selection search
+                      options={this.state.usersAvailableInCompany} required
+                      name='users1'
+                      onChange={this.onMutipleChoiceChange}
+                      defaultValue={this.state.defaultDropdownStaffs}
+                      disabled={true}
+                      /> : 
+                      <Dropdown key={456} placeholder='Nhân viên tham gia' fluid multiple selection search
+                      options={this.state.usersAvailableInCompany} required
+                      name='users2'
+                      onChange={this.onMutipleChoiceChange}
                       />
-                  </Form.Field>
-                  <Form.Field>
-                      <Form.TextArea label="Description" placeholder='Description' 
-                        name='description'
-                        onChange={this.onInputChange}
-                      />
-                  </Form.Field>
-                  <Form.Field className="required">
-                      <label>Programming Language/Skills</label>
-                      <Dropdown id="language_programming" placeholder='Programming Language' fluid multiple selection search
-                        options={this.state.programming_language} required
-                        name='language_programming'
-                        onChange={this.onMutipleChoiceChange}
-                          />
-                  </Form.Field>
-                  <Form.Field className="required">
-                      <label>Responsible</label>
-                      {
-                        
-                        this.state.isGetUsersInfoDone ? ( this.props.projectNewFormInfos.responsible_user.length > 0 ? 
-                        <Dropdown key={123} placeholder='Responsible User' fluid multiple selection search
-                          options={this.state.usersAvailableInCompany} required
-                          name='users1'
-                          onChange={this.onMutipleChoiceChange}
-                          defaultValue={this.props.projectNewFormInfos.responsible_user}
-                          /> : 
-                          <Dropdown key={456} placeholder='Responsible User' fluid multiple selection search
-                          options={this.state.usersAvailableInCompany} required
-                          name='users2'
-                          onChange={this.onMutipleChoiceChange}
-                          />
-                          )
-                          :
-                          <Loader active inline='centered' className="new_project"/>
-                      }
-                  </Form.Field>
-                  
-              
-              </Modal.Content>
-
-              <Modal.Actions>
-                <div className="new_project_action clearfix">
-                  <Estimate className='margin_1em' />
-                  <Button className='margin_1em' floated='right' primary type="submit">
-                      {this.state.isCreatingProject ? <Loader active inline size='tiny'/> : <Icon name='plus' />} Create
-                  </Button>
-                  <Button className='margin_1em' floated='right' type='button' onClick={this.close}>
-                      <Icon name='cancel' /> Cancel
-                  </Button>
-                  </div>
-              </Modal.Actions>
+                      )
+                      :
+                      <Loader active inline='centered' className="new_project"/>
+                  }
+              </Form.Field>
+              <div className="new_project_action clearfix display-none">
+                <Button id="create_new_project" className='margin_1em display-none' floated='right' primary type="submit">
+                    {this.state.isCreatingProject ? <Loader active inline size='tiny'/> : <Icon name='plus' />} Tạo dự án
+                </Button>
+                <Button id="cancel_new_project" className='margin_1em display-none' floated='right' type='button' onClick={this.close}>
+                    <Icon name='cancel' /> Hủy bỏ
+                </Button>
+              </div>
             </Form>
-          </Modal>
-            </i>
+          </div>
         )
     }
 }
@@ -549,7 +638,8 @@ class ProjectNewForm extends React.Component {
 const mapStateToProps = (state) => {
     return {
       profileUser: state.userReducer,
-      projectNewFormInfos: state.projectReducer
+      projectReducer: state.projectReducer,
+      estimateReducer: state.estimateReducer
     };
 }
 
@@ -561,6 +651,7 @@ const mapDispatchToProps = {
     changeProjectWillCreate,
     changeFindTeamBugdetError,
     changeResponsibleUser,
+    setProjectCreatedStatus
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProjectNewForm);

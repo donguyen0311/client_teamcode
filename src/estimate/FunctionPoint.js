@@ -26,7 +26,8 @@ import {
 import {
   changeValueState,
   changeVisibleState,
-  changeFPTableArray
+  changeFPTableArray,
+  setFunctionPointDone
 } from './function_point/FunctionPointActions';
 
 class FunctionPoint extends React.Component {
@@ -97,7 +98,8 @@ class FunctionPoint extends React.Component {
           numberOfProgrammingLanguagesVisible: true,
           lastLanguage: '',
           alertVisible: false,
-          completeFunctionPoint: false
+          completeFunctionPoint: false,
+          currentPhaseSLOC: 0
         };
 
         handleDismiss = () => {
@@ -132,9 +134,14 @@ class FunctionPoint extends React.Component {
                 SLOC=totalFP*FUNCTION_POINT_TO_SLOC[selectedLanguage];
             }
             if(!(isNaN(SLOC)))
+            {
                 document.getElementById('total_SLOC').innerHTML=SLOC;
-            
-            this.props.changeKLOC(SLOC/1000);
+            }
+            if(!(isNaN(SLOC)) && SLOC != '' && SLOC != null)
+            {
+              this.setState({currentPhaseSLOC: SLOC});
+              // this.props.changeKLOC(this.props.estimateReducer.KLOC+SLOC/1000);
+            }
             return SLOC;
         }
         
@@ -155,34 +162,22 @@ class FunctionPoint extends React.Component {
         }
 
         submitFunctionPoint(){
-          var totalFP = document.getElementById('total_fp').value;
-          var totalSLOC = document.getElementById('total_SLOC').value;
-
+          var totalFP = document.getElementById('total_fp').innerHTML;
+          var totalSLOC = document.getElementById('total_SLOC').innerHTML;
+          // console.log(totalFP);
+          // console.log(totalSLOC);
           if(totalFP == 0)
           {
-
+            return false;
           }
 
           if(totalSLOC == 0)
           {
-            
+            return false;
           }
 
-          // this.changeFPTableArray(
-          //   Object.assign(
-          //     {...this.props.functionPointReducer.functionPointTableArray},
-          //     {
-          //       value: this.props.functionPointReducer.functionPointTableArray.value[this.props.functionPointReducer.functionPointTableArray.currentIndex].push({
-          //         visible: false,
-          //         language: '',
-          //         FP: totalFP,
-          //         SLOC: totalSLOC,
-          //         FPDetails:[]
-          //       }),
-          //       currentIndex: this.props.functionPointReducer.functionPointTableArray.currentIndex+1
-          //     }
-          //   )
-          // );
+          this.props.changeKLOC(this.props.estimateReducer.KLOC+(this.state.currentPhaseSLOC/1000));
+
           let currentFPTableIndex = this.props.functionPointReducer.functionPointTableArray.currentIndex;
           FUNCTION_POINT.map((fpType, fpTypeIndex) =>{
             
@@ -228,7 +223,7 @@ class FunctionPoint extends React.Component {
           if(currentFPTableIndex == this.props.functionPointReducer.functionPointTableArray.value.length-1)
           {
             this.setState({completeFunctionPoint: true});
-
+            this.props.setFunctionPointDone({isFunctionPointDone: true});
           }
           else
           {
@@ -461,7 +456,7 @@ class FunctionPoint extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-      input_project: state.estimateReducer,
+      estimateReducer: state.estimateReducer,
       functionPointReducer: state.functionPointReducer
     };
 }
@@ -470,7 +465,8 @@ const mapDispatchToProps = {
     changeKLOC,
     changeValueState,
     changeVisibleState,
-    changeFPTableArray
+    changeFPTableArray,
+    setFunctionPointDone
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(FunctionPoint);

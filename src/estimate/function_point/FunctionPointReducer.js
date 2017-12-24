@@ -1,7 +1,8 @@
 import {
     CHANGE_VISIBLE_STATE,
     CHANGE_VALUE_STATE,
-    CHANGE_FP_TABLE_ARRAY
+    CHANGE_FP_TABLE_ARRAY,
+    SET_FUNCTION_POINT_DONE
 } from './FunctionPointConstants'
 
 
@@ -17,6 +18,7 @@ const initialState = {
         value: [],
         currentIndex: -1   
     },
+    isFunctionPointDone: false
 };
 
 export function functionPointReducer(state = initialState, action) {
@@ -35,6 +37,11 @@ export function functionPointReducer(state = initialState, action) {
             return {
                 ...state,
                 functionPointTableArray: action.newState
+            };
+        case SET_FUNCTION_POINT_DONE:
+            return {
+                ...state,
+                isFunctionPointDone: action.newState
             };
         default:
             return state;

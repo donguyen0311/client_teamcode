@@ -5,8 +5,11 @@ import {
     CHANGE_RESPONSIBLE_USER,
     CHANGE_PROJECT_WILL_CREATE,
     CHANGE_FIND_TEAM_BUGDET_ERROR,
-    SET_ACCEPT_SUGGESTION_STATUS
+    SET_ACCEPT_SUGGESTION_STATUS,
+    SET_PROJECT_CREATED_STATUS
 } from './ProjectConstants'
+
+import moment from 'moment';
 
 const NOT_DECIDED = -1, ACCEPTED = 1, DECLINED = 0;
 const initialState = {
@@ -14,14 +17,25 @@ const initialState = {
 
 	},
     projectWillCreate:{
+        project_name: '',
         budget: 0,
-        start_day: new Date(),
-        end_day: new Date(),
-        duration: 0
+        level: 0,
+        // start_day: new Date(),
+        // end_day: new Date(),
+        description: '',
+        start_day: moment(),
+        end_day: moment().add(3,'months'),
+        duration: 0,
+        language_programming: [],
+        belong_company: 0,
+        created_by: 0,
+        users: [],
+        tasks: []
     },
 	responsible_user: [],
     findTeamBudgetError: false,
-    acceptSuggestionStatus: NOT_DECIDED
+    acceptSuggestionStatus: NOT_DECIDED,
+    isProjectCreated: false
 	// _id :{
  //    	'project_id': 0,
  //    },
@@ -74,7 +88,11 @@ export function projectReducer(state = initialState, action) {
                 ...state,
                 acceptSuggestionStatus: action.newState
             };
-            
+        case SET_PROJECT_CREATED_STATUS:
+            return {
+                ...state,
+                isProjectCreated: action.newState
+            };
         default:
             return state;
     }

@@ -1,12 +1,12 @@
 import { 
-CHANGE_USERS_NEW_PROJECT_FORM,
-CHANGE_ID_NEW_PROJECT_FORM,
-CHANGE_PROJECT_SAVED,
-CHANGE_RESPONSIBLE_USER,
-CHANGE_PROJECT_WILL_CREATE,
-CHANGE_FIND_TEAM_BUGDET_ERROR,
-SET_ACCEPT_SUGGESTION_STATUS
-
+	CHANGE_USERS_NEW_PROJECT_FORM,
+	CHANGE_ID_NEW_PROJECT_FORM,
+	CHANGE_PROJECT_SAVED,
+	CHANGE_RESPONSIBLE_USER,
+	CHANGE_PROJECT_WILL_CREATE,
+	CHANGE_FIND_TEAM_BUGDET_ERROR,
+	SET_ACCEPT_SUGGESTION_STATUS,
+	SET_PROJECT_CREATED_STATUS
 } from './ProjectConstants'
 
 export function changeUserNewProjectForm(newState) {
@@ -35,4 +35,8 @@ export function changeFindTeamBugdetError(newState) {
 
 export function setAcceptSuggestionStatus(newState) {
     return {type: SET_ACCEPT_SUGGESTION_STATUS, newState};
+}
+
+export function setProjectCreatedStatus(newState) {
+    return {type: SET_PROJECT_CREATED_STATUS, newState};
 }

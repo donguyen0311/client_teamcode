@@ -152,3 +152,27 @@ input.FP{
 .margin-top-2{
 	margin-top: 2vh;
 }
+
+.cursor-pointer-hover{
+	cursor: pointer !important;
+}
+
+.display-none{
+	display: none !important;
+}
+
+.padding-top-1{
+	padding-top: 1rem !important;
+}
+
+.padding-left-right-2{
+    padding: 0rem 2rem !important;
+}
+
+.new-project-form{
+    padding: 0rem 22rem !important;
+}
+
+.text-bold, .text-bold input{
+	font-weight: bold !important;
+}

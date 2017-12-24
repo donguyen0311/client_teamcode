@@ -14,9 +14,13 @@ const NOT_DECIDED = -1, ACCEPTED = 1, DECLINED = 0;
 class SuitableStaffsView extends React.Component {
     constructor(props) {
         super(props);
+        this.distinctStaff = this.distinctStaff.bind(this);
     }
 
-    state = { activeIndex: 0 }
+    state = {
+        activeIndex: 0,
+        suitableStaffsDistinct: []
+    }
 
     handleClick = (e, titleProps) => {
         const { index } = titleProps;
@@ -26,9 +30,32 @@ class SuitableStaffsView extends React.Component {
         this.setState({ activeIndex: newIndex });
     }
 
+    componentWillReceiveProps(nextProps){
+        this.setState({
+            suitableStaffsDistinct: this.distinctStaff(nextProps.estimateReducer.estimatedResult.suitableStaffs)
+        });
+    }
+
+    distinctStaff(staffs){
+        if(staffs.length == 0)
+            return [];
+
+        let distinctStaffsId = [];
+        let distinctStaffs = [];
+        for(let staff of staffs)
+        {
+            if(distinctStaffsId.indexOf(staff._id)<0)
+            {
+                distinctStaffsId.push(staff._id);
+                distinctStaffs.push(staff);
+            }
+        }
+        return distinctStaffs;
+    }
+
     render() {
-         const suitableStaffs = 
-         this.props.estimateReducer.estimatedResult.suitableStaffs.map((staff, staffIndex) => {
+        const suitableStaffs =
+         this.state.suitableStaffsDistinct.map((staff, staffIndex) => {
             return (
           <Grid.Column className="suitable_staff" key={`suitable_staff_${staffIndex}`}>
             <Grid.Row>
@@ -68,14 +95,14 @@ class SuitableStaffsView extends React.Component {
                             </Grid.Row>
                         </Grid>
                     </Grid.Row>
-                    <Divider section className="no_margin"/>
+                    {/*<Divider section className="no_margin"/>
                     <Grid className="no_margin">
                         <Grid.Row>
                             <Grid.Column textAlign="center">
                                 <Button color='blue'>Thông tin cá nhân</Button>
                             </Grid.Column>
                         </Grid.Row>
-                    </Grid>
+                    </Grid>*/}
                 </Grid.Column>
             </Grid.Row>
           </Grid.Column>

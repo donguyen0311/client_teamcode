@@ -9,7 +9,7 @@ import {
 } from './estimateConstants'
 
 const initialState = {
-	KLOC: 3,
+	KLOC: 0,
 	EAF: {
 
 	},
@@ -39,8 +39,9 @@ const initialState = {
             PM: 0,
             effortPM:0
         },
-        projectCostPerMonth: 0,
-        projectCost: 0,
+        // projectCostPerMonth: 0,
+        totalProjectCost: 0,
+        totalTimeTeamAfforable: 0
 
     },
     bruteforceStaffs:[]

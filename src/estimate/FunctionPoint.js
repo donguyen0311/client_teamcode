@@ -277,8 +277,11 @@ class FunctionPoint extends React.Component {
             this.props.changeValueState(numberOfProgrammingLanguages);
             this.props.changeVisibleState(
               Object.assign(
-                {...this.props.visible},
-                {numberOfProgrammingLanguagesErrorLabel: true}
+                {...this.props.functionPointReducer.visible},
+                {
+                  numberOfProgrammingLanguagesErrorLabel: false,
+                  numberOfProgrammingLanguages: false
+                }
               ));
             this.props.changeFPTableArray(
               Object.assign({...this.props.functionPointReducer.functionPointTableArray},
@@ -293,8 +296,8 @@ class FunctionPoint extends React.Component {
           {
             this.props.changeVisibleState(
               Object.assign(
-                {...this.props.visible},
-                {numberOfProgrammingLanguagesErrorLabel: false}
+                {...this.props.functionPointReducer.visible},
+                {numberOfProgrammingLanguagesErrorLabel: true}
               ));
           }
         }
@@ -442,7 +445,10 @@ class FunctionPoint extends React.Component {
                           </Statistic>
                       </Statistic.Group>
                       <br/>
-                      <Button color="orange" fluid onClick={this.submitFunctionPoint}> Ngôn ngữ tiếp theo  <Icon name="right chevron" /></Button>
+                      <Button color="orange" fluid onClick={this.submitFunctionPoint}>
+                       { this.props.functionPointReducer.functionPointTableArray.currentIndex+1 == this.props.functionPointReducer.functionPointTableArray.value.length ?
+                        'Hoàn thành' : 'Ngôn ngữ tiếp theo' }
+                       <Icon name="right chevron" /></Button>
                     </Grid.Column>
                   </Grid.Row>
                 </Grid>

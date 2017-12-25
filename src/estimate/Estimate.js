@@ -30,7 +30,7 @@ import {
     changeStaffRequirements,
     getBruteforceStaffs,
     changeBruteforceStaffs
-} from './estimateActions'
+} from './estimateActions';
 
 import {
     changeResponsibleUser,
@@ -38,7 +38,11 @@ import {
     setAcceptSuggestionStatus,
     changeProjectWillCreate,
     setProjectCreatedStatus
-} from '../project/ProjectActions'
+} from '../project/ProjectActions';
+
+import {
+    changeVisibleState
+} from '../estimate/function_point/FunctionPointActions';
 
 import StaffAfforableTimeline from './timeline/StaffAfforableTimeline';
 import ProjectNewForm from '../project/ProjectNewForm';
@@ -304,6 +308,7 @@ class Estimate extends React.Component {
             );
             this.props.setProjectCreatedStatus(false);
         }
+
         if(element == 'SuitableStaffsModal')
         {
             this.estimate();
@@ -340,17 +345,30 @@ class Estimate extends React.Component {
         }
         else
         {   
-            //isSLOCModal
             this.setState({isGetSuitableStaffDone: false});
-
-            if(!this.state.transition.fpVisible)
+            //isSLOCModal
+            if(element == 'SLOCModal')
             {
-            
-                setTimeout(() =>{
-                    if(document.querySelectorAll('#sloc')[0] !== undefined)
-                        document.querySelectorAll('#sloc')[0].value = this.props.estimateReducer.KLOC * 1000;
-                },100);
-              
+                this.props.changeKLOC(0);
+
+                if(!this.state.transition.fpVisible)
+                {
+                    setTimeout(() =>{
+                        if(document.querySelectorAll('#sloc')[0] !== undefined)
+                            document.querySelectorAll('#sloc')[0].value = this.props.estimateReducer.KLOC * 1000;
+                    },100);
+                  
+                }
+            }
+            else
+            {
+                //isProjecTimeModal
+                // console.log('estimate this.props.functionPointReducer.visible',this.props.functionPointReducer.visible);
+                this.props.changeVisibleState(
+                    Object.assign(
+                    {...this.props.functionPointReducer.visible},
+                    {numberOfProgrammingLanguages: true}
+                ));
             }
         }
         for(let modal_name in this.state.modal)
@@ -637,6 +655,10 @@ class Estimate extends React.Component {
                             </Button>
                         </Grid.Column>
                         <Grid.Column width={13}>
+                            {
+                              slocInput &&
+                              <Label basic color='red' pointing='below'>{fpVisible ? 'Hãy nhập ít nhất một Function Point' : 'Hãy nhập số lượng SLOC'}</Label>
+                            }
                             <Transition.Group animation={fpAnimation} duration='0'>
                                 {fpVisible && <FunctionPoint/>}
                             </Transition.Group> 
@@ -653,10 +675,6 @@ class Estimate extends React.Component {
                                 placeholder='Nhập số lượng SLOC...'
                                 onKeyUp={this.onInputSLOCChange}
                               />
-                            }
-                            {
-                              slocInput &&
-                              <Label basic color='red' pointing='left'>{fpVisible ? 'Hãy nhập ít nhất một Function Point' : 'Hãy nhập số lượng SLOC'}</Label>
                             }
                         </Grid.Column>
                   </Grid>
@@ -704,7 +722,7 @@ class Estimate extends React.Component {
                 </Modal.Content>
                 <Modal.Actions>
                     <Button onClick={this.show('ScaleFactorModal')} > <Icon name='left chevron' /> Quay lại </Button>
-                    <Button onClick={this.estimate} color='blue'> Ước lượng  <Icon name='chevron right' /></Button>
+                    <Button onClick={this.show('SuitableStaffsModal')} color='blue'> Ước lượng  <Icon name='chevron right' /></Button>
                 </Modal.Actions>
                 </Modal>
 
@@ -815,7 +833,8 @@ const mapDispatchToProps = {
     changeStaffRequirements,
     getBruteforceStaffs,
     changeBruteforceStaffs,
-    setProjectCreatedStatus
+    setProjectCreatedStatus,
+    changeVisibleState
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Estimate);

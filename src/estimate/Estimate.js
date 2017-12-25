@@ -50,6 +50,9 @@ import BruteforceStaffs from './BruteforceStaffs';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
+import SweetAlert from 'sweetalert2-react';
+import 'sweetalert2/dist/sweetalert2.css';
+
 import moment from 'moment';
 import 'moment-duration-format';
 
@@ -68,6 +71,32 @@ class Estimate extends React.Component {
         this.closeTimeline = this.closeTimeline.bind(this);
         this.openTimeline = this.openTimeline.bind(this);
 
+    }
+    componentWillReceiveProps(nextProps)
+    {
+        if(nextProps.projectReducer.isProjectCreated)
+        {
+            let willSaveState = {...this.state};
+            for(let modal_name in this.state.modal)
+            {
+                willSaveState.modal[modal_name] = false;
+            } 
+            this.setState(willSaveState);
+
+            this.setState({
+                alert: {
+                    projectIsCreated: true
+                }
+            });
+
+            setTimeout(() => {
+                this.setState({
+                    alert: {
+                        projectIsCreated: false
+                    }
+               })
+            },2000);
+        }
     }
     estimate(){
         let currentState;
@@ -241,6 +270,9 @@ class Estimate extends React.Component {
             SummaryProjectModal: false,
             StaffAfforableTimelineModal: false
         },
+        alert: {
+            projectIsCreated: false
+        },
         transition:{
             fpVisible  : true,
             fpAnimation: 'drop'
@@ -386,7 +418,6 @@ class Estimate extends React.Component {
     }
 
     handleStartDateChange(date) {
-
       let currentState = {...this.state};
       currentState.time.start_day = date;
       // currentState.projectInfos.deadline = date._d;
@@ -395,7 +426,7 @@ class Estimate extends React.Component {
       this.props.changeProjectWillCreate(
         Object.assign({...this.props.projectReducer.projectWillCreate},
           {
-            start_day: date._d,
+            start_day: date,
             duration: this.durationMonthFormat(date._d,this.state.time.end_day)
           }
         )
@@ -403,7 +434,6 @@ class Estimate extends React.Component {
     }
 
     handleEndDateChange(date) {
-
       let currentState = {...this.state};
       currentState.time.end_day = date;
       // currentState.projectInfos.deadline = date._d;
@@ -412,7 +442,7 @@ class Estimate extends React.Component {
       this.props.changeProjectWillCreate(
         Object.assign({...this.props.projectReducer.projectWillCreate},
           {
-            end_day: date._d,
+            end_day: date,
             duration: this.durationMonthFormat(this.state.time.start_day,date._d)
           }
         )
@@ -529,9 +559,17 @@ class Estimate extends React.Component {
                   </Step.Content>
                 </Step>
               </Step.Group>
-
+        const sweetAlertTag =
+            <SweetAlert
+              show={this.state.alert.projectIsCreated}
+              title="Thành công!"
+              text="Dự án đã được tạo"
+              type='success'
+              showConfirmButton = {false}
+            />
         return (
         <div style={{display: 'inline'}}>
+             {sweetAlertTag}
                 {/*<Button type='button' color='orange' onClick={this.show('SLOCModal')}><Icon name='wizard' /> Find suitable team</Button>*/}
               <Icon name="add circle" size={'large'} style={{float: 'right', cursor: 'pointer'}} 
                     onClick={this.show('ProjectTimeModal')}/>

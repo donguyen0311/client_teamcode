@@ -6,7 +6,8 @@ import {
     CHANGE_PROJECT_WILL_CREATE,
     CHANGE_FIND_TEAM_BUGDET_ERROR,
     SET_ACCEPT_SUGGESTION_STATUS,
-    SET_PROJECT_CREATED_STATUS
+    SET_PROJECT_CREATED_STATUS,
+    RESET_PROJECT_WILL_CREATE
 } from './ProjectConstants'
 
 import moment from 'moment';
@@ -92,6 +93,11 @@ export function projectReducer(state = initialState, action) {
             return {
                 ...state,
                 isProjectCreated: action.newState
+            };
+        case RESET_PROJECT_WILL_CREATE:
+            return {
+                ...state,
+                projectWillCreate: {...initialState.projectWillCreate}
             };
         default:
             return state;

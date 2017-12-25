@@ -75,18 +75,21 @@ class SideBar extends React.Component {
     }    
 
     componentWillReceiveProps(nextProps) {
-        // console.log(this.state.projects)
         
+        if(Object.keys(nextProps.projectReducer.projectSaved).length > 0){
+            // console.log('nextProps.projectReducer.projectSaved.users',nextProps.projectReducer.projectSaved.users);
+            // console.log('this.props.profileUser.profile._id',this.props.profileUser.profile._id);
+            if(nextProps.projectReducer.projectSaved.users.indexOf(this.props.profileUser.profile._id) > -1)
+            {
+                let projects = [...this.state.projects];
 
-        if(Object.keys(nextProps.projectNewFormInfos.projectSaved).length > 0){
-            let projects = [...this.state.projects];
-
-            projects.push(nextProps.projectNewFormInfos.projectSaved)
+                projects.push(nextProps.projectReducer.projectSaved)
+            
+                this.setState({
+                    projects: projects
+                });
+            }
             this.props.changeProjectSaved({});
-
-            this.setState({
-                projects: projects
-            });
         }
     }
 
@@ -178,7 +181,7 @@ class SideBar extends React.Component {
 const mapStateToProps = (state) => {
     return {
         profileUser: state.userReducer,
-        projectNewFormInfos: state.projectReducer,
+        projectReducer: state.projectReducer,
         sidebar: state.sidebarReducer
     };
 }

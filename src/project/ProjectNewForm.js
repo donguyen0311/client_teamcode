@@ -15,9 +15,9 @@ import {
 
 import Estimate from '../estimate/Estimate';
 
-import project from '../utils/project'
+import project from '../utils/project';
 
-import {getUsersInCompanyInfo} from '../user/UserActions'
+import {getUsersInCompanyInfo} from '../user/UserActions';
 import {
   changeUserNewProjectForm,
   changeIdNewProjectForm,
@@ -25,11 +25,13 @@ import {
   changeProjectWillCreate,
   changeFindTeamBugdetError,
   changeResponsibleUser,
-  setProjectCreatedStatus
-} from '../project/ProjectActions'
+  setProjectCreatedStatus,
+  resetProjectWillCreate
+} from '../project/ProjectActions';
 
-import SweetAlert from 'sweetalert2-react';
-import 'sweetalert2/dist/sweetalert2.css';
+import {
+  resetEstimateResult
+} from '../estimate/estimateActions';
 
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -456,8 +458,17 @@ class ProjectNewForm extends React.Component {
         // console.log(this.props.projectReducer.projectWillCreate);
         let projectInfos = this.props.projectReducer.projectWillCreate;
         delete projectInfos["duration"];
-        projectInfos.start_day = projectInfos.start_day.utc().format();
-        projectInfos.end_day = projectInfos.end_day.utc().format();
+        console.log('projectInfos.start_day',projectInfos.start_day);
+        console.log('projectInfos.end_day',projectInfos.end_day);
+        if(typeof projectInfos.start_day === "function")
+        {
+          projectInfos.start_day = projectInfos.start_day.utc().format();
+        }
+        if(typeof projectInfos.end_day === "function")
+        {
+          projectInfos.end_day = projectInfos.end_day.utc().format();
+        }
+
         projectInfos.suitableStaffs = this.props.estimateReducer.estimatedResult.suitableStaffs;
         console.log(projectInfos);
         project.newProject(projectInfos)
@@ -476,16 +487,9 @@ class ProjectNewForm extends React.Component {
 
           this.props.setProjectCreatedStatus(true);
 
-          this.setState({
-            sweetalert: true
-          });
-          setTimeout(() => {
-            this.setState({
-              sweetalert: false
-            })
-          },1500);
-        })
-        
+          this.props.resetEstimateResult(true);
+          this.props.resetProjectWillCreate(true);
+        });
       }
     }
     open(){
@@ -524,17 +528,9 @@ class ProjectNewForm extends React.Component {
     }
 
     render() {
-        const openModal = this.state.openModal
-        const sweetalert = this.state.sweetalert
+        const openModal = this.state.openModal;
         return(
           <div>
-            <SweetAlert
-              show={sweetalert}
-              title="Success!"
-              text="Project has been created"
-              type='success'
-              showConfirmButton = {false}
-            />
             <Form id="new_project" className="new-project-form" onSubmit={this.onNewProjectFormSubmit}>
               <Form.Field>
                 <Form.Input label='Tên dự án' name='project_name' placeholder='Tên dự án' autoFocus required 
@@ -651,7 +647,9 @@ const mapDispatchToProps = {
     changeProjectWillCreate,
     changeFindTeamBugdetError,
     changeResponsibleUser,
-    setProjectCreatedStatus
+    setProjectCreatedStatus,
+    resetEstimateResult,
+    resetProjectWillCreate
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProjectNewForm);

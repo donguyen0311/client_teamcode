@@ -5,7 +5,8 @@ import {
 	CHANGE_KLOC,
     CHANGE_ESTIMATED_RESULT,
     CHANGE_BRUTEFORCE_STAFFS,
-    CHANGE_STAFF_REQUIREMENTS
+    CHANGE_STAFF_REQUIREMENTS,
+    RESET_ESTIMATED_RESULT
 } from './estimateConstants'
 
 const initialState = {
@@ -83,6 +84,10 @@ export function estimateReducer(state = initialState, action) {
             return {
                 ...state,
                 staffRequirements: action.newState
+            };
+        case RESET_ESTIMATED_RESULT:
+            return {
+                ...initialState
             };
         default:
             return state;

@@ -5,7 +5,8 @@ import {
     CHANGE_KLOC,
     CHANGE_ESTIMATED_RESULT,
     CHANGE_BRUTEFORCE_STAFFS,
-    CHANGE_STAFF_REQUIREMENTS
+    CHANGE_STAFF_REQUIREMENTS,
+    RESET_ESTIMATED_RESULT
 } from './estimateConstants'
 
 import estimate from '../utils/estimate'
@@ -40,6 +41,10 @@ export function changeBruteforceStaffs(newState) {
 
 export function changeStaffRequirements(newState) {
     return {type: CHANGE_STAFF_REQUIREMENTS, newState};
+}
+
+export function resetEstimateResult(newState){
+    return {type: RESET_ESTIMATED_RESULT, newState};   
 }
 
 export function getSuitableStaffs(requirement) {

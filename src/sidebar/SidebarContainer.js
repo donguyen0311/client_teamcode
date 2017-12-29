@@ -10,6 +10,7 @@ import Activity from '../activity/Activity';
 import user from '../utils/user';
 import SideBar from './Sidebar';
 import BlockPage from './BlockPage';
+import Meeting from '../meeting/Meeting';
 
 class SideBarContainer extends React.Component {
     constructor(props) {
@@ -26,6 +27,7 @@ class SideBarContainer extends React.Component {
                         <BlockPage />
                         {/* <Redirect from={`${this.props.match.url}/`} to={`${this.props.match.url}/dashboard`}/> */}
                         <Switch>
+                            <Route path={`${this.props.match.url}/meeting/`} component={Meeting} />
                             <Route path={`${this.props.match.url}/dashboard`} component={Dashboard} />
                             <Route path={`${this.props.match.url}/project/:project`} component={Project} />
                             <Route path={`${this.props.match.url}/activity/:project`} component={Activity} />

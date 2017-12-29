@@ -13,6 +13,7 @@ import {
     Form
 } from 'semantic-ui-react';
 import auth from '../utils/auth';
+import ModalCompanyInfo from './ModalCompanyInfo';
 
 import {changeVisible} from './SidebarActions';
 import Dashboard from '../dashboard/Dashboard';
@@ -42,6 +43,7 @@ class SideBar extends React.Component {
         this.state = {
             activeItem: sessionStorage.current_project || 'dashboard',
             projects: [],
+            company: {},
             // visibleSidebar: this.props.sidebar.visibleSidebar
         }
         
@@ -62,10 +64,12 @@ class SideBar extends React.Component {
         user.getUserInfo().then(response => {
             if(response.success) {
                 this.setState({
+                    company: response.user.current_company,
                     projects: response.user.belong_project
                 });
             } else {
                 auth.logout();
+                this.props.history.push('/');
             }
         });
         // console.log(this.props)
@@ -83,7 +87,7 @@ class SideBar extends React.Component {
             {
                 let projects = [...this.state.projects];
 
-                projects.push(nextProps.projectReducer.projectSaved)
+                projects.push(nextProps.projectReducer.projectSaved);
             
                 this.setState({
                     projects: projects
@@ -97,7 +101,7 @@ class SideBar extends React.Component {
         const {activeItem} = this.state;
         var trigger = (
             <Header style={{color: 'white', marginBottom: 0}} as='h1'> 
-                <Image centered circular='true' size={'small'} style={{borderRadius: '50%'}} src='https://react.semantic-ui.com/assets/images/avatar/large/patrick.png' />
+                <Image centered circular='true' size={'small'} style={{borderRadius: '50%'}} src={this.state.company.image} />
                 {' '}{this.props.match.params.company}
             </Header>
         );
@@ -113,15 +117,18 @@ class SideBar extends React.Component {
                     }}
                     >
                     <Menu.Item>
-                        <Dropdown trigger={trigger} pointing='top right' icon={null} >
+                        <Dropdown style={{width: '100%'}} trigger={trigger} pointing='top left' icon={null} >
                             <Dropdown.Menu>
-                                <Dropdown.Item icon='address book' text='Profile' as={Link} to={`/profile`} />
-                                {/* <Dropdown.Item icon='game' text='Editor' as={Link} to={`/editor`} /> */}
-                                <Dropdown.Divider />
-                                <Dropdown.Item icon='sign out' text='Sign Out' onClick={this._logout} />
+                                <Modal size={'small'} closeIcon trigger={<Dropdown.Item icon='address book' text='Company Infomation'/>} >
+                                    <Modal.Header>
+                                        <Header size='small' icon='hashtag' content='Company Infomation'/>
+                                    </Modal.Header>
+                                    <Modal.Content image>
+                                        <ModalCompanyInfo company={this.state.company} />
+                                    </Modal.Content>
+                                </Modal>
                             </Dropdown.Menu>
                         </Dropdown>
-                        
                     </Menu.Item>
                     {this.props.profileUser.profile.admin === 1 ? (
                         <Menu.Item style={{fontSize: 19, fontWeight: 'bold'}} 

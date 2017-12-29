@@ -6,14 +6,12 @@ import {
     Header,
     Segment,
     Form,
-    Button,
     Image,
     List,
     Label,
     Input,
     Icon,
     Message,
-    Search
 } from 'semantic-ui-react';
 import axios from 'axios';
 import _ from 'lodash';
@@ -271,7 +269,7 @@ class Dashboard extends React.Component {
                                         fluid 
                                         placeholder='Search...'
                                     />
-                                    <List divided verticalAlign='middle' size='large' style={{maxHeight: 500, overflow: 'auto'}}>
+                                    <List animated divided verticalAlign='middle' size='large' style={{maxHeight: 500, overflow: 'auto'}}>
                                         {this.state.userWaitingValue.length > 0 ? 
                                         (
                                             this.state.userWaitingResults.length > 0 ? 
@@ -321,7 +319,7 @@ class Dashboard extends React.Component {
                                         fluid 
                                         placeholder='Search...'
                                     />
-                                    <List divided verticalAlign='middle' size='large' style={{maxHeight: 500, overflow: 'auto'}}>
+                                    <List animated divided verticalAlign='middle' size='large' style={{maxHeight: 500, overflow: 'auto'}}>
                                         {this.state.userValue.length > 0 ? 
                                         (
                                             this.state.userResults.length > 0 ? 
@@ -358,6 +356,116 @@ class Dashboard extends React.Component {
                                 </Segment>
                             </Grid.Row>
                         </Grid.Column>
+                        {/* <Grid.Column mobile={16} tablet={16} computer={16}>
+                            <Grid.Row>
+                                <Segment color='teal'>
+                                    <Header as='h2'>User List</Header>
+                                    <Input
+                                        loading={this.state.isLoadingSearchUser}
+                                        onChange={this._handleSearchChangeUser}
+                                        icon='search' 
+                                        fluid 
+                                        placeholder='Search...'
+                                    />
+                                    <List divided verticalAlign='middle' size='large' style={{maxHeight: 500, overflow: 'auto'}}>
+                                        {this.state.userValue.length > 0 ? 
+                                        (
+                                            this.state.userResults.length > 0 ? 
+                                                [...this.state.userResults].map((user) => (
+                                                    <List.Item key={user._id}>
+                                                        <List.Content floated='right' style={{marginTop: 5}}>
+                                                            <ModalEditUserSkills user={user} />
+                                                        </List.Content>
+                                                        <Image avatar src={user.image}/>
+                                                        <List.Content>
+                                                            {user.email}
+                                                        </List.Content>
+                                                    </List.Item>
+                                                )) :
+                                                <List.Item>
+                                                    <List.Content>
+                                                        <h4 style={{textIndent: 10}}>No results found.</h4>
+                                                    </List.Content>
+                                                </List.Item>
+                                        ) :
+                                        [...this.state.userList].map((user) => (
+                                            <List.Item key={user._id}>
+                                                <List.Content floated='right'>
+                                                    <ModalEditUserSkills user={user} />
+                                                </List.Content>
+                                                <Image avatar src={user.image}/>
+                                                <List.Content>
+                                                    {user.email}
+                                                </List.Content>
+                                            </List.Item>
+                                        ))
+                                        }
+                                    </List>
+                                    <Table striped>
+                                        <Table.Header>
+                                        <Table.Row>
+                                            <Table.HeaderCell>Name</Table.HeaderCell>
+                                            <Table.HeaderCell>Name</Table.HeaderCell>
+                                            <Table.HeaderCell>Date Joined</Table.HeaderCell>
+                                            <Table.HeaderCell>E-mail</Table.HeaderCell>
+                                            <Table.HeaderCell>Called</Table.HeaderCell>
+                                        </Table.Row>
+                                        </Table.Header>
+
+                                        <Table.Body>
+                                        <Table.Row>
+                                            <Table.Cell>John Lilki</Table.Cell>
+                                            <Table.Cell>September 14, 2013</Table.Cell>
+                                            <Table.Cell>jhlilk22@yahoo.com</Table.Cell>
+                                            <Table.Cell>No</Table.Cell>
+                                        </Table.Row>
+                                        <Table.Row>
+                                            <Table.Cell>Jamie Harington</Table.Cell>
+                                            <Table.Cell>January 11, 2014</Table.Cell>
+                                            <Table.Cell>jamieharingonton@yahoo.com</Table.Cell>
+                                            <Table.Cell>Yes</Table.Cell>
+                                        </Table.Row>
+                                        <Table.Row>
+                                            <Table.Cell>Jill Lewis</Table.Cell>
+                                            <Table.Cell>May 11, 2014</Table.Cell>
+                                            <Table.Cell>jilsewris22@yahoo.com</Table.Cell>
+                                            <Table.Cell>Yes</Table.Cell>
+                                        </Table.Row>
+                                        <Table.Row>
+                                            <Table.Cell>John Lilki</Table.Cell>
+                                            <Table.Cell>September 14, 2013</Table.Cell>
+                                            <Table.Cell>jhlilk22@yahoo.com</Table.Cell>
+                                            <Table.Cell>No</Table.Cell>
+                                        </Table.Row>
+                                        <Table.Row>
+                                            <Table.Cell>John Lilki</Table.Cell>
+                                            <Table.Cell>September 14, 2013</Table.Cell>
+                                            <Table.Cell>jhlilk22@yahoo.com</Table.Cell>
+                                            <Table.Cell>No</Table.Cell>
+                                        </Table.Row>
+                                        <Table.Row>
+                                            <Table.Cell>Jamie Harington</Table.Cell>
+                                            <Table.Cell>January 11, 2014</Table.Cell>
+                                            <Table.Cell>jamieharingonton@yahoo.com</Table.Cell>
+                                            <Table.Cell>Yes</Table.Cell>
+                                        </Table.Row>
+                                        <Table.Row>
+                                            <Table.Cell>Jill Lewis</Table.Cell>
+                                            <Table.Cell>May 11, 2014</Table.Cell>
+                                            <Table.Cell>jilsewris22@yahoo.com</Table.Cell>
+                                            <Table.Cell>Yes</Table.Cell>
+                                        </Table.Row>
+                                        <Table.Row>
+                                            <Table.Cell>John Lilki</Table.Cell>
+                                            <Table.Cell>September 14, 2013</Table.Cell>
+                                            <Table.Cell>jhlilk22@yahoo.com</Table.Cell>
+                                            <Table.Cell>No</Table.Cell>
+                                        </Table.Row>
+                                        </Table.Body>
+                                    </Table>
+                                </Segment>
+                            </Grid.Row>
+                        </Grid.Column> */}
                     </Grid>
                 ) : (
                     <h1 style={{textAlign: 'center'}}><Icon name='lock' />You have not permission to access this page</h1>

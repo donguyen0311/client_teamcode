@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { Label, Dimmer, Loader, Icon, Grid, Segment, Header } from 'semantic-ui-react';
 import Timeline from 'react-time-line';
 import {Doughnut, Line} from 'react-chartjs-2';
+import auth from '../utils/auth';
 
 class Activity extends React.Component {
     constructor(props) {
@@ -29,7 +30,7 @@ class Activity extends React.Component {
         var data = activities.map(activity => ({
             ts: activity.createdAt,
             text: activity.action
-        }))
+        }));
         return data;
     }
 
@@ -38,12 +39,17 @@ class Activity extends React.Component {
         axios.get('/api/activities/projects/' + this.props.match.params.project, {headers: { 'x-access-token': localStorage.token } })
             .then(response => {
                 console.log(response);
-                this.setState({
-                    activitiesLog: response.data.activities,
-                    offset: this.state.offset + 30,
-                    activeLoading: false,
-                    activeLoader: false
-                });
+                if(response.success) {
+                    this.setState({
+                        activitiesLog: response.data.activities,
+                        offset: this.state.offset + 30,
+                        activeLoading: false,
+                        activeLoader: false
+                    });
+                } else {
+                    auth.logout();
+                    this.props.history.push('/');
+                }
             })
             .catch(error => {
                 console.log(error);

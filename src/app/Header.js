@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Input, Menu, Segment, Dropdown, Icon, Modal, Header} from 'semantic-ui-react';
+import { Menu, Segment, Dropdown, Icon, Modal, Header} from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { logout } from '../auth/AuthActions';
 import Avatar from '../user/UserAvatar';
@@ -45,7 +45,6 @@ class NavBar extends React.Component {
                                     <Profile />
                                 </Modal.Content>
                             </Modal>
-                            {/* <Dropdown.Item icon='game' text='Editor' as={Link} to={`/editor`} /> */}
                             <Dropdown.Divider />
                             <Dropdown.Item icon='sign out' text='Sign Out' onClick={this._logout} />
                         </Dropdown.Menu>

@@ -7,7 +7,6 @@ import {
     Form,
     Segment,
     Header,
-    Input,
     Message
 } from 'semantic-ui-react';
 import {login, changeLoginForm} from './AuthActions';

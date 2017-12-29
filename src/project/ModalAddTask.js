@@ -8,11 +8,32 @@ class ModalAddTask extends React.Component {
 			openModalAdd: false,
 			addTaskName: '',
 			addLevel: '',
-			addNote: '',
+            addNote: '',
+            addLabels: [],
+            labelOptions: [],
 			addDescription: '',
 			addResponsible: ''
 		};
-		this.handleChangeAdd = this.handleChangeAdd.bind(this);
+        this.handleChangeAdd = this.handleChangeAdd.bind(this);
+        this.handleAddition = this.handleAddition.bind(this);
+    }
+
+    formatDropdownValue(arrayValue) {
+        var formatValue = [];
+        for (let value of arrayValue) {
+            formatValue.push({ text: value, value });
+        }
+        return formatValue;
+    }
+
+    handleAddition(e, { name, value }) {
+        console.log(name, value);
+        let mapName = {
+            addLabels: 'labelOptions'
+        };
+        this.setState({
+            [ mapName[name] ]: [{ text: value, value }, ...this.state[ mapName[name] ]],
+        });
     }
 
     closeModalAdd = () => {
@@ -20,7 +41,8 @@ class ModalAddTask extends React.Component {
 			openModalAdd: false,
 			addTaskName: '',
 			addLevel: '',
-			addNote: '',
+            addNote: '',
+            addLabels: [],
 			addDescription: '',
 			addResponsible: ''
 		})
@@ -51,6 +73,21 @@ class ModalAddTask extends React.Component {
                         </Form.Field>
                         <Form.Field>
                             <Form.TextArea label="Description" placeholder='Description' name='addDescription' onChange={this.handleChangeAdd} required />
+                        </Form.Field>
+                        <Form.Field>
+                            <label>Labels</label>
+                            <Dropdown
+                                name='addLabels'
+                                options={this.state.labelOptions}
+                                search
+                                selection
+                                fluid
+                                multiple
+                                allowAdditions
+                                value={this.state.addLabels}
+                                onAddItem={this.handleAddition}
+                                onChange={this.handleChangeAdd}
+                            />
                         </Form.Field>
                         <Form.Field>
                             <label>Responsible</label>

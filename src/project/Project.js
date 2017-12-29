@@ -381,6 +381,7 @@ class Project extends React.Component {
 			task_name: task.addTaskName,
 			level: task.addLevel,
 			note: task.addNote,
+			labels: task.addLabels,
 			description: task.addDescription,
 			responsible_user: task.addResponsible,
 			belong_project: this.state.currentProject._id,
@@ -437,7 +438,7 @@ class Project extends React.Component {
 			<div style={{width: '100%', height: 'calc(100vh - 59px)', overflow: 'auto', marginTop: '-1rem'}}>
 				<Dimmer active={this.state.activeLoading} inverted>
 					<Loader inverted>Loading</Loader>
-				</Dimmer>
+				</Dimmer>		
 				<div style={{ width: 1330 }}>
 				<DragDropContext 
 					onDragEnd={this.onDragEnd}

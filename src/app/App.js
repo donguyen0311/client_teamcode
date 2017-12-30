@@ -6,7 +6,7 @@ import {BrowserRouter, Route, Switch, HashRouter} from 'react-router-dom';
 import {composeWithDevTools} from 'redux-devtools-extension';
 import axios from 'axios';
 
-// import auth from '../utils/auth';
+import auth from '../utils/auth';
 
 import Home from './Home';
 import SideBarContainer from '../sidebar/SidebarContainer';
@@ -40,6 +40,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
             .then(response => {
                 console.log(response);
                 if(!response.data.success) {
+                    auth.logout();
                     history.push('/');
                 }
             }).catch(error => {

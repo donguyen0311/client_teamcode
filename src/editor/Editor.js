@@ -4,6 +4,7 @@ import CodeMirrorEditor from './CodemirrorEditor';
 import LiveCode from './LiveCode';
 import {connect} from 'react-redux';
 import {initTaskEditorCode} from './EditorActions';
+import axios from 'axios';
 
 class Editor extends React.Component {
     constructor(props) {
@@ -18,9 +19,20 @@ class Editor extends React.Component {
         // }
         // this.receiveMode = this.receiveMode.bind(this);
         // this.receiveCode = this.receiveCode.bind(this);
-        this.props.initTaskEditorCode(this.props.taskID);
+        this.getTaskInfo = this.getTaskInfo.bind(this);
+        this.props.initTaskEditorCode(this.props.taskID, {html:{}, css:{}, js:{}});
+        
     }
-
+    async getTaskInfo() {
+        var response = await axios.get(`/api/tasks/${this.props.taskID}`, {headers: { 'x-access-token': localStorage.token } });
+        if(response.data.success) {
+            var editor = response.data.task.editor;
+            this.props.initTaskEditorCode(this.props.taskID, editor);
+        }      
+    }
+    componentWillMount() {
+        this.getTaskInfo();
+    }
     // receiveMode(mode, prevMode) {
     //     var key = '';
     //     if (prevMode === this.state.modehtml) {

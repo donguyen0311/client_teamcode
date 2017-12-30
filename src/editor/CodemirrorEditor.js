@@ -91,6 +91,9 @@ let optionsDropdown = [
         text: 'Javascript(JSX)',
         value: 'text/typescript-jsx'
     }, {
+        text: 'Typescript',
+        value: 'application/typescript'
+    }, {
         text: 'PHP',
         value: 'php'
     }, {
@@ -158,13 +161,13 @@ class CodemirrorEditor extends React.Component {
         // this.props.receiveCode(newCode, this.props.mode);
     }
     componentDidMount() {
-        console.log(this.props.modeInit);
-        let code = this.props.data[this.props.taskID][this.props.modeInit].code ? this.props.data[this.props.taskID][this.props.modeInit].code : '';
-        let mode = this.props.data[this.props.taskID][this.props.modeInit].mode ? this.props.data[this.props.taskID][this.props.modeInit].mode : mapLanguage[this.props.modeInit];
-        this.props.changeTaskEditorCode(this.props.taskID, code, this.props.modeInit);
-        let codemirror = this.refs.CodeMirror.getCodeMirror();
-        let codeMirrorInstance = this.refs.CodeMirror.getCodeMirrorInstance();
-        this.handleChangeModeCodemirror(mode, codemirror, codeMirrorInstance);
+        // console.log(this.props.modeInit);
+        // let code = this.props.data[this.props.taskID][this.props.modeInit].code ? this.props.data[this.props.taskID][this.props.modeInit].code : '';
+        // let mode = this.props.data[this.props.taskID][this.props.modeInit].mode ? this.props.data[this.props.taskID][this.props.modeInit].mode : mapLanguage[this.props.modeInit];
+        // this.props.changeTaskEditorCode(this.props.taskID, code, this.props.modeInit);
+        // let codemirror = this.refs.CodeMirror.getCodeMirror();
+        // let codeMirrorInstance = this.refs.CodeMirror.getCodeMirrorInstance();
+        // this.handleChangeModeCodemirror(mode, codemirror, codeMirrorInstance);
     }
     handleChangeDropdown(e, {name, value}) {
         //console.log(name, value);
@@ -208,20 +211,24 @@ class CodemirrorEditor extends React.Component {
         }
     }
     render() {
+        console.log(this.props.data[this.props.taskID][this.props.modeInit].code);
+        console.log(this.props.data[this.props.taskID][this.props.modeInit].mode);
+        let code = this.props.data[this.props.taskID][this.props.modeInit].code;
+        let mode = this.props.data[this.props.taskID][this.props.modeInit].mode;
         return (
             <div>
                 <CodeMirror
                     className='codemirror'
                     ref="CodeMirror"
                     autoFocus={true}
-                    value={this.props.data[this.props.taskID][this.props.modeInit].code ? this.props.data[this.props.taskID][this.props.modeInit].code : ''}
+                    value={code}
                     onChange={this.updateCode}
                     options={this.options}/>
                 <Menu attached={'bottom'}>
                     <Menu.Menu position='right'>
                         <Dropdown
                             placeholder='Select language'
-                            defaultValue={this.props.data[this.props.taskID][this.props.modeInit].mode ? this.props.data[this.props.taskID][this.props.modeInit].mode : mapLanguage[this.props.modeInit]}
+                            defaultValue={mode ? mode : mapLanguage[this.props.modeInit]}
                             upward
                             className='link item'
                             options={optionsDropdown}

@@ -8,6 +8,7 @@
     "babel-loader": "^7.1.2",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
+    "babel-preset-typescript": "^7.0.0-alpha.19",
     "babel-runtime": "^6.26.0",
     "babel-standalone": "^6.26.0",
     "babel-template": "^6.26.0",
@@ -41,6 +42,7 @@
     "socket.io": "^2.0.3",
     "styled-components": "^2.2.2",
     "sweetalert2-react": "^0.5.0",
+    "typescript": "^2.6.2",
     "uniter": "^2.11.1"
   },
   "scripts": {

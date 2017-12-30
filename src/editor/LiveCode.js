@@ -3,6 +3,8 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {Menu} from 'semantic-ui-react';
 import {changeTaskEditorCode, changeTaskEditorMode} from './EditorActions';
+import * as ts from "typescript";
+import axios from 'axios';
 var Babel = require('babel-standalone');
 // var uniter = require('uniter');
 
@@ -14,6 +16,7 @@ class LiveCode extends React.Component {
         this.updatePreview = this.updatePreview.bind(this);
         this.saveCode = this.saveCode.bind(this);
         this.compileCodeJSX = this.compileCodeJSX.bind(this);
+        this.compileCodeTypeScript = this.compileCodeTypeScript.bind(this);
         // this.compileCodePHP = this.compileCodePHP.bind(this);
     }
 
@@ -45,11 +48,29 @@ class LiveCode extends React.Component {
         return code;
     }
 
+    compileCodeTypeScript(codeTypeScript) {
+        // var code = Babel.transform(codeTypeScript, {
+        //     minified: true,
+        //     presets: [require('babel-preset-typescript')]
+        // }).code;
+        // console.log(code);
+        var code = ts.transpileModule(codeTypeScript, { compilerOptions: { module: ts.ModuleKind.CommonJS } });
+        return code.outputText;
+    }
+
     updatePreview() {
         var previewFrame = this.refs.iframe;
-        let codeCSS = this.props.data[this.props.taskID].css.code;
-        let codeHTML = this.props.data[this.props.taskID].html.code;
-        let codeJS = this.props.data[this.props.taskID].js.code;
+        var codeCSS = this.props.data[this.props.taskID].css.code;
+        var codeHTML = this.props.data[this.props.taskID].html.code;
+        var codeJS = '';
+        if (this.props.data[this.props.taskID].js.mode === 'text/typescript-jsx') {
+            codeJS = this.compileCodeJSX(this.props.data[this.props.taskID].js.code);
+        } else if (this.props.data[this.props.taskID].js.mode === 'application/typescript') {
+            codeJS = this.compileCodeTypeScript(this.props.data[this.props.taskID].js.code);
+        }else {
+            codeJS = this.props.data[this.props.taskID].js.code;
+        }
+        
         var preview =  previewFrame.contentDocument || previewFrame.contentWindow.document;
         preview.open();
         preview.write(`<style>${codeCSS}</style>${codeHTML}<script>${codeJS}</script>`);
@@ -57,6 +78,15 @@ class LiveCode extends React.Component {
     }
 
     saveCode() {
+        axios.put(`/api/tasks/${this.props.taskID}/editor`, {data: this.props.data[this.props.taskID]},
+                 {headers: { 'x-access-token': localStorage.token }
+            })
+            .then(response => {
+                console.log(response);
+            })
+            .catch(error => {
+                console.log(error);
+            });
         console.log(this.props.data[this.props.taskID]);
     }
 

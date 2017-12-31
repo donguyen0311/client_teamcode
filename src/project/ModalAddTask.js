@@ -1,6 +1,11 @@
 import React from 'react';
 import { Dropdown, Header, Icon, Modal, Button, Form } from 'semantic-ui-react';
 
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import moment from 'moment';
+import 'moment-duration-format';
+
 class ModalAddTask extends React.Component {
     constructor(props) {
         super(props);
@@ -12,10 +17,13 @@ class ModalAddTask extends React.Component {
             addLabels: [],
             labelOptions: [],
 			addDescription: '',
-			addResponsible: ''
+            addResponsible: '',
+            addStartDay: moment(),
+            addEndDay: moment().add(1, 'days'),
 		};
         this.handleChangeAdd = this.handleChangeAdd.bind(this);
         this.handleAddition = this.handleAddition.bind(this);
+        this.handleDateChange = this.handleDateChange.bind(this);
     }
 
     formatDropdownValue(arrayValue) {
@@ -36,6 +44,13 @@ class ModalAddTask extends React.Component {
         });
     }
 
+    handleDateChange(type, date) {
+        console.log(date, type);
+        this.setState({
+			[type]: date
+        });
+    }
+
     closeModalAdd = () => {
 		this.setState({ 
 			openModalAdd: false,
@@ -44,8 +59,10 @@ class ModalAddTask extends React.Component {
             addNote: '',
             addLabels: [],
 			addDescription: '',
-			addResponsible: ''
-		})
+            addResponsible: '',
+            addStartDay: moment(),
+            addEndDay: moment().add(1, 'days'),
+		});
 	}
     openModalAdd = () => this.setState({ openModalAdd: true })
     
@@ -73,6 +90,22 @@ class ModalAddTask extends React.Component {
                         </Form.Field>
                         <Form.Field>
                             <Form.TextArea label="Description" placeholder='Description' name='addDescription' onChange={this.handleChangeAdd} required />
+                        </Form.Field>
+                        <Form.Field className="required">
+                            <label>Start Day</label>
+                            <DatePicker required selected={this.state.addStartDay}
+                                name='addStartDay'
+                                dateFormat="DD/MM/YYYY"
+                                onChange={this.handleDateChange.bind(this, 'addStartDay')}
+                            />
+                        </Form.Field>
+                        <Form.Field className="required">
+                            <label>End Day</label>
+                            <DatePicker required selected={this.state.addEndDay}
+                                name='addEndDay'
+                                dateFormat="DD/MM/YYYY"
+                                onChange={this.handleDateChange.bind(this, 'addEndDay')}
+                            />
                         </Form.Field>
                         <Form.Field>
                             <label>Labels</label>

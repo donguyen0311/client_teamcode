@@ -1,7 +1,7 @@
 import React from 'react';
 // import ReactDOM from 'react-dom';
 import {connect} from 'react-redux';
-import {Menu} from 'semantic-ui-react';
+import {Menu, Icon} from 'semantic-ui-react';
 import {changeTaskEditorCode, changeTaskEditorMode} from './EditorActions';
 import * as ts from "typescript";
 import axios from 'axios';
@@ -135,10 +135,10 @@ class LiveCode extends React.Component {
                 <Menu attached={'top'}>
                     <Menu.Menu position='left'>
                         <Menu.Item name='save' onClick={this.saveCode}>
-                            Save
+                            <Icon name='save' /> Save
                         </Menu.Item>
                         <Menu.Item name='run' onClick={this.updatePreview}>
-                            Run
+                            <Icon name='play circle' /> Run
                         </Menu.Item>
                     </Menu.Menu>
                 </Menu>

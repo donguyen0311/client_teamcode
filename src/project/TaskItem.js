@@ -17,6 +17,11 @@ import {
 import TimeAgo from 'react-timeago';
 import ModalTaskEditor from './ModalTaskEditor';
 
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import moment from 'moment';
+import 'moment-duration-format';
+
 class TaskItem extends React.Component {
     constructor(props) {
         super(props);
@@ -30,12 +35,15 @@ class TaskItem extends React.Component {
             editDescription: this.props.data.description,
             editLabels: this.props.data.labels,
             labelOptions: this.formatDropdownValue(this.props.data.labels),
-			editResponsible: this.props.data.responsible_user.map(user => user._id)
+            editResponsible: this.props.data.responsible_user.map(user => user._id),
+            editStartDay: moment(this.props.data.start_day),
+            editEndDay: moment(this.props.data.end_day),
         }
         this.handleChangeEdit = this.handleChangeEdit.bind(this);
         this.handleAdditionEdit = this.handleAdditionEdit.bind(this);
         this.editTask = this.editTask.bind(this);
         this.deleteTask = this.deleteTask.bind(this);
+        this.handleDateChange = this.handleDateChange.bind(this);
     }
 
     formatDate(dateValue) {
@@ -85,6 +93,13 @@ class TaskItem extends React.Component {
         });
     }
 
+    handleDateChange(type, date) {
+        console.log(date, type);
+        this.setState({
+			[type]: date
+        });
+    }
+
     handleAdditionEdit(e, { name, value }) {
         console.log(name, value);
         let mapName = {
@@ -104,7 +119,9 @@ class TaskItem extends React.Component {
             editLabels: this.props.data.labels,
             labelOptions: this.formatDropdownValue(this.props.data.labels),
 			editDescription: this.props.data.description,
-			editResponsible: this.props.data.responsible_user.map(user => user._id)
+            editResponsible: this.props.data.responsible_user.map(user => user._id),
+            editStartDay: moment(this.props.data.start_day),
+            editEndDay: moment(this.props.data.end_day),
         });
 	}
 	openModalEdit = () => this.setState({ openModalEdit: true })
@@ -134,8 +151,10 @@ class TaskItem extends React.Component {
             editDescription: nextProps.data.description,
             editLabels: nextProps.data.labels,
             labelOptions: this.formatDropdownValue(nextProps.data.labels),
-			editResponsible: nextProps.data.responsible_user.map(user => user._id)
-        })
+            editResponsible: nextProps.data.responsible_user.map(user => user._id),
+            editStartDay: moment(nextProps.data.start_day),
+            editEndDay: moment(nextProps.data.end_day),
+        });
     }
 
     render() {
@@ -151,7 +170,7 @@ class TaskItem extends React.Component {
             <div style={{position: 'relative'}}>
                 <Dropdown style={{position: 'absolute', top: -3, right: -5}} trigger={<Icon size='large' name="ellipsis vertical" />} icon={null}>
                     <Dropdown.Menu>
-                        <Modal trigger={< Dropdown.Item text = 'Detail' />} size='mini' closeIcon>
+                        <Modal trigger={<Dropdown.Item icon='info circle' text = 'Detail' />} size='mini' closeIcon>
                             <Header icon='hashtag' content='Task Detail'/>
                             <Modal.Content>
                                 <Table basic='very'>
@@ -206,6 +225,22 @@ class TaskItem extends React.Component {
                                         </Table.Row>
                                         <Table.Row>
                                             <Table.Cell>
+                                                <h4>Start Day</h4>
+                                            </Table.Cell>
+                                            <Table.Cell>
+                                                {this.formatDate(this.props.data.start_day)}
+                                            </Table.Cell>
+                                        </Table.Row>
+                                        <Table.Row>
+                                            <Table.Cell>
+                                                <h4>End Day</h4>
+                                            </Table.Cell>
+                                            <Table.Cell>
+                                                {this.formatDate(this.props.data.end_day)}
+                                            </Table.Cell>
+                                        </Table.Row>
+                                        <Table.Row>
+                                            <Table.Cell>
                                                 <h4>Created by</h4>
                                             </Table.Cell>
                                             <Table.Cell>
@@ -250,7 +285,7 @@ class TaskItem extends React.Component {
                                 </Table>
                             </Modal.Content>
                         </Modal>
-                        <Modal open={openModalEdit} onClose={this.closeModalEdit} trigger={<Dropdown.Item onClick={this.openModalEdit} text = 'Edit' />} size='mini' closeIcon>
+                        <Modal open={openModalEdit} onClose={this.closeModalEdit} trigger={<Dropdown.Item icon='edit' onClick={this.openModalEdit} text = 'Edit' />} size='mini' closeIcon>
                             <Header icon='hashtag' content='Edit Task'/>
                             <Modal.Content>
                                 <Form onSubmit={this.editTask}>
@@ -265,6 +300,22 @@ class TaskItem extends React.Component {
                                     </Form.Field>
                                     <Form.Field>
                                         <Form.TextArea label="Description" placeholder='Description' name='editDescription' value={this.state.editDescription} onChange={this.handleChangeEdit} required />
+                                    </Form.Field>
+                                    <Form.Field className="required">
+                                        <label>Start Day</label>
+                                        <DatePicker required selected={this.state.editStartDay}
+                                            name='editStartDay'
+                                            dateFormat="DD/MM/YYYY"
+                                            onChange={this.handleDateChange.bind(this, 'editStartDay')}
+                                        />
+                                    </Form.Field>
+                                    <Form.Field className="required">
+                                        <label>End Day</label>
+                                        <DatePicker required selected={this.state.editEndDay}
+                                            name='editEndDay'
+                                            dateFormat="DD/MM/YYYY"
+                                            onChange={this.handleDateChange.bind(this, 'editEndDay')}
+                                        />
                                     </Form.Field>
                                     <Form.Field>
                                         <label>Labels</label>
@@ -296,7 +347,7 @@ class TaskItem extends React.Component {
                                 </Form>
                             </Modal.Content>
                         </Modal>
-                        <Modal open={openModalDelete} onClose={this.closeModalDelete} trigger={<Dropdown.Item onClick={this.openModalDelete} text = 'Delete' />} size='mini' closeIcon>
+                        <Modal open={openModalDelete} onClose={this.closeModalDelete} trigger={<Dropdown.Item icon='trash outline' onClick={this.openModalDelete} text = 'Delete' />} size='mini' closeIcon>
                             <Header icon='hashtag' content='Delete Task'/>
                             <Modal.Content>
                                 <h4>Are you sure to delete this task ?</h4>
@@ -312,7 +363,7 @@ class TaskItem extends React.Component {
                                 </Button>
                             </Modal.Actions>
                         </Modal>
-                        <Modal open={openModalEditor} onClose={this.closeModalEditor} trigger={<Dropdown.Item onClick={this.openModalEditor} text = 'Editor' />} size='fullscreen' closeIcon>
+                        <Modal open={openModalEditor} onClose={this.closeModalEditor} trigger={<Dropdown.Item icon='code' onClick={this.openModalEditor} text = 'Editor' />} size='fullscreen' closeIcon>
                             <Header icon='hashtag' content='Editor'/>
                             <Modal.Content>
                                 <ModalTaskEditor taskID={this.props.data._id} />

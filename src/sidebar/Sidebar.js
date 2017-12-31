@@ -14,7 +14,7 @@ import {
 } from 'semantic-ui-react';
 import auth from '../utils/auth';
 import ModalCompanyInfo from './ModalCompanyInfo';
-
+import _ from 'lodash';
 import {changeVisible} from './SidebarActions';
 import Dashboard from '../dashboard/Dashboard';
 import Project from '../project/Project';
@@ -65,17 +65,20 @@ class SideBar extends React.Component {
             if(response.success) {
                 this.setState({
                     company: response.user.current_company,
-                    projects: response.user.belong_project
+                    projects: [...this.state.projects, ...response.user.belong_project]
                 });
             } else {
                 auth.logout();
                 this.props.history.push('/');
             }
         });
-        // console.log(this.props)
-        // this.setState({
-        //     projects: this.props.profileUser.profile.belong_project
-        // })
+        project.getProjectBelongUser().then(response => {
+            if(response.success) {
+                this.setState({
+                    projects: [...this.state.projects, ...response.projects]
+                });
+            }
+        });
     }    
 
     componentWillReceiveProps(nextProps) {
@@ -98,7 +101,8 @@ class SideBar extends React.Component {
     }
 
     render() {
-        const {activeItem} = this.state;
+        const { activeItem } = this.state;
+        const projects = _.uniqBy(this.state.projects, '_id');
         var trigger = (
             <Header style={{color: 'white', marginBottom: 0}} as='h1'> 
                 <Image centered circular='true' size={'small'} style={{borderRadius: '50%'}} src={this.state.company.image} />
@@ -148,7 +152,7 @@ class SideBar extends React.Component {
                         </Menu.Header>
 
                         <Menu.Menu>
-                            {this.state.projects.map(project => (
+                            {projects.map(project => (
                                 <Menu.Item 
                                     key={project._id}
                                     style={{fontSize: 15}}
@@ -167,7 +171,7 @@ class SideBar extends React.Component {
                         </Menu.Header>
 
                         <Menu.Menu>
-                            {this.state.projects.map(project => (
+                            {projects.map(project => (
                                 <Menu.Item 
                                     key={project._id}
                                     style={{fontSize: 15}}

@@ -39,7 +39,7 @@ class Activity extends React.Component {
         axios.get('/api/activities/projects/' + this.props.match.params.project, {headers: { 'x-access-token': localStorage.token } })
             .then(response => {
                 console.log(response);
-                if(response.success) {
+                if(response.data.success) {
                     this.setState({
                         activitiesLog: response.data.activities,
                         offset: this.state.offset + 30,

@@ -7,6 +7,9 @@ import ModalAddTask from './ModalAddTask';
 import {connect} from 'react-redux';
 import axios from 'axios';
 
+import moment from 'moment';
+import 'moment-duration-format';
+
 // fake data generator
 const getItems = count =>
   Array.from({ length: count }, (v, k) => k).map(k => ({
@@ -323,7 +326,7 @@ class Project extends React.Component {
 				activeLoading: true
 			});
 			this.props.socket.emit('Task:joinRoom', nextProps.match.url);
-			axios.get('/api/projects/' + nextProps.match.params.project, {headers: { 'x-access-token': localStorage.token } })
+			axios.get('/api/projects/project_name/' + nextProps.match.params.project, {headers: { 'x-access-token': localStorage.token } })
 				.then(response => {
 					this.setState({
 						columns: formatTasks(response.data.project.tasks),
@@ -342,7 +345,7 @@ class Project extends React.Component {
 	componentWillMount() {
 		console.log(this.props);
 		this.props.socket.emit('Task:joinRoom', this.props.match.url);
-		axios.get('/api/projects/' + this.props.match.params.project, {headers: { 'x-access-token': localStorage.token } })
+		axios.get('/api/projects/project_name/' + this.props.match.params.project, {headers: { 'x-access-token': localStorage.token } })
 			.then(response => {
 				console.log(response);
 				this.setState({
@@ -384,6 +387,8 @@ class Project extends React.Component {
 			labels: task.addLabels,
 			description: task.addDescription,
 			responsible_user: task.addResponsible,
+			start_day: task.addStartDay,
+			end_day: task.addStartDay,
 			belong_project: this.state.currentProject._id,
 			created_by: this.props.profileUser.profile._id
 		});

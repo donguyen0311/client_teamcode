@@ -57,7 +57,7 @@ require('codemirror/mode/meta.js');
 function requireAll(requireContext) {
     return requireContext.keys().map(requireContext);
 }
-requireAll(require.context("codemirror/mode", true, /^\.\/.*\.js$/))
+requireAll(require.context("codemirror/mode", true, /^\.\/.*\.js$/));
 
 let optionsDropdown = [
     {
@@ -123,10 +123,6 @@ let mapLanguage = {
 class CodemirrorEditor extends React.Component {
     constructor(props) {
         super(props);
-        // this.state = {
-        //     code: this.props.code,
-        //     mode: this.props.mode
-        // };
         this.options = {
             lineNumbers: true,
             lineWrapping: true,
@@ -156,21 +152,15 @@ class CodemirrorEditor extends React.Component {
         this.handleChangeModeCodemirror = this.handleChangeModeCodemirror.bind(this);
     }
     updateCode(newCode) {
-        //this.setState({code: newCode});
         this.props.changeTaskEditorCode(this.props.taskID, newCode, this.props.modeInit);
-        // this.props.receiveCode(newCode, this.props.mode);
     }
     componentDidMount() {
-        // console.log(this.props.modeInit);
-        // let code = this.props.data[this.props.taskID][this.props.modeInit].code ? this.props.data[this.props.taskID][this.props.modeInit].code : '';
-        // let mode = this.props.data[this.props.taskID][this.props.modeInit].mode ? this.props.data[this.props.taskID][this.props.modeInit].mode : mapLanguage[this.props.modeInit];
-        // this.props.changeTaskEditorCode(this.props.taskID, code, this.props.modeInit);
-        // let codemirror = this.refs.CodeMirror.getCodeMirror();
-        // let codeMirrorInstance = this.refs.CodeMirror.getCodeMirrorInstance();
-        // this.handleChangeModeCodemirror(mode, codemirror, codeMirrorInstance);
+        let mode = this.props.data[this.props.taskID][this.props.modeInit].mode ? this.props.data[this.props.taskID][this.props.modeInit].mode : mapLanguage[this.props.modeInit];
+        let codemirror = this.refs.CodeMirror.getCodeMirror();
+        let codeMirrorInstance = this.refs.CodeMirror.getCodeMirrorInstance();
+        this.handleChangeModeCodemirror(mode, codemirror, codeMirrorInstance);
     }
     handleChangeDropdown(e, {name, value}) {
-        //console.log(name, value);
         let codemirror = this.refs.CodeMirror.getCodeMirror();
         let codeMirrorInstance = this.refs.CodeMirror.getCodeMirrorInstance();
         this.handleChangeModeCodemirror(value, codemirror, codeMirrorInstance);
@@ -192,31 +182,23 @@ class CodemirrorEditor extends React.Component {
         } else {
             mode = spec = val;
         }
-        if (mode) {
-            // console.log(codeMirrorValue, mode, spec);
-            //this.setState({ mode: mode });
+        if (mode) {    
             this.props.changeTaskEditorMode(this.props.taskID, spec, this.props.modeInit);
-            // this.props.receiveMode(spec, this.props.mode);
-
             if(Array.isArray(spec)) {
                 codeMirrorValue.setOption("mode", spec[0]);
-            }
-            else {
+            } else {
                 codeMirrorValue.setOption("mode", spec);
             }
             CodeMirror.autoLoadMode(codeMirrorValue, mode);
-        }
-        else {
+        } else {
             console.log("Could not find a mode corresponding to " + val);
         }
     }
     render() {
-        console.log(this.props.data[this.props.taskID][this.props.modeInit].code);
-        console.log(this.props.data[this.props.taskID][this.props.modeInit].mode);
-        let code = this.props.data[this.props.taskID][this.props.modeInit].code;
-        let mode = this.props.data[this.props.taskID][this.props.modeInit].mode;
+        const code = this.props.data[this.props.taskID][this.props.modeInit].code;
+        const mode = this.props.data[this.props.taskID][this.props.modeInit].mode;
         return (
-            <div>
+            <div key={1}>
                 <CodeMirror
                     className='codemirror'
                     ref="CodeMirror"

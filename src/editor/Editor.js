@@ -1,5 +1,5 @@
 import React from 'react';
-import {Grid, Tab} from 'semantic-ui-react';
+import {Grid, Tab, Dimmer, Loader} from 'semantic-ui-react';
 import CodeMirrorEditor from './CodemirrorEditor';
 import LiveCode from './LiveCode';
 import {connect} from 'react-redux';
@@ -9,18 +9,13 @@ import axios from 'axios';
 class Editor extends React.Component {
     constructor(props) {
         super(props);
-        // this.state = {
-        //     modehtml: 'htmlmixed',
-        //     modecss: 'text/css',
-        //     modejs: 'text/javascript',
-        //     codehtml: '',
-        //     codecss: '',
-        //     codejs: ''
-        // }
+        this.state = {
+            loading: true
+        }
         // this.receiveMode = this.receiveMode.bind(this);
         // this.receiveCode = this.receiveCode.bind(this);
         this.getTaskInfo = this.getTaskInfo.bind(this);
-        this.props.initTaskEditorCode(this.props.taskID, {html:{}, css:{}, js:{}});
+        //this.props.initTaskEditorCode(this.props.taskID, {html:{}, css:{}, js:{}});
         
     }
     async getTaskInfo() {
@@ -28,7 +23,12 @@ class Editor extends React.Component {
         if(response.data.success) {
             var editor = response.data.task.editor;
             this.props.initTaskEditorCode(this.props.taskID, editor);
-        }      
+        } else {
+            this.props.initTaskEditorCode(this.props.taskID, {html:{}, css:{}, js:{}});
+        }  
+        this.setState({
+            loading: false
+        });    
     }
     componentWillMount() {
         this.getTaskInfo();
@@ -75,17 +75,17 @@ class Editor extends React.Component {
             <Grid columns={2} divided>
                 <Grid.Row>
                     <Grid.Column>
-                        <Tab panes={panes} />
+                        {this.state.loading ? (
+                            <Dimmer active={true} inverted>
+                                <Loader inverted>Loading</Loader>
+                            </Dimmer>
+                        ) : (
+                            <Tab panes={panes} />
+                        )}
                     </Grid.Column>
                     <Grid.Column>
                         <LiveCode
-                            taskID={this.props.taskID}
-                            // modehtml={this.state.modehtml} 
-                            // modecss={this.state.modecss}
-                            // modejs={this.state.modejs}
-                            // codehtml={this.state.codehtml}
-                            // codecss={this.state.codecss}
-                            // codejs={this.state.codejs}  
+                            taskID={this.props.taskID} 
                         />
                     </Grid.Column>
                 </Grid.Row>  

@@ -29,13 +29,13 @@ class ModalWarningUsers extends React.Component {
     }
 
     componentDidMount() {
-        project
-            .getUserReplace(this.state.warningUser, this.state.project._id)
-            .then((response) => {
-                if(response.success) {
+        // project
+        //     .getUserReplace(this.state.warningUser, this.state.project._id)
+        //     .then((response) => {
+        //         if(response.success) {
 
-                }
-            });
+        //         }
+        //     });
     }
 
     render() {

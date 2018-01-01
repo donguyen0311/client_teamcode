@@ -24,7 +24,7 @@ var project = {
             });
     },
     getProjectBelongUser() {
-        return axios .get('/api/projects/', {
+        return axios.get('/api/projects/', {
                 headers: {
                     'x-access-token': localStorage.token
                 }
@@ -35,6 +35,19 @@ var project = {
             .catch(error => {
                 console.log(error);
             });
+    },
+    getUserReplace(users, projectID) {
+        return axios.post('/api/users/user_replace/', {users, projectID}, {
+            headers: {
+                'x-access-token': localStorage.token
+            }
+        })
+        .then(response => {
+            return response.data;
+        })
+        .catch(error => {
+            console.log(error);
+        });
     }
 }
 

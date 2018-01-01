@@ -1,6 +1,6 @@
 import React from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { Label, Dimmer, Loader } from 'semantic-ui-react';
+import { Label, Dimmer, Loader, Card, Icon, Menu, Button } from 'semantic-ui-react';
 import styled, { injectGlobal } from 'styled-components';
 import TaskItem from './TaskItem';
 import ModalAddTask from './ModalAddTask';
@@ -9,6 +9,9 @@ import axios from 'axios';
 
 import moment from 'moment';
 import 'moment-duration-format';
+
+import ModalManageUsers from './ModalManageUsers';
+import ModalWarningUsers from './ModalWarningUsers';
 
 // fake data generator
 const getItems = count =>
@@ -263,7 +266,8 @@ class Project extends React.Component {
 			activeLoading: true,
 			columns: {TODO: [], INPROGRESS: [], CODEREVIEW: [], DONE: []},
 			// autoFocusQuoteId: ''
-			currentProject: ''
+			currentProject: '',
+			users: []
 		};
 		this.formatResponsibleUser = this.formatResponsibleUser.bind(this);
 		this.addTask = this.addTask.bind(this);
@@ -328,9 +332,11 @@ class Project extends React.Component {
 			this.props.socket.emit('Task:joinRoom', nextProps.match.url);
 			axios.get('/api/projects/project_name/' + nextProps.match.params.project, {headers: { 'x-access-token': localStorage.token } })
 				.then(response => {
+					console.log(response);
 					this.setState({
 						columns: formatTasks(response.data.project.tasks),
 						currentProject: response.data.project,
+						users: response.data.project.users,
 						activeLoading: false
 					});
 				})
@@ -351,6 +357,7 @@ class Project extends React.Component {
 				this.setState({
 					columns: formatTasks(response.data.project.tasks),
 					currentProject: response.data.project,
+					users: response.data.project.users,
 					activeLoading: false
 				});
 			})
@@ -439,11 +446,19 @@ class Project extends React.Component {
 
   	render() {
 		console.log(this.state.activeLoading);
+		const currentUserId = this.props.profileUser.profile._id;
+		const projectOwnerId = this.state.currentProject ? this.state.currentProject.created_by._id : '';
 		return (
 			<div style={{width: '100%', height: 'calc(100vh - 59px)', overflow: 'auto', marginTop: '-1rem'}}>
 				<Dimmer active={this.state.activeLoading} inverted>
 					<Loader inverted>Loading</Loader>
-				</Dimmer>		
+				</Dimmer>
+				{currentUserId === projectOwnerId ? (
+					<Button.Group basic size='large' style={{marginTop: 15, marginLeft: 15}}>
+						<ModalManageUsers project={this.state.currentProject} users={this.state.users} />
+						<ModalWarningUsers project={this.state.currentProject} users={this.state.users} />
+					</Button.Group>
+				) : ''}
 				<div style={{ width: 1330 }}>
 				<DragDropContext 
 					onDragEnd={this.onDragEnd}
@@ -474,12 +489,12 @@ class Project extends React.Component {
 											{this.state.columns['TODO'].map(task => (
 												<Draggable type="TASK" key={task._id} draggableId={task._id} >
 													{(provided, snapshot) => (
-														<div>														
+														<div>													
 															<div
 																ref={provided.innerRef}
 																style={ContainerItemStyle(provided.draggableStyle, snapshot.isDragging, 'todo')}
 																{...provided.dragHandleProps}
-															>	
+															>
 																<TaskItem 
 																	data={task} 
 																	editTask={this.editTask} 

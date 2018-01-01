@@ -224,7 +224,7 @@ class ModalEditUserSkills extends React.Component {
                 <Modal.Header>
                     <Header size='small' icon='hashtag' content='View & Edit User Skills'/>
                 </Modal.Header>
-                <Modal.Content image>
+                <Modal.Content image scrolling>
                     {this.state.stateView ? 
                         [
                             <Image key={'avatar_profile'} wrapped size='medium' src={this.props.user.image} />,

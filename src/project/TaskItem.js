@@ -420,7 +420,8 @@ class TaskItem extends React.Component {
                 </Container>
                 <Divider fitted />
                 <div style={{marginTop: 5}}>
-                    <Label circular size='mini' color='red' title={this.props.data.level}>{this.props.data.level}</Label>
+                    <Label circular size='mini' color='blue' title={this.props.data.level}>{this.props.data.level}</Label>
+                    {new Date() > new Date(this.props.data.end_day) ? (<Label circular size='mini' color='red' title='Out of date'>Out of date</Label>) : ''}
                     {this.props.data.labels.map(label => (
                         <Label key={label} size='mini' basic title={label} >{label}</Label>
                     ))}

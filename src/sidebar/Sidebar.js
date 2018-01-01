@@ -127,7 +127,7 @@ class SideBar extends React.Component {
                                     <Modal.Header>
                                         <Header size='small' icon='hashtag' content='Company Infomation'/>
                                     </Modal.Header>
-                                    <Modal.Content image>
+                                    <Modal.Content image scrolling>
                                         <ModalCompanyInfo company={this.state.company} />
                                     </Modal.Content>
                                 </Modal>

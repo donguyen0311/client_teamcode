@@ -41,7 +41,7 @@ class NavBar extends React.Component {
                                 <Modal.Header>
                                     <Header size='small' icon='hashtag' content='Profile'/>
                                 </Modal.Header>
-                                <Modal.Content image>
+                                <Modal.Content image scrolling>
                                     <Profile />
                                 </Modal.Content>
                             </Modal>

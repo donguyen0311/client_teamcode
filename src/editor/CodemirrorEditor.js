@@ -155,7 +155,7 @@ class CodemirrorEditor extends React.Component {
         this.props.changeTaskEditorCode(this.props.taskID, newCode, this.props.modeInit);
     }
     componentDidMount() {
-        let mode = this.props.data[this.props.taskID][this.props.modeInit].mode ? this.props.data[this.props.taskID][this.props.modeInit].mode : mapLanguage[this.props.modeInit];
+        let mode = this.props.data[this.props.taskID][this.props.modeInit] ? this.props.data[this.props.taskID][this.props.modeInit].mode : mapLanguage[this.props.modeInit];
         let codemirror = this.refs.CodeMirror.getCodeMirror();
         let codeMirrorInstance = this.refs.CodeMirror.getCodeMirrorInstance();
         this.handleChangeModeCodemirror(mode, codemirror, codeMirrorInstance);
@@ -195,22 +195,21 @@ class CodemirrorEditor extends React.Component {
         }
     }
     render() {
-        const code = this.props.data[this.props.taskID][this.props.modeInit].code;
-        const mode = this.props.data[this.props.taskID][this.props.modeInit].mode;
+        const modeInit = this.props.data[this.props.taskID][this.props.modeInit];
         return (
             <div key={1}>
                 <CodeMirror
                     className='codemirror'
                     ref="CodeMirror"
                     autoFocus={true}
-                    value={code}
+                    value={modeInit ? modeInit.code : ''}
                     onChange={this.updateCode}
                     options={this.options}/>
                 <Menu attached={'bottom'}>
                     <Menu.Menu position='right'>
                         <Dropdown
                             placeholder='Select language'
-                            defaultValue={mode ? mode : mapLanguage[this.props.modeInit]}
+                            defaultValue={modeInit ? modeInit.mode : mapLanguage[this.props.modeInit]}
                             upward
                             className='link item'
                             options={optionsDropdown}

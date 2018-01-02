@@ -7,12 +7,17 @@ class Room extends EventEmitter {
     constructor(socket) {
         super();
         this.iceConfig = {
-            'iceServers': [{
-                    'url': 'stun:stun.l.google.com:19302'
-                },
+            "iceServers": [
                 {
-                    'url': "turn:webrtc%40live.com@numb.viagenie.ca",
-                    'credential': "muazkh"
+                    'urls': [
+                        'turn:webrtcweb.com:7788', // coTURN 7788+8877
+                        'turn:webrtcweb.com:4455', // restund udp
+                        'turn:webrtcweb.com:5544' // restund tcp
+                    ],
+                    'username': 'muazkh',
+                    'credential': 'muazkh'
+                }, {
+                    'urls': ['stun:stun.l.google.com:19302']
                 }
             ]
         };
@@ -67,7 +72,7 @@ class Room extends EventEmitter {
         };
         pc.onaddstream = (evnt) => {
             console.log('Received new stream');
-            Room.trigger('peer.stream', [
+            this.trigger('peer.stream', [
                 {
                     id: id,
                     stream: evnt.stream
@@ -138,7 +143,7 @@ class Room extends EventEmitter {
             this.makeOffer(params.id);
         });
         socket.on('peer.disconnected', (data) => {
-            Room.trigger('peer.disconnected', [data]);
+            this.trigger('peer.disconnected', [data]);
         });
         socket.on('msg', (data) => {
             this.handleMessage(data);
@@ -153,7 +158,7 @@ class Meeting extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            room: this.props.match.params.project,
+            room: this.props.match.params.project || 'demo',
             peers: [],
             stream: '',
             error: ''

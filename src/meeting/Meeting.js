@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 const EventEmitter = require('wolfy87-eventemitter');
 //var ee = new EventEmitter();
 
+
 class Room extends EventEmitter {
     constructor(socket) {
         super();
@@ -163,6 +164,7 @@ class Meeting extends React.Component {
             stream: '',
             error: ''
         }
+        window.room.joinRoom('demoxx');
         this.Room = new Room(this.props.socket);
         this.Init();
     }

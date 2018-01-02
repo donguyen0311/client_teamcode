@@ -106,7 +106,7 @@ class Room extends EventEmitter {
             case 'sdp-offer':
                 pc.setRemoteDescription(new RTCSessionDescription(data.sdp), () => {
                     console.log('Setting remote description by offer');
-                    pc.createAnswer(function (sdp) {
+                    pc.createAnswer((sdp) => {
                         pc.setLocalDescription(sdp);
                         this.socket.emit('msg', {
                             by: this.currentId,
@@ -167,10 +167,10 @@ class Meeting extends React.Component {
             navigator.getUserMedia({
                 video: true,
                 audio: true
-            }, function (s) {
+            }, (s) => {
                 var stream = s;
                 resolve(stream);
-            }, function (e) {
+            }, (e) => {
                 reject(e);
             });
         });
@@ -191,9 +191,9 @@ class Meeting extends React.Component {
             this.setState({
                 stream: stream
             });
-            Room.createOrJoinRoom(this.state.room);
+            this.Room.createOrJoinRoom(this.state.room);
 
-            Room.on('peer.stream', function (peer) {
+            this.Room.on('peer.stream', (peer) => {
                 console.log('Client connected, adding new stream');
                 this.setState({
                     peers: [
@@ -205,9 +205,9 @@ class Meeting extends React.Component {
                     ]
                 });
             });
-            Room.on('peer.disconnected', function (peer) {
+            this.Room.on('peer.disconnected', (peer) => {
                 console.log('Client disconnected, removing stream');
-                var peers = this.state.peers.filter(function (p) {
+                var peers = this.state.peers.filter((p) => {
                     return p.id !== peer.id;
                 });
                 this.setState({

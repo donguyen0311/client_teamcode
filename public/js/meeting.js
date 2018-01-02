@@ -54,14 +54,17 @@ window.meeting = function (socketioHost) {
         
         // Open up a default communication channel
         initDefaultChannel();
-
+        
         if (_room !== '') {
             console.log('Create or join room', _room);
             _defaultChannel.emit('create or join', {room:_room, from:_myID});
         }
 
         // Open up a private communication channel
-        initPrivateChannel();
+        setTimeout(() => {
+            initPrivateChannel();
+        }, 100)
+        
 
         // Get local media data
         getUserMedia(_constraints, handleUserMedia, handleUserMediaError);
@@ -182,7 +185,7 @@ window.meeting = function (socketioHost) {
     
     function initDefaultChannel() {
         _defaultChannel = openSignalingChannel('');
-        
+        console.log(_defaultChannel)
         _defaultChannel.on('created', function (room){
           console.log('Created room ' + room);
           _isInitiator = true;
@@ -231,9 +234,10 @@ window.meeting = function (socketioHost) {
     function initPrivateChannel() {
         // Open a private channel (namespace = _myID) to receive offers
         _privateAnswerChannel = openSignalingChannel(_myID);
-
+        console.log(_privateAnswerChannel);
         // Wait for offers or ice candidates
         _privateAnswerChannel.on('message', function (message){
+            console.log('messsssssssss', message);
             if (message.dest===_myID) {
                 if(message.type === 'offer') {
                     var to = message.from;
@@ -348,6 +352,7 @@ window.meeting = function (socketioHost) {
 		_sendChannel[participantId].onclose = handleSendChannelStateChange(participantId);
 
         var onSuccess = function(participantId) {
+            console.log('participantId==============', _offerChannels)
             return function(sessionDescription) {
                 var channel = _offerChannels[participantId];
 
@@ -355,7 +360,7 @@ window.meeting = function (socketioHost) {
                 sessionDescription.sdp = preferOpus(sessionDescription.sdp);
 
                 _opc[participantId].setLocalDescription(sessionDescription, setLocalDescriptionSuccess, setLocalDescriptionError);  
-                console.log('Sending offer to channel '+ channel.name);
+                console.log('Sending offer to channel '+ channel.nsp);
                 channel.emit('message', {snDescription: sessionDescription, from:_myID, type:'offer', dest:participantId});        
             }
         }
@@ -375,12 +380,12 @@ window.meeting = function (socketioHost) {
 		_apc[to].ondatachannel = gotReceiveChannel(to);
 		
         var onSuccess = function(channel) {
-            return function(sessionDescription) {87
+            return function(sessionDescription) {
                 // Set Opus as the preferred codec in SDP if Opus is present.
                 sessionDescription.sdp = preferOpus(sessionDescription.sdp);
 
                 _apc[to].setLocalDescription(sessionDescription, setLocalDescriptionSuccess, setLocalDescriptionError); 
-                console.log('Sending answer to channel '+ channel.name);
+                console.log('Sending answer to channel '+ channel.nsp);
                 channel.emit('message', {snDescription:sessionDescription, from:_myID,  type:'answer', dest:to});
             }
         }

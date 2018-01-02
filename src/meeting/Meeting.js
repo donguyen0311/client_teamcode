@@ -165,8 +165,37 @@ class Meeting extends React.Component {
             error: ''
         }
         window.room.joinRoom('demoxx');
-        this.Room = new Room(this.props.socket);
-        this.Init();
+        window.room.onLocalVideo((s) => {
+            console.log(stream);
+            var stream = URL.createObjectURL(s);
+            this.setState({
+                stream: stream
+            })
+        });
+        window.room.onRemoteVideo((stream, participantID) => {
+            this.setState({
+                peers: [
+                    ...this.state.peers, 
+                    {
+                        id: participantID,
+                        stream: URL.createObjectURL(stream)
+                    }
+                ]
+            });
+            console.log('onRemoteVideo: ====', stream, participantID);
+        });
+        window.room.onParticipantHangup((participantID) => {
+            var peers = this.state.peers.filter((p) => {
+                return p.id !== participantID;
+            });
+            this.setState({
+                peers: peers
+            })
+            console.log(participantID);
+        });
+
+        //this.Room = new Room(this.props.socket);
+        //this.Init();
     }
 
     VideoStream() {
@@ -229,10 +258,10 @@ class Meeting extends React.Component {
     }
 
     render() {
-        console.log(this.state.error);
+        console.log(this.state);
         return (
             <div>
-                <video src={this.state.stream} autoPlay></video>
+                <video src={this.state.stream} autoPlay muted></video>
                 {this.state.peers.map((peer) => (
                     <video key={peer.id} src={peer.stream} autoPlay></video>
                 ))}

@@ -36,7 +36,7 @@ window.meeting = function (socketioHost) {
     var _onChatNotReadyCallback;
     var _onParticipantHangupCallback;
     var _host = socketioHost;
-    
+    var _stateUnmountCallback;
     ////////////////////////////////////////////////
     // PUBLIC FUNCTIONS
     ////////////////////////////////////////////////
@@ -57,21 +57,43 @@ window.meeting = function (socketioHost) {
         
         if (_room !== '') {
             console.log('Create or join room', _room);
-            _defaultChannel.emit('create or join', {room:_room, from:_myID});
+            _defaultChannel.emit('create or join', {room:_room, from:_myID}, function(data) {
+                if(data.success) {
+                    // Open up a private communication channel
+                    initPrivateChannel();
+                    // Get local media data
+                    getUserMedia(_constraints, handleUserMedia, handleUserMediaError);
+                }
+            });
         }
-
-        // Open up a private communication channel
-        setTimeout(() => {
-            initPrivateChannel();
-        }, 100)
-        
-
-        // Get local media data
-        getUserMedia(_constraints, handleUserMedia, handleUserMediaError);
 
         window.onbeforeunload = function(e){
             _defaultChannel.emit('message',{type: 'bye', from:_myID});
         }
+        _stateUnmountCallback = function(){
+            _defaultChannel.emit('message',{type: 'bye', from:_myID});
+            console.log(_defaultChannel);
+            console.log(_privateAnswerChannel)
+            console.log('unmount===============================')
+            console.log(_offerChannels);
+            console.log('========================')
+            if (_defaultChannel.disconnected === false) {
+                _defaultChannel.disconnect();
+            }
+            if (_privateAnswerChannel.disconnected === false) {
+                _privateAnswerChannel.disconnect();
+            }
+            for(let partID in _offerChannels) {
+                if(_offerChannels[partID].disconnected === false) {
+                    _offerChannels[partID].disconnect();
+                } 
+            }
+        }
+    }
+
+    //Unmount meeting component
+    function stateUnmount() {
+        _stateUnmountCallback();
     }
     
     
@@ -638,6 +660,7 @@ window.meeting = function (socketioHost) {
     exports.onChatMessage       =       onChatMessage;
     exports.sendChatMessage     =       sendChatMessage;
     exports.onParticipantHangup =		onParticipantHangup;
+    exports.stateUnmount      =         stateUnmount;
     return exports;
     
 };

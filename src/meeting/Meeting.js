@@ -1,280 +1,136 @@
 import React from 'react';
 import {connect} from 'react-redux';
-const EventEmitter = require('wolfy87-eventemitter');
-//var ee = new EventEmitter();
-
-
-class Room extends EventEmitter {
-    constructor(socket) {
-        super();
-        this.iceConfig = {
-            "iceServers": [
-                {
-                    'urls': [
-                        'turn:webrtcweb.com:7788', // coTURN 7788+8877
-                        'turn:webrtcweb.com:4455', // restund udp
-                        'turn:webrtcweb.com:5544' // restund tcp
-                    ],
-                    'username': 'muazkh',
-                    'credential': 'muazkh'
-                }, {
-                    'urls': ['stun:stun.l.google.com:19302']
-                }
-            ]
-        };
-        this.socket = socket;
-        this.peerConnections = {};
-        this.currentId = '';
-        this.roomId = '';
-        this.stream = '';
-        this.connected = false;
-        this.addHandlers(this.socket);
-    }
-
-    joinRoom(r) {
-        if(!this.connected) {
-            this.socket.emit('init', {room: r}, (roomid, id) => {
-                this.currentId = id;
-                this.roomId = roomid;
-            });
-            this.connected = true;
-        }
-    }
-
-    createOrJoinRoom(r) {
-        return new Promise((resolve) => {
-            this.socket.emit('init', {room: r}, (roomid, id) => {
-                resolve(roomid);
-                this.roomId = roomid;
-                this.currentId = id;
-                this.connected = true;
-            });
-        });
-    }
-
-    init(s) {
-        this.stream = s;
-    }
-
-    getPeerConnection(id) {
-        if (this.peerConnections[id]) {
-            return this.peerConnections[id];
-        }
-        var pc = new RTCPeerConnection(this.iceConfig);
-        this.peerConnections[id] = pc;
-        pc.addStream(this.stream);
-        pc.onicecandidate = (evnt) => {
-            this.socket.emit('msg', {
-                by: this.currentId,
-                to: id,
-                ice: evnt.candidate,
-                type: 'ice'
-            });
-        };
-        pc.onaddstream = (evnt) => {
-            console.log('Received new stream');
-            this.trigger('peer.stream', [
-                {
-                    id: id,
-                    stream: evnt.stream
-                }
-            ]);
-        };
-        return pc;
-    }
-
-    makeOffer(id) {
-        var pc = this.getPeerConnection(id);
-        pc.createOffer({
-            mandatory: {
-                OfferToReceiveVideo: true,
-                OfferToReceiveAudio: true
-            }
-        }).then((sdp) => {
-            pc.setLocalDescription(sdp);
-            console.log('Creating an offer for', id);
-            this.socket.emit('msg', {
-                by: this.currentId,
-                to: id,
-                sdp: sdp,
-                type: 'sdp-offer'
-            });
-        })
-        .catch((e) => {
-            // An error occurred, so handle the failure to connect
-            console.log(e);
-        });
-    }
-
-    handleMessage(data) {
-        var pc = this.getPeerConnection(data.by);
-        switch (data.type) {
-            case 'sdp-offer':
-                pc.setRemoteDescription(new RTCSessionDescription(data.sdp), () => {
-                    console.log('Setting remote description by offer');
-                    pc.createAnswer((sdp) => {
-                        pc.setLocalDescription(sdp);
-                        this.socket.emit('msg', {
-                            by: this.currentId,
-                            to: data.by,
-                            sdp: sdp,
-                            type: 'sdp-answer'
-                        });
-                    });
-                });
-                break;
-            case 'sdp-answer':
-                pc.setRemoteDescription(new RTCSessionDescription(data.sdp), () => {
-                    console.log('Setting remote description by answer');
-                }, (e) => {
-                    console.error(e);
-                });
-                break;
-            case 'ice':
-                if (data.ice) {
-                    console.log('Adding ice candidates');
-                    pc.addIceCandidate(new RTCIceCandidate(data.ice));
-                }
-                break;
-        }
-    }
-
-    addHandlers(socket) {
-        socket.on('peer.connected', (params) => {
-            this.makeOffer(params.id);
-        });
-        socket.on('peer.disconnected', (data) => {
-            this.trigger('peer.disconnected', [data]);
-        });
-        socket.on('msg', (data) => {
-            this.handleMessage(data);
-        });
-    }
-
-}
-
-
+import { Grid } from 'semantic-ui-react';
 
 class Meeting extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            room: this.props.match.params.project || 'demo',
+            room: 'general',
             peers: [],
+            pureStream: '',
             stream: '',
-            error: ''
+            error: '',
         }
-        window.room.joinRoom('demoxx');
-        window.room.onLocalVideo((s) => {
-            console.log(stream);
+        this.room = '';
+        this.initMeeting = this.initMeeting.bind(this);
+        this.leaveMeeting = this.leaveMeeting.bind(this);
+        this.onUnload = this.onUnload.bind(this);
+    }
+
+    initMeeting(currentRoom) {
+        this.room = new window.meeting('');
+
+        this.room.onLocalVideo((s) => {
+            console.log('onLocalVideo: ', s);
             var stream = URL.createObjectURL(s);
+            console.log("stream", stream);
             this.setState({
+                pureStream: s,
                 stream: stream
             })
         });
-        window.room.onRemoteVideo((stream, participantID) => {
+        this.room.onRemoteVideo((stream, participantID) => {
             this.setState({
                 peers: [
                     ...this.state.peers, 
                     {
                         id: participantID,
-                        stream: URL.createObjectURL(stream)
+                        stream: URL.createObjectURL(stream),
+                        pureStream: stream
                     }
                 ]
             });
-            console.log('onRemoteVideo: ====', stream, participantID);
+            console.log('onRemoteVideo: ', stream, participantID);
         });
-        window.room.onParticipantHangup((participantID) => {
+        this.room.onParticipantHangup((participantID) => {
             var peers = this.state.peers.filter((p) => {
                 return p.id !== participantID;
             });
+            console.log(participantID);
+            console.log(this.state.peers);
+            console.log(peers);
             this.setState({
                 peers: peers
             })
-            console.log(participantID);
+            console.log('disconnect: ', participantID);
         });
-
-        //this.Room = new Room(this.props.socket);
-        //this.Init();
+        this.room.onChatReady(() => {
+            console.log('Chat is ready');
+        });
+        this.room.joinRoom(currentRoom);
     }
 
-    VideoStream() {
-        return new Promise((resolve, reject) => {
-            navigator.getUserMedia({
-                video: true,
-                audio: true
-            }, (s) => {
-                var stream = s;
-                resolve(stream);
-            }, (e) => {
-                reject(e);
-            });
-        });
-    }
-
-    Init() {
-        if (!window.RTCPeerConnection || !navigator.getUserMedia) {
-            this.setState({
-                error: 'WebRTC is not supported by your browser. You can try the app with Chrome and Firefox.'
-            });
-            return;
+    leaveMeeting(callback) {
+        if(this.room) {
+            this.room.stateUnmount();
+            this.room = '';
         }
-        var stream;
-        this.VideoStream().then((s) => {
-            stream = s;
-            this.Room.init(stream);
-            stream = URL.createObjectURL(stream);
-            this.setState({
-                stream: stream
+        if(this.state.pureStream) {
+            this.state.pureStream.getTracks().forEach(track => track.stop());
+        }
+        if(this.state.peers.length > 0) {
+            this.state.peers.map(peer => {
+                peer.pureStream.getTracks().forEach(track => track.stop());
             });
-            this.Room.createOrJoinRoom(this.state.room);
+        }
+        this.setState({
+            room: 'general',
+            peers: [],
+            pureStream: '',
+            stream: '',
+            error: '',
+        }, callback);
+    }
 
-            this.Room.on('peer.stream', (peer) => {
-                console.log('Client connected, adding new stream');
-                this.setState({
-                    peers: [
-                        ...this.state.peers, 
-                        {
-                            id: peer.id,
-                            stream: URL.createObjectURL(peer.stream)
-                        }
-                    ]
-                });
-            });
-            this.Room.on('peer.disconnected', (peer) => {
-                console.log('Client disconnected, removing stream');
-                var peers = this.state.peers.filter((p) => {
-                    return p.id !== peer.id;
-                });
-                this.setState({
-                    peers: peers
-                });
-            });
+    componentWillMount() {
+        console.log(this.props.match.params.project);
+        this.initMeeting(this.props.match.params.project);
+    }
 
-        }, (err) => {
-            console.log("ERROR: ", err);
-        });
+    componentWillReceiveProps(nextProps) {
+        console.log(this.props.match.params.project);
+        console.log(nextProps.match.params.project, '====================');
+        console.log(this.room, 'room------------------')
+        if(this.props.match.params.project !== nextProps.match.params.project) {
+            this.leaveMeeting(() => {
+                this.initMeeting(nextProps.match.params.project);
+            });  
+        }
+    }
 
+    onUnload(e) {
+        this.leaveMeeting();
+    }
+
+    componentDidMount() {
+        window.addEventListener('beforeunload', this.onUnload);
+    }
+
+    componentWillUnmount() {
+        console.log('unmount~~~~~~~~~');
+        this.leaveMeeting();
+        window.removeEventListener('beforeunload', this.onUnload);
     }
 
     render() {
         console.log(this.state);
         return (
-            <div>
-                <video src={this.state.stream} autoPlay muted></video>
-                {this.state.peers.map((peer) => (
-                    <video key={peer.id} src={peer.stream} autoPlay></video>
+            <div style={{width: '100%', height: 'calc(100vh - 59px)', marginTop:'-1rem'}}>
+                <video src={this.state.stream} autoPlay muted style={{width: '100%', height: 'inherit', background: '#000'}}></video>
+                {this.state.peers.map((peer, index) => (
+                    <video key={peer.id} src={peer.stream} autoPlay style={{width: '20%', position: 'absolute', bottom: 0, right: index * 200}} muted></video>
                 ))}
             </div>
         )
     }
 }
 
-const mapStateToProps = (state) => {
-    return {
-		profileUser: state.userReducer,
-		socket: state.socketReducer.socket
-	};
-}
-
-export default connect(mapStateToProps)(Meeting);
+// const mapStateToProps = (state) => {
+//     return {
+// 		profileUser: state.userReducer,
+// 		socket: state.socketReducer.socket
+// 	};
+// }
+export default Meeting;
+//export default connect(mapStateToProps)(Meeting);

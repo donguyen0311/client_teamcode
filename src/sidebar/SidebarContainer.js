@@ -27,10 +27,10 @@ class SideBarContainer extends React.Component {
                         <BlockPage />
                         {/* <Redirect from={`${this.props.match.url}/`} to={`${this.props.match.url}/dashboard`}/> */}
                         <Switch>
-                            <Route path={`${this.props.match.url}/meeting/`} component={Meeting} />
                             <Route path={`${this.props.match.url}/dashboard`} component={Dashboard} />
                             <Route path={`${this.props.match.url}/project/:project`} component={Project} />
                             <Route path={`${this.props.match.url}/activity/:project`} component={Activity} />
+                            <Route path={`${this.props.match.url}/meeting/:project`} component={Meeting} />
                         </Switch>
                     </div>
                 </Sidebar.Pusher>

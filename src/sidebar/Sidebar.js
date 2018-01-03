@@ -21,7 +21,7 @@ import Project from '../project/Project';
 import ProjectNewForm from '../project/ProjectNewForm';
 import Estimate from '../estimate/Estimate';
 import NavBar from '../app/Header';
-
+import Meeting from '../meeting/Meeting';
 import Avatar from '../user/UserAvatar';
 
 import project from '../utils/project';
@@ -179,6 +179,25 @@ class SideBar extends React.Component {
                                     active={activeItem === project.project_name + '_activity'}
                                     onClick={this.handleItemClick.bind(this, project.project_name + '_activity')}
                                     as={Link} to={`${this.props.match.url}/activity/${project.project_name}`}> 
+                                    <Icon name='rocket' style={{float: 'left', marginRight: 10}} /> {project.project_name}
+                                </Menu.Item>
+                            ))}
+                        </Menu.Menu>
+                    </Menu.Item>
+                    <Menu.Item>
+                        <Menu.Header>
+                            <div style={{display: 'inline-block', fontSize: 19}}>Meeting Room</div>
+                        </Menu.Header>
+
+                        <Menu.Menu>
+                            {projects.map(project => (
+                                <Menu.Item 
+                                    key={project._id}
+                                    style={{fontSize: 15}}
+                                    name={project.project_name + '_meeting'}
+                                    active={activeItem === project.project_name + '_meeting'}
+                                    onClick={this.handleItemClick.bind(this, project.project_name + '_meeting')}
+                                    as={Link} to={`${this.props.match.url}/meeting/${project.project_name}`}> 
                                     <Icon name='rocket' style={{float: 'left', marginRight: 10}} /> {project.project_name}
                                 </Menu.Item>
                             ))}

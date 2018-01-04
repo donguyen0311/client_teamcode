@@ -323,6 +323,12 @@ class Project extends React.Component {
 		});
 	}
 
+	getQueryParams(paramsString, param) {
+		let params = new URLSearchParams(paramsString); 
+		let value = params.get(param);
+		return value;
+	}
+
 	componentWillReceiveProps(nextProps) {
 		console.log(nextProps);
 		if (this.props.match.params.project !== nextProps.match.params.project) {
@@ -330,7 +336,8 @@ class Project extends React.Component {
 				activeLoading: true
 			});
 			this.props.socket.emit('Task:joinRoom', nextProps.match.url);
-			axios.get('/api/projects/project_name/' + nextProps.match.params.project, {headers: { 'x-access-token': localStorage.token } })
+			var projectId = this.getQueryParams(nextProps.location.search, 'id');
+			axios.get('/api/projects/' + projectId, {headers: { 'x-access-token': localStorage.token } })
 				.then(response => {
 					console.log(response);
 					this.setState({
@@ -351,7 +358,8 @@ class Project extends React.Component {
 	componentWillMount() {
 		console.log(this.props);
 		this.props.socket.emit('Task:joinRoom', this.props.match.url);
-		axios.get('/api/projects/project_name/' + this.props.match.params.project, {headers: { 'x-access-token': localStorage.token } })
+		var projectId = this.getQueryParams(this.props.location.search, 'id');
+		axios.get('/api/projects/' + projectId, {headers: { 'x-access-token': localStorage.token } })
 			.then(response => {
 				console.log(response);
 				this.setState({

@@ -159,7 +159,7 @@ class SideBar extends React.Component {
                                     name={project.project_name}
                                     active={activeItem === project.project_name}
                                     onClick={this.handleItemClick.bind(this, project.project_name)}
-                                    as={Link} to={`${this.props.match.url}/project/${project.project_name}`}> 
+                                    as={Link} to={`${this.props.match.url}/project/${project.project_name}?id=${project._id}`}> 
                                     <Icon name='rocket' style={{float: 'left', marginRight: 10}} /> {project.project_name}
                                 </Menu.Item>
                             ))}
@@ -178,7 +178,7 @@ class SideBar extends React.Component {
                                     name={project.project_name + '_activity'}
                                     active={activeItem === project.project_name + '_activity'}
                                     onClick={this.handleItemClick.bind(this, project.project_name + '_activity')}
-                                    as={Link} to={`${this.props.match.url}/activity/${project.project_name}`}> 
+                                    as={Link} to={`${this.props.match.url}/activity/${project.project_name}?id=${project._id}`}> 
                                     <Icon name='rocket' style={{float: 'left', marginRight: 10}} /> {project.project_name}
                                 </Menu.Item>
                             ))}
@@ -197,7 +197,7 @@ class SideBar extends React.Component {
                                     name={project.project_name + '_meeting'}
                                     active={activeItem === project.project_name + '_meeting'}
                                     onClick={this.handleItemClick.bind(this, project.project_name + '_meeting')}
-                                    as={Link} to={`${this.props.match.url}/meeting/${project.project_name}`}> 
+                                    as={Link} to={`${this.props.match.url}/meeting/${project.project_name}?id=${project._id}`}> 
                                     <Icon name='rocket' style={{float: 'left', marginRight: 10}} /> {project.project_name}
                                 </Menu.Item>
                             ))}

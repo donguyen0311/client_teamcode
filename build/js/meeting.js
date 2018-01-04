@@ -35,6 +35,7 @@ window.meeting = function (socketioHost) {
     var _onChatReadyCallback;
     var _onChatNotReadyCallback;
     var _onParticipantHangupCallback;
+    var _onReceiveMessageCallback;
     var _host = socketioHost;
     var _stateUnmountCallback;
     ////////////////////////////////////////////////
@@ -91,7 +92,12 @@ window.meeting = function (socketioHost) {
         }
     }
 
-    //Unmount meeting component
+    /**
+	 *
+	 * Unmount meeting component.
+	 *
+	 * 
+	 */
     function stateUnmount() {
         _stateUnmountCallback();
     }
@@ -200,6 +206,16 @@ window.meeting = function (socketioHost) {
     function onParticipantHangup(callback) {
 	    _onParticipantHangupCallback = callback;
     }
+
+    /**
+	 *
+	 * Add callback function to be called when received message chat.
+	 *
+	 * @param callback of type function(stream, participantID)
+	 */
+    function onReceiveMessage(callback) {
+        _onReceiveMessageCallback = callback;
+    }
     
     ////////////////////////////////////////////////
     // INIT FUNCTIONS
@@ -220,6 +236,8 @@ window.meeting = function (socketioHost) {
         _defaultChannel.on('joined', function (room){
             console.log('This peer has joined room ' + room);
         });
+
+        _defaultChannel.on('receive chat group message', _onReceiveMessageCallback);
         
         _defaultChannel.on('message', function (message){
             console.log('Client received message:', message);
@@ -305,7 +323,7 @@ window.meeting = function (socketioHost) {
     ///////////////////////////////////////////
     // UTIL FUNCTIONS
     ///////////////////////////////////////////
-    
+
     /**
 	 *
 	 * Call the registered _onRemoteVideoCallback
@@ -335,6 +353,18 @@ window.meeting = function (socketioHost) {
     // COMMUNICATION FUNCTIONS
     ////////////////////////////////////////////////
     
+    /**
+	 *
+	 * Send message to group chat.
+     * 
+     * @param from user who send message
+	 * @param to user or group who receive message
+	 * @param message message
+	 */
+    function sendChatGroupMessage(from, to, message) {
+        _defaultChannel.emit('send chat group message', {from, to, message});
+    }
+
     /**
 	 *
 	 * Connect to the server and open a signal channel using channel as the channel's name.
@@ -650,17 +680,19 @@ window.meeting = function (socketioHost) {
     // EXPORT PUBLIC FUNCTIONS
     ////////////////////////////////////////////////
     
-    exports.joinRoom            =       joinRoom;
-    exports.toggleMic 			= 		toggleMic;
-    exports.toggleVideo			= 		toggleVideo;
-    exports.onLocalVideo        =       onLocalVideo;
-    exports.onRemoteVideo       =       onRemoteVideo;
-    exports.onChatReady 		= 		onChatReady;
-    exports.onChatNotReady 		= 		onChatNotReady;
-    exports.onChatMessage       =       onChatMessage;
-    exports.sendChatMessage     =       sendChatMessage;
-    exports.onParticipantHangup =		onParticipantHangup;
-    exports.stateUnmount      =         stateUnmount;
+    exports.joinRoom             =       joinRoom;
+    exports.toggleMic 			 = 		 toggleMic;
+    exports.toggleVideo			 = 		 toggleVideo;
+    exports.onLocalVideo         =       onLocalVideo;
+    exports.onRemoteVideo        =       onRemoteVideo;
+    exports.onChatReady 		 = 		 onChatReady;
+    exports.onChatNotReady 		 = 		 onChatNotReady;
+    exports.onChatMessage        =       onChatMessage;
+    exports.sendChatMessage      =       sendChatMessage;
+    exports.onParticipantHangup  =		 onParticipantHangup;
+    exports.stateUnmount         =       stateUnmount;
+    exports.sendChatGroupMessage =       sendChatGroupMessage;
+    exports.onReceiveMessage     =       onReceiveMessage;
     return exports;
     
 };

@@ -3,8 +3,6 @@ import {connect} from 'react-redux';
 import {
     Button,
     Icon,
-    Header,
-    Modal,
     Dropdown,
     Form,
     Input,
@@ -12,8 +10,6 @@ import {
     Loader,
     Grid
 } from 'semantic-ui-react';
-
-import Estimate from '../estimate/Estimate';
 
 import project from '../utils/project';
 

@@ -1,9 +1,8 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import { Sidebar, Icon, Segment, Menu, Form, Comment, Header, Button, Ref } from 'semantic-ui-react';
+import { Sidebar, Segment, Form, Comment, Header, Button, Ref } from 'semantic-ui-react';
 import meeting from '../utils/meeting';
 import TimeAgo from 'react-timeago';
-import _ from 'lodash';
 
 class Meeting extends React.Component {
     constructor(props) {
@@ -208,7 +207,7 @@ class Meeting extends React.Component {
                 <div key={'chat'} style={{width: '20%', display: 'inline-block', height: 'calc(100vh - 59px)'}}>
                     <Sidebar.Pushable>
                         <Sidebar animation='overlay' style={{width: '100%', paddingLeft: 1, paddingRight: 1}} visible={true} icon='labeled' vertical>
-                            <Header as='h3' attached='top'>Message</Header>
+                            <Header as='h3' attached='top'>Tin nhắn</Header>
                             <Ref innerRef={this.handleRef}>
                                 <Segment attached style={{height: 'calc(100% - 83px)', overflow: 'auto'}} onScroll={this.handleScroll}>
                                     <Comment.Group>
@@ -231,7 +230,7 @@ class Meeting extends React.Component {
                             </Ref>
                             <Header as='div' attached='bottom' style={{padding: 0}}>
                                 <Form onSubmit={this.sendMessage}>
-                                    <Form.Input type='text' name='text_input' size='mini' action={<Button type='submit' content='Send' primary />} />
+                                    <Form.Input type='text' placeholder='Nhập tin nhắn' name='text_input' size='small' action={<Button type='submit' content='Gửi' primary />} />
                                 </Form>
                             </Header>
                         </Sidebar>

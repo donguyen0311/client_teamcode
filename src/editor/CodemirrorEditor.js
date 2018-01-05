@@ -1,8 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {Segment, Menu, Dropdown, Icon, Grid} from 'semantic-ui-react';
+import {Menu, Dropdown} from 'semantic-ui-react';
 import CodeMirror from 'react-codemirror';
-import LiveCode from './LiveCode';
 import {changeTaskEditorCode, changeTaskEditorMode} from './EditorActions';
 // const io = require('socket.io-client');
 // const socket = io();

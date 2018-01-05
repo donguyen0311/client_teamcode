@@ -220,9 +220,9 @@ class ModalEditUserSkills extends React.Component {
                     type={this.state.typeAlert}
                     showConfirmButton = {false}
                 />
-            <Modal size={'small'} closeIcon trigger={<Button color='teal'>View & Edit</Button>} >
+            <Modal size={'small'} closeIcon trigger={<Button color='teal'>Xem và chỉnh sửa</Button>} >
                 <Modal.Header>
-                    <Header size='small' icon='hashtag' content='View & Edit User Skills'/>
+                    <Header size='small' icon='hashtag' content='Xem và chỉnh sửa kỹ năng nhân viên'/>
                 </Modal.Header>
                 <Modal.Content image scrolling>
                     {this.state.stateView ? 
@@ -233,7 +233,7 @@ class ModalEditUserSkills extends React.Component {
                                     <Table.Body>
                                         <Table.Row>
                                             <Table.Cell width={4}>
-                                                <h4>First Name</h4>
+                                                <h4>Tên</h4>
                                             </Table.Cell>
                                             <Table.Cell>
                                                 {this.props.user.firstname}
@@ -241,7 +241,7 @@ class ModalEditUserSkills extends React.Component {
                                         </Table.Row>
                                         <Table.Row>
                                             <Table.Cell>
-                                                <h4>Last Name</h4>
+                                                <h4>Họ</h4>
                                             </Table.Cell>
                                             <Table.Cell>
                                                 {this.props.user.lastname}
@@ -249,10 +249,10 @@ class ModalEditUserSkills extends React.Component {
                                         </Table.Row>
                                         <Table.Row>
                                             <Table.Cell>
-                                                <h4>Gender</h4>
+                                                <h4>Giới tính</h4>
                                             </Table.Cell>
                                             <Table.Cell>
-                                                {this.props.user.gender === true ? 'Male' : 'Female'}
+                                                {this.props.user.gender === true ? 'Nam' : 'Nữ'}
                                             </Table.Cell>
                                         </Table.Row>
                                         <Table.Row>
@@ -265,7 +265,7 @@ class ModalEditUserSkills extends React.Component {
                                         </Table.Row>
                                         <Table.Row>
                                             <Table.Cell>
-                                                <h4>Username</h4>
+                                                <h4>Tên định danh</h4>
                                             </Table.Cell>
                                             <Table.Cell>
                                                 {this.props.user.username}
@@ -273,15 +273,15 @@ class ModalEditUserSkills extends React.Component {
                                         </Table.Row>
                                         <Table.Row>
                                             <Table.Cell>
-                                                <h4>Admin</h4>
+                                                <h4>Quản trị viên</h4>
                                             </Table.Cell>
                                             <Table.Cell>
-                                                {this.props.user.admin === 1 ? "Yes" : "No"}
+                                                {this.props.user.admin === 1 ? "Có" : "Không"}
                                             </Table.Cell>
                                         </Table.Row>
                                         <Table.Row>
                                             <Table.Cell>
-                                                <h4>Salary</h4>
+                                                <h4>Lương</h4>
                                             </Table.Cell>
                                             <Table.Cell>
                                                 $ {this.props.user.salary}
@@ -289,7 +289,7 @@ class ModalEditUserSkills extends React.Component {
                                         </Table.Row> 
                                         <Table.Row>
                                             <Table.Cell>
-                                                <h4>Worked At</h4>
+                                                <h4>Đã làm việc tại</h4>
                                             </Table.Cell>
                                             <Table.Cell>
                                                 {this.props.user.worked_at.join()}
@@ -297,7 +297,7 @@ class ModalEditUserSkills extends React.Component {
                                         </Table.Row>
                                         <Table.Row>
                                             <Table.Cell>
-                                                <h4>Studied At</h4>
+                                                <h4>Đã học tại</h4>
                                             </Table.Cell>
                                             <Table.Cell>
                                                 {this.props.user.studied_at.join()}
@@ -305,7 +305,7 @@ class ModalEditUserSkills extends React.Component {
                                         </Table.Row>
                                         <Table.Row>
                                             <Table.Cell>
-                                                <h4>Language Programming</h4>
+                                                <h4>Ngôn ngữ lập trình</h4>
                                             </Table.Cell>
                                             <Table.Cell>
                                                 {this.props.user.language_programming.join()}
@@ -313,7 +313,7 @@ class ModalEditUserSkills extends React.Component {
                                         </Table.Row>
                                         <Table.Row>
                                             <Table.Cell>
-                                                <h4>Analyst Capability Skill</h4>
+                                                <h4>Khả năng phân tích</h4>
                                             </Table.Cell>
                                             <Table.Cell>
                                                 {this.convertSkillNumberToDescription(this.props.user.analyst_capability, 'analyst_capability')}
@@ -321,7 +321,7 @@ class ModalEditUserSkills extends React.Component {
                                         </Table.Row>
                                         <Table.Row>
                                             <Table.Cell>
-                                                <h4>Programmer Capability Skill</h4>
+                                                <h4>Khả năng lập trình</h4>
                                             </Table.Cell>
                                             <Table.Cell>
                                                 {this.convertSkillNumberToDescription(this.props.user.programmer_capability, 'programmer_capability')}
@@ -329,7 +329,7 @@ class ModalEditUserSkills extends React.Component {
                                         </Table.Row>
                                         <Table.Row>
                                             <Table.Cell>
-                                                <h4>Application Experience Skill</h4>
+                                                <h4>Kinh nghiệm ứng dụng</h4>
                                             </Table.Cell>
                                             <Table.Cell>
                                                 {this.convertSkillNumberToDescription(this.props.user.application_experience, 'application_experience')}
@@ -337,7 +337,7 @@ class ModalEditUserSkills extends React.Component {
                                         </Table.Row>
                                         <Table.Row>
                                             <Table.Cell>
-                                                <h4>Platform Experience Skill</h4>
+                                                <h4>Kinh nghiệm nền tảng</h4>
                                             </Table.Cell>
                                             <Table.Cell>
                                                 {this.convertSkillNumberToDescription(this.props.user.platform_experience, 'platform_experience')}
@@ -345,7 +345,7 @@ class ModalEditUserSkills extends React.Component {
                                         </Table.Row>
                                         <Table.Row>
                                             <Table.Cell>
-                                                <h4>Language And Toolset Experience Skill</h4>
+                                                <h4>Kinh nghiệm ngôn ngữ và công cụ</h4>
                                             </Table.Cell>
                                             <Table.Cell>
                                                 {this.convertSkillNumberToDescription(this.props.user.language_and_toolset_experience, 'language_and_toolset_experience')}
@@ -353,7 +353,7 @@ class ModalEditUserSkills extends React.Component {
                                         </Table.Row>
                                         <Table.Row>
                                             <Table.Cell colSpan='2'>
-                                                <Button fluid onClick={this.changeView.bind(this, 'edit')}>Update Profile</Button>
+                                                <Button fluid onClick={this.changeView.bind(this, 'edit')}>Cập nhật thông tin</Button>
                                             </Table.Cell>
                                         </Table.Row>                 
                                     </Table.Body>
@@ -368,7 +368,7 @@ class ModalEditUserSkills extends React.Component {
                                         <Table.Body>
                                             <Table.Row>
                                                 <Table.Cell width={4}>
-                                                    <h4>First Name</h4>
+                                                    <h4>Tên</h4>
                                                 </Table.Cell>
                                                 <Table.Cell>
                                                     {this.props.user.firstname}
@@ -376,7 +376,7 @@ class ModalEditUserSkills extends React.Component {
                                             </Table.Row>
                                             <Table.Row>
                                                 <Table.Cell>
-                                                    <h4>Last Name</h4>
+                                                    <h4>Họ</h4>
                                                 </Table.Cell>
                                                 <Table.Cell>
                                                     {this.props.user.lastname}
@@ -384,10 +384,10 @@ class ModalEditUserSkills extends React.Component {
                                             </Table.Row>
                                             <Table.Row>
                                                 <Table.Cell>
-                                                    <h4>Gender</h4>
+                                                    <h4>Giới tính</h4>
                                                 </Table.Cell>
                                                 <Table.Cell>
-                                                    {this.props.user.gender === true ? 'Male' : 'Female'}
+                                                    {this.props.user.gender === true ? 'Nam' : 'Nữ'}
                                                 </Table.Cell>
                                             </Table.Row>
                                             <Table.Row>
@@ -400,7 +400,7 @@ class ModalEditUserSkills extends React.Component {
                                             </Table.Row>
                                             <Table.Row>
                                                 <Table.Cell>
-                                                    <h4>Username</h4>
+                                                    <h4>Tên định danh</h4>
                                                 </Table.Cell>
                                                 <Table.Cell>
                                                     {this.props.user.username}
@@ -408,7 +408,7 @@ class ModalEditUserSkills extends React.Component {
                                             </Table.Row> 
                                             <Table.Row>
                                                 <Table.Cell>
-                                                    <h4>Worked At</h4>
+                                                    <h4>Đã làm việc tại</h4>
                                                 </Table.Cell>
                                                 <Table.Cell>
                                                     {this.props.user.worked_at.join()}
@@ -416,7 +416,7 @@ class ModalEditUserSkills extends React.Component {
                                             </Table.Row>
                                             <Table.Row>
                                                 <Table.Cell>
-                                                    <h4>Studied At</h4>
+                                                    <h4>Đã học tại</h4>
                                                 </Table.Cell>
                                                 <Table.Cell>
                                                     {this.props.user.studied_at.join()}
@@ -424,7 +424,7 @@ class ModalEditUserSkills extends React.Component {
                                             </Table.Row>
                                             <Table.Row>
                                                 <Table.Cell>
-                                                    <h4>Language Programming</h4>
+                                                    <h4>Ngôn ngữ lập trình</h4>
                                                 </Table.Cell>
                                                 <Table.Cell>
                                                     {this.props.user.language_programming.join()}
@@ -432,18 +432,18 @@ class ModalEditUserSkills extends React.Component {
                                             </Table.Row>
                                             <Table.Row>
                                                 <Table.Cell>
-                                                    <h4>Admin</h4>
+                                                    <h4>Quản trị viên</h4>
                                                 </Table.Cell>
                                                 <Table.Cell> 
                                                     <Form.Group inline style={{marginBottom: 0}}>
-                                                        <Form.Radio label='Yes' name='admin' value={1} checked={this.state.admin === 1} onChange={this.handleChange} />
-                                                        <Form.Radio label='No' name='admin' value={0} checked={this.state.admin === 0} onChange={this.handleChange} />
+                                                        <Form.Radio label='Có' name='admin' value={1} checked={this.state.admin === 1} onChange={this.handleChange} />
+                                                        <Form.Radio label='Không' name='admin' value={0} checked={this.state.admin === 0} onChange={this.handleChange} />
                                                     </Form.Group>
                                                 </Table.Cell>
                                             </Table.Row>
                                             <Table.Row>
                                                 <Table.Cell>
-                                                    <h4>Salary</h4>
+                                                    <h4>Lương</h4>
                                                 </Table.Cell>
                                                 <Table.Cell>
                                                     <Input labelPosition='right' type='number' value={this.state.salary} name='salary' fluid placeholder='Amount' onChange={this.handleChange}>
@@ -455,11 +455,11 @@ class ModalEditUserSkills extends React.Component {
                                             </Table.Row>
                                             <Table.Row>
                                                 <Table.Cell>
-                                                    <h4>Analyst Capability Skill</h4>
+                                                    <h4>Khả năng phân tích</h4>
                                                 </Table.Cell>
                                                 <Table.Cell>
                                                     <Dropdown 
-                                                        placeholder='Select Skill Level' 
+                                                        placeholder='Chọn cấp độ kỹ năng' 
                                                         name='analyst_capability' 
                                                         value={this.state.analyst_capability} 
                                                         fluid 
@@ -470,11 +470,11 @@ class ModalEditUserSkills extends React.Component {
                                             </Table.Row>
                                             <Table.Row>
                                                 <Table.Cell>
-                                                    <h4>Programmer Capability Skill</h4>
+                                                    <h4>Khả năng lập trình</h4>
                                                 </Table.Cell>
                                                 <Table.Cell>
                                                     <Dropdown 
-                                                        placeholder='Select Skill Level' 
+                                                        placeholder='Chọn cấp độ kỹ năng' 
                                                         name='programmer_capability'
                                                         value={this.state.programmer_capability} 
                                                         fluid 
@@ -485,11 +485,11 @@ class ModalEditUserSkills extends React.Component {
                                             </Table.Row>
                                             <Table.Row>
                                                 <Table.Cell>
-                                                    <h4>Application Experience Skill</h4>
+                                                    <h4>Kinh nghiệm ứng dụng</h4>
                                                 </Table.Cell>
                                                 <Table.Cell>
                                                     <Dropdown 
-                                                        placeholder='Select Skill Level' 
+                                                        placeholder='Chọn cấp độ kỹ năng' 
                                                         name='application_experience'
                                                         value={this.state.application_experience} 
                                                         fluid 
@@ -500,11 +500,11 @@ class ModalEditUserSkills extends React.Component {
                                             </Table.Row>
                                             <Table.Row>
                                                 <Table.Cell>
-                                                    <h4>Platform Experience Skill</h4>
+                                                    <h4>Kinh nghiệm nền tảng</h4>
                                                 </Table.Cell>
                                                 <Table.Cell>
                                                     <Dropdown 
-                                                        placeholder='Select Skill Level' 
+                                                        placeholder='Chọn cấp độ kỹ năng' 
                                                         name='platform_experience'
                                                         value={this.state.platform_experience} 
                                                         fluid 
@@ -515,11 +515,11 @@ class ModalEditUserSkills extends React.Component {
                                             </Table.Row>
                                             <Table.Row>
                                                 <Table.Cell>
-                                                    <h4>Language And Toolset Experience Skill</h4>
+                                                    <h4>Kinh nghiệm ngôn ngữ và công cụ</h4>
                                                 </Table.Cell>
                                                 <Table.Cell>
                                                     <Dropdown 
-                                                        placeholder='Select Skill Level' 
+                                                        placeholder='Chọn cấp độ kỹ năng' 
                                                         name='language_and_toolset_experience'
                                                         value={this.state.language_and_toolset_experience} 
                                                         fluid 
@@ -531,8 +531,8 @@ class ModalEditUserSkills extends React.Component {
                                             <Table.Row>
                                                 <Table.Cell colSpan='2'>
                                                     <Form.Group widths='equal'>
-                                                        <Button fluid type='submit' color='green' >Update</Button>
-                                                        <Button fluid type='button' onClick={this.changeView.bind(this, 'view')}>View Profile</Button>
+                                                        <Button fluid type='submit' color='green' >Cập nhật</Button>
+                                                        <Button fluid type='button' onClick={this.changeView.bind(this, 'view')}>Xem thông tin</Button>
                                                     </Form.Group>
                                                 </Table.Cell>
                                             </Table.Row>                 

@@ -1,9 +1,9 @@
 import React from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
-import { Label, Dimmer, Loader, Icon, Grid, Segment, Header } from 'semantic-ui-react';
+import { Dimmer, Loader, Segment, Header } from 'semantic-ui-react';
 import Timeline from 'react-time-line';
-import {Doughnut, Line} from 'react-chartjs-2';
+// import {Doughnut, Line} from 'react-chartjs-2';
 import auth from '../utils/auth';
 
 class Activity extends React.Component {
@@ -202,10 +202,10 @@ class Activity extends React.Component {
         return (
             <div style={{width: '100%', height: 'calc(100vh - 59px)', overflow: 'auto', marginTop: '-1rem', fontSize: 18}}>
                 <Dimmer active={this.state.activeLoading} inverted>
-                    <Loader inverted>Loading</Loader>
+                    <Loader inverted>Đang tải</Loader>
                 </Dimmer>
                 <div style={{width: '100%', bottom: 0, position: 'absolute'}}>
-                    <Header attached='top' size='medium'>Activities Log</Header>
+                    <Header attached='top' size='medium'>Lịch sử hoạt động</Header>
                     <Segment loading={this.state.activeLoader} attached style={{height: 300, overflow: 'auto', padding: 0, paddingTop: 10}} onScroll={this.handleScroll}>
                         <Timeline items={this.formatActivities(this.state.activitiesLog)} />
                     </Segment>

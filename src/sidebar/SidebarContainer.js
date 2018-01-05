@@ -1,13 +1,10 @@
 import React from 'react';
-import { Route, Switch, Redirect } from 'react-router-dom';
-import { Sidebar, Dimmer } from 'semantic-ui-react';
+import { Route, Switch } from 'react-router-dom';
+import { Sidebar } from 'semantic-ui-react';
 import Dashboard from '../dashboard/Dashboard';
 import Project from '../project/Project';
 import NavBar from '../app/Header';
-import Estimate from '../estimate/Estimate';
-import Profile from '../user/UserProfile';
 import Activity from '../activity/Activity';
-import user from '../utils/user';
 import SideBar from './Sidebar';
 import BlockPage from './BlockPage';
 import Meeting from '../meeting/Meeting';

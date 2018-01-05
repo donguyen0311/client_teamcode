@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, Header, Icon, Modal, Button, Card, Dimmer } from 'semantic-ui-react';
+import { Image, Header, Icon, Modal, Button, Card } from 'semantic-ui-react';
 
 class ModalManageUsers extends React.Component {
     constructor(props) {
@@ -18,8 +18,8 @@ class ModalManageUsers extends React.Component {
     render() {
         const { openModal } = this.state;
         return (
-            <Modal open={openModal} onClose={this.closeModal} trigger={<Button icon='users' content='List Users' onClick={this.openModal} />} size='small' closeIcon>
-                    <Header icon='hashtag' content='List Users'/>
+            <Modal open={openModal} onClose={this.closeModal} trigger={<Button icon='users' content='Danh sách nhân viên' onClick={this.openModal} />} size='small' closeIcon>
+                    <Header icon='hashtag' content='Danh sách nhân viên'/>
                     <Modal.Content scrolling>
                     {this.state.users.length > 0 ? (
                         <Card.Group itemsPerRow={3}>
@@ -37,7 +37,7 @@ class ModalManageUsers extends React.Component {
                         <Header as='h2' icon textAlign='center'>
                             <Icon name='x' />
                             <Header.Content>
-                                Empty
+                                Trống
                             </Header.Content>
                         </Header>
                     )}

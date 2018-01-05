@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, Header, Icon, Modal, Button, Card, Dimmer } from 'semantic-ui-react';
+import { Image, Header, Icon, Modal, Button, Card } from 'semantic-ui-react';
 import _ from 'lodash';
 import project from '../utils/project';
 
@@ -41,8 +41,8 @@ class ModalWarningUsers extends React.Component {
     render() {
         const { openModal } = this.state;
         return (
-            <Modal open={openModal} onClose={this.closeModal} trigger={<Button icon='warning sign' content='Warning Users' onClick={this.openModal} />} size='small' closeIcon>
-                    <Header icon='hashtag' content='Warning Users'/>
+            <Modal open={openModal} onClose={this.closeModal} trigger={<Button icon='warning sign' content='Nhân viên bị cảnh cáo' onClick={this.openModal} />} size='small' closeIcon>
+                    <Header icon='hashtag' content='Nhân viên bị cảnh cáo'/>
                     <Modal.Content scrolling>
                         {this.state.warningUser.length > 0 ? (
                             <Card.Group itemsPerRow={3}>
@@ -60,7 +60,7 @@ class ModalWarningUsers extends React.Component {
                             <Header as='h2' icon textAlign='center'>
                                 <Icon name='x' />
                                 <Header.Content>
-                                    Empty
+                                    Trống
                                 </Header.Content>
                             </Header>
                         )}

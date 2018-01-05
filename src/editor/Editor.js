@@ -77,7 +77,7 @@ class Editor extends React.Component {
                     <Grid.Column>
                         {this.state.loading ? (
                             <Dimmer active={true} inverted>
-                                <Loader inverted>Loading</Loader>
+                                <Loader inverted>Đang tải</Loader>
                             </Dimmer>
                         ) : (
                             <Tab panes={panes} />

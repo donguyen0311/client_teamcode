@@ -37,16 +37,16 @@ class NavBar extends React.Component {
                 <Menu.Item style={{paddingTop: 3.5, paddingBottom: 3.5}}>
                     <Dropdown trigger={trigger} pointing='top right' icon={null} >
                         <Dropdown.Menu>
-                            <Modal size={'small'} closeIcon trigger={<Dropdown.Item icon='address book' text='Your Profile'/>} >
+                            <Modal size={'small'} closeIcon trigger={<Dropdown.Item icon='address book' text='Thông tin cá nhân'/>} >
                                 <Modal.Header>
-                                    <Header size='small' icon='hashtag' content='Profile'/>
+                                    <Header size='small' icon='hashtag' content='Thông tin cá nhân'/>
                                 </Modal.Header>
                                 <Modal.Content image scrolling>
                                     <Profile />
                                 </Modal.Content>
                             </Modal>
                             <Dropdown.Divider />
-                            <Dropdown.Item icon='sign out' text='Sign Out' onClick={this._logout} />
+                            <Dropdown.Item icon='sign out' text='Đăng xuất' onClick={this._logout} />
                         </Dropdown.Menu>
                     </Dropdown>
                 </Menu.Item>

@@ -173,7 +173,7 @@ class Notifications extends React.Component {
         return (
             <Dropdown trigger={trigger} pointing='top right' inline icon={null} onOpen={this.getNotification} onClose={this.handleCloseNotification}>
                 <Dropdown.Menu style={{minWidth: 400, right: -7.5}}>
-                    <Dropdown.Header>Notifications</Dropdown.Header>
+                    <Dropdown.Header>Thông báo</Dropdown.Header>
                     <Dropdown.Menu scrolling onScroll={this.handleScroll}>
                         {(this.state.notificationList.length > 0) ? (
                             this.state.notificationList.map((notification) => (
@@ -196,7 +196,7 @@ class Notifications extends React.Component {
                             ))  
                         ) : (
                             <Dropdown.Item> 
-                                <Header as='h3' textAlign='center' content='Empty' />
+                                <Header as='h3' textAlign='center' content='Trống' />
                             </Dropdown.Item> 
                         )}
                         {this.state.activeLoader ? (

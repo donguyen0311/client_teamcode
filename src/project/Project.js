@@ -1,14 +1,11 @@
 import React from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { Label, Dimmer, Loader, Card, Icon, Menu, Button } from 'semantic-ui-react';
+import { Label, Dimmer, Loader, Button } from 'semantic-ui-react';
 import styled, { injectGlobal } from 'styled-components';
 import TaskItem from './TaskItem';
 import ModalAddTask from './ModalAddTask';
 import {connect} from 'react-redux';
 import axios from 'axios';
-
-import moment from 'moment';
-import 'moment-duration-format';
 
 import ModalManageUsers from './ModalManageUsers';
 import ModalWarningUsers from './ModalWarningUsers';
@@ -459,7 +456,7 @@ class Project extends React.Component {
 		return (
 			<div style={{width: '100%', height: 'calc(100vh - 59px)', overflow: 'auto', marginTop: '-1rem'}}>
 				<Dimmer active={this.state.activeLoading} inverted>
-					<Loader inverted>Loading</Loader>
+					<Loader inverted>Đang tải</Loader>
 				</Dimmer>
 				{currentUserId === projectOwnerId ? (
 					<Button.Group basic size='large' style={{marginTop: 15, marginLeft: 15}}>
@@ -476,7 +473,7 @@ class Project extends React.Component {
 						<Container>
 							<HeaderCustom>
 								<Title>
-									<span style={{fontSize: 18, verticalAlign: 'middle'}}>To Do</span> 
+									<span style={{fontSize: 18, verticalAlign: 'middle'}}>Danh sách việc</span> 
 									<Label as='a' size={'small'} style={{float: 'right'}}>{this.state.columns['TODO'].length}</Label>
 								</Title>
 							</HeaderCustom>
@@ -530,7 +527,7 @@ class Project extends React.Component {
 						<Container>
 							<HeaderCustom>
 								<Title>
-									<span style={{fontSize: 18, verticalAlign: 'middle'}}>In Progress</span> 
+									<span style={{fontSize: 18, verticalAlign: 'middle'}}>Đang làm</span> 
 									<Label as='a' size={'small'} style={{float: 'right'}}>{this.state.columns['INPROGRESS'].length}</Label>
 								</Title>
 							</HeaderCustom>
@@ -584,7 +581,7 @@ class Project extends React.Component {
 						<Container>
 							<HeaderCustom>
 								<Title>
-									<span style={{fontSize: 18, verticalAlign: 'middle'}}>Code Review</span> 
+									<span style={{fontSize: 18, verticalAlign: 'middle'}}>Kiểm tra</span> 
 									<Label as='a' size={'small'} style={{float: 'right'}}>{this.state.columns['CODEREVIEW'].length}</Label>
 								</Title>
 							</HeaderCustom>
@@ -638,7 +635,7 @@ class Project extends React.Component {
 						<Container>
 							<HeaderCustom>
 								<Title>
-									<span style={{fontSize: 18, verticalAlign: 'middle'}}>Done</span> 
+									<span style={{fontSize: 18, verticalAlign: 'middle'}}>Hoàn thành</span> 
 									<Label as='a' size={'small'} style={{float: 'right'}}>{this.state.columns['DONE'].length}</Label>
 								</Title>
 							</HeaderCustom>

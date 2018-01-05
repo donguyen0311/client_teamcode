@@ -1,8 +1,6 @@
 import React from 'react';
-// import ReactDOM from 'react-dom';
 import {connect} from 'react-redux';
 import {Menu, Icon} from 'semantic-ui-react';
-import {changeTaskEditorCode, changeTaskEditorMode} from './EditorActions';
 import * as ts from "typescript";
 import axios from 'axios';
 var Babel = require('babel-standalone');
@@ -135,10 +133,10 @@ class LiveCode extends React.Component {
                 <Menu attached={'top'}>
                     <Menu.Menu position='left'>
                         <Menu.Item name='save' onClick={this.saveCode}>
-                            <Icon name='save' /> Save
+                            <Icon name='save' /> Lưu
                         </Menu.Item>
                         <Menu.Item name='run' onClick={this.updatePreview}>
-                            <Icon name='play circle' /> Run
+                            <Icon name='play circle' /> Chạy
                         </Menu.Item>
                     </Menu.Menu>
                 </Menu>

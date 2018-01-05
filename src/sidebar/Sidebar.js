@@ -3,34 +3,23 @@ import {connect} from 'react-redux';
 import { Link } from 'react-router-dom';
 import {
     Sidebar,
-    Button,
     Menu,
     Image,
     Icon,
     Header,
     Modal,
-    Dropdown,
-    Form
+    Dropdown
 } from 'semantic-ui-react';
 import auth from '../utils/auth';
 import ModalCompanyInfo from './ModalCompanyInfo';
 import _ from 'lodash';
 import {changeVisible} from './SidebarActions';
-import Dashboard from '../dashboard/Dashboard';
-import Project from '../project/Project';
-import ProjectNewForm from '../project/ProjectNewForm';
+
 import Estimate from '../estimate/Estimate';
-import NavBar from '../app/Header';
-import Meeting from '../meeting/Meeting';
-import Avatar from '../user/UserAvatar';
 
 import project from '../utils/project';
 
 import user from '../utils/user';
-
-import DatePicker from 'react-datepicker';
-import moment from 'moment';
-import 'react-datepicker/dist/react-datepicker.css';
 
 import {
   changeIdNewProjectForm,
@@ -123,9 +112,9 @@ class SideBar extends React.Component {
                     <Menu.Item>
                         <Dropdown style={{width: '100%'}} trigger={trigger} pointing='top left' icon={null} >
                             <Dropdown.Menu>
-                                <Modal size={'small'} closeIcon trigger={<Dropdown.Item icon='address book' text='Company Infomation'/>} >
+                                <Modal size={'small'} closeIcon trigger={<Dropdown.Item icon='address book' text='Thông tin công ty'/>} >
                                     <Modal.Header>
-                                        <Header size='small' icon='hashtag' content='Company Infomation'/>
+                                        <Header size='small' icon='hashtag' content='Thông tin công ty'/>
                                     </Modal.Header>
                                     <Modal.Content image scrolling>
                                         <ModalCompanyInfo company={this.state.company} />
@@ -142,12 +131,12 @@ class SideBar extends React.Component {
                                     active={activeItem === 'dashboard'}
                                     onClick={this.handleItemClick.bind(this, 'dashboard')}>
                                     
-                                <Icon name='dashboard' style={{float: 'left', marginRight: 10, marginLeft: 30}} />Dashboard   
+                                <Icon name='dashboard' style={{float: 'left', marginRight: 10, marginLeft: 10}} />Quản lý nhân viên   
                         </Menu.Item>
                     ) : ""}
                     <Menu.Item>
                         <Menu.Header>
-                            <div style={{display: 'inline-block', fontSize: 19}}>Project</div>
+                            <div style={{display: 'inline-block', fontSize: 19}}>Dự án</div>
                             <Estimate/>
                         </Menu.Header>
 
@@ -167,7 +156,7 @@ class SideBar extends React.Component {
                     </Menu.Item>
                     <Menu.Item>
                         <Menu.Header>
-                            <div style={{display: 'inline-block', fontSize: 19}}>Activity</div>
+                            <div style={{display: 'inline-block', fontSize: 19}}>Lịch sử hoạt động</div>
                         </Menu.Header>
 
                         <Menu.Menu>
@@ -186,7 +175,7 @@ class SideBar extends React.Component {
                     </Menu.Item>
                     <Menu.Item>
                         <Menu.Header>
-                            <div style={{display: 'inline-block', fontSize: 19}}>Meeting Room</div>
+                            <div style={{display: 'inline-block', fontSize: 19}}>Phòng họp</div>
                         </Menu.Header>
 
                         <Menu.Menu>

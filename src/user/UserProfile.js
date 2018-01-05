@@ -190,7 +190,7 @@ class Profile extends React.Component {
                         <Table.Body>
                             <Table.Row>
                                 <Table.Cell width={4}>
-                                    <h4>First Name</h4>
+                                    <h4>Tên</h4>
                                 </Table.Cell>
                                 <Table.Cell>
                                     {this.props.data.profile.firstname}
@@ -198,7 +198,7 @@ class Profile extends React.Component {
                             </Table.Row>
                             <Table.Row>
                                 <Table.Cell>
-                                    <h4>Last Name</h4>
+                                    <h4>Họ</h4>
                                 </Table.Cell>
                                 <Table.Cell>
                                     {this.props.data.profile.lastname}
@@ -206,10 +206,10 @@ class Profile extends React.Component {
                             </Table.Row>
                             <Table.Row>
                                 <Table.Cell>
-                                    <h4>Gender</h4>
+                                    <h4>Giới tính</h4>
                                 </Table.Cell>
                                 <Table.Cell>
-                                    {this.props.data.profile.gender === true ? 'Male' : 'Female'}
+                                    {this.props.data.profile.gender === true ? 'Nam' : 'Nữ'}
                                 </Table.Cell>
                             </Table.Row>
                             <Table.Row>
@@ -222,7 +222,7 @@ class Profile extends React.Component {
                             </Table.Row>
                             <Table.Row>
                                 <Table.Cell>
-                                    <h4>Username</h4>
+                                    <h4>Tên định danh</h4>
                                 </Table.Cell>
                                 <Table.Cell>
                                     {this.props.data.profile.username}
@@ -230,7 +230,7 @@ class Profile extends React.Component {
                             </Table.Row> 
                             <Table.Row>
                                 <Table.Cell>
-                                    <h4>Password</h4>
+                                    <h4>Mật khẩu</h4>
                                 </Table.Cell>
                                 <Table.Cell>
                                     *************
@@ -238,7 +238,7 @@ class Profile extends React.Component {
                             </Table.Row>
                             <Table.Row>
                                 <Table.Cell>
-                                    <h4>Worked At</h4>
+                                    <h4>Đã làm việc tại</h4>
                                 </Table.Cell>
                                 <Table.Cell>
                                     {this.props.data.profile.worked_at.join()}
@@ -246,7 +246,7 @@ class Profile extends React.Component {
                             </Table.Row>
                             <Table.Row>
                                 <Table.Cell>
-                                    <h4>Studied At</h4>
+                                    <h4>Đã học tại</h4>
                                 </Table.Cell>
                                 <Table.Cell>
                                     {this.props.data.profile.studied_at.join()}
@@ -254,7 +254,7 @@ class Profile extends React.Component {
                             </Table.Row>
                             <Table.Row>
                                 <Table.Cell>
-                                    <h4>Language Programming</h4>
+                                    <h4>Ngôn ngữ lập trình</h4>
                                 </Table.Cell>
                                 <Table.Cell>
                                     {this.props.data.profile.language_programming.join()}
@@ -262,7 +262,7 @@ class Profile extends React.Component {
                             </Table.Row>
                             <Table.Row>
                                 <Table.Cell colSpan='2'>
-                                    <Button fluid onClick={this.changeView.bind(this, 'edit')}>Update Profile</Button>
+                                    <Button fluid onClick={this.changeView.bind(this, 'edit')}>Cập nhật thông tin</Button>
                                 </Table.Cell>
                             </Table.Row>                 
                         </Table.Body>
@@ -286,7 +286,7 @@ class Profile extends React.Component {
                             <Table.Body>
                                 <Table.Row>
                                     <Table.Cell width={4}>
-                                        <h4>First Name</h4>
+                                        <h4>Tên</h4>
                                     </Table.Cell>
                                     <Table.Cell>
                                         <Form.Input name='first_name' type='text' value={this.state.first_name} onChange={this.handleChange} />
@@ -294,7 +294,7 @@ class Profile extends React.Component {
                                 </Table.Row>
                                 <Table.Row>
                                     <Table.Cell>
-                                        <h4>Last Name</h4>
+                                        <h4>Họ</h4>
                                     </Table.Cell>
                                     <Table.Cell>
                                         <Form.Input name='last_name' type='text' value={this.state.last_name} onChange={this.handleChange} />  
@@ -302,12 +302,12 @@ class Profile extends React.Component {
                                 </Table.Row>
                                 <Table.Row>
                                     <Table.Cell>
-                                        <h4>Gender</h4>
+                                        <h4>Giới tính</h4>
                                     </Table.Cell>
                                     <Table.Cell> 
                                         <Form.Group inline style={{marginBottom: 0}}>
-                                            <Form.Radio label='Male' name='gender' value={true} checked={this.state.gender === true} onChange={this.handleChange} />
-                                            <Form.Radio label='Female' name='gender' value={false} checked={this.state.gender === false} onChange={this.handleChange} />
+                                            <Form.Radio label='Nam' name='gender' value={true} checked={this.state.gender === true} onChange={this.handleChange} />
+                                            <Form.Radio label='Nữ' name='gender' value={false} checked={this.state.gender === false} onChange={this.handleChange} />
                                         </Form.Group>
                                     </Table.Cell>
                                 </Table.Row>
@@ -321,7 +321,7 @@ class Profile extends React.Component {
                                 </Table.Row>
                                 <Table.Row>
                                     <Table.Cell>
-                                        <h4>Username</h4>
+                                        <h4>Tên định danh</h4>
                                     </Table.Cell>
                                     <Table.Cell>
                                         <Form.Input name='username' type='text' value={this.props.data.profile.username} readOnly />
@@ -329,18 +329,18 @@ class Profile extends React.Component {
                                 </Table.Row> 
                                 <Table.Row>
                                     <Table.Cell>
-                                        <h4>Password</h4>
+                                        <h4>Mật khẩu</h4>
                                     </Table.Cell>
                                     <Table.Cell> 
                                         <Form.Group>    
                                             <Form.Input name='password' type='password' value={'*************'} readOnly />
-                                            <Form.Button color='red' icon='setting' content='Change' type='button' onClick={this.changeView.bind(this, 'edit_pass')}></Form.Button>
+                                            <Form.Button color='red' icon='setting' content='Thay đổi' type='button' onClick={this.changeView.bind(this, 'edit_pass')}></Form.Button>
                                         </Form.Group>
                                     </Table.Cell>
                                 </Table.Row>
                                 <Table.Row>
                                     <Table.Cell>
-                                        <h4>Worked At</h4>
+                                        <h4>Đã làm việc tại</h4>
                                     </Table.Cell>
                                     <Table.Cell>
                                         <Dropdown
@@ -359,7 +359,7 @@ class Profile extends React.Component {
                                 </Table.Row>
                                 <Table.Row>
                                     <Table.Cell>
-                                        <h4>Studied At</h4>
+                                        <h4>Đã học tại</h4>
                                     </Table.Cell>
                                     <Table.Cell>
                                         <Dropdown
@@ -378,7 +378,7 @@ class Profile extends React.Component {
                                 </Table.Row>
                                 <Table.Row>
                                     <Table.Cell>
-                                        <h4>Language Programming</h4>
+                                        <h4>Ngôn ngữ lập trình</h4>
                                     </Table.Cell>
                                     <Table.Cell>
                                         <Dropdown
@@ -398,8 +398,8 @@ class Profile extends React.Component {
                                 <Table.Row>
                                     <Table.Cell colSpan='2'>
                                         <Form.Group widths='equal'>
-                                            <Button fluid type='submit' color='green' >Update</Button>
-                                            <Button fluid type='button' onClick={this.changeView.bind(this, 'view')}>View Profile</Button>
+                                            <Button fluid type='submit' color='green' >Cập nhật</Button>
+                                            <Button fluid type='button' onClick={this.changeView.bind(this, 'view')}>Xem thông tin</Button>
                                         </Form.Group>
                                     </Table.Cell>
                                 </Table.Row>                 
@@ -425,7 +425,7 @@ class Profile extends React.Component {
                             <Table.Body>
                                 <Table.Row>
                                     <Table.Cell width={3}>
-                                        <h4>Old Password</h4>
+                                        <h4>Mật khẩu cũ</h4>
                                     </Table.Cell>
                                     <Table.Cell>
                                         <Form.Input name='old_password' type='password'  onChange={this.handleChange} />
@@ -433,7 +433,7 @@ class Profile extends React.Component {
                                 </Table.Row>
                                 <Table.Row>
                                     <Table.Cell>
-                                        <h4>New Password</h4>
+                                        <h4>Mật khẩu mới</h4>
                                     </Table.Cell>
                                     <Table.Cell>
                                         <Form.Input name='new_password' type='password' onChange={this.handleChange} />  
@@ -441,7 +441,7 @@ class Profile extends React.Component {
                                 </Table.Row>
                                 <Table.Row>
                                     <Table.Cell>
-                                        <h4>Confirm Password</h4>
+                                        <h4>Xác nhận lại mật khẩu</h4>
                                     </Table.Cell>
                                     <Table.Cell>
                                         <Form.Input name='confirm_password' type='password' onChange={this.handleChange} />  
@@ -450,8 +450,8 @@ class Profile extends React.Component {
                                 <Table.Row>
                                     <Table.Cell colSpan='2'>
                                         <Form.Group widths='equal'>
-                                            <Button fluid type='submit' color='green'>Update Password</Button>
-                                            <Button fluid type='button' onClick={this.changeView.bind(this, 'edit')}>Back</Button>
+                                            <Button fluid type='submit' color='green'>Cập nhật mật khẩu</Button>
+                                            <Button fluid type='button' onClick={this.changeView.bind(this, 'edit')}>Quay lại</Button>
                                         </Form.Group>
                                     </Table.Cell>
                                 </Table.Row>                 

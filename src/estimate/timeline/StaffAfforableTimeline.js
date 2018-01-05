@@ -1,12 +1,5 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {
-    Grid,
-    Header,
-    Icon,
-    Statistic,
-    Popup
-} from 'semantic-ui-react';
 
 import moment from 'moment';
 import Timeline from 'react-calendar-timeline/lib';

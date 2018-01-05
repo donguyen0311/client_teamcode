@@ -184,7 +184,7 @@ class Register extends React.Component {
                     maxWidth: 450,
                     margin: '0 auto'
                 }}>
-                    <Header as='h2'>Sign Up</Header>
+                    <Header as='h2'>Đăng ký</Header>
                     {(( this.state.companynameValid === false ||
                         this.state.emailValid === false || 
                         this.state.usernameValid === false || 
@@ -204,26 +204,26 @@ class Register extends React.Component {
                     <Form
                         onSubmit={this._handleSignup}>
                         <Form.Field>
-                            <Form.Input label="Company Name" type="text" id="company" placeholder='demo' onChange={this._changeCompanyName} onBlur={this._checkCompanyName} required/>
+                            <Form.Input label="Tên công ty" type="text" id="company" placeholder='demo' onChange={this._changeCompanyName} onBlur={this._checkCompanyName} required/>
                         </Form.Field>
                         <Form.Field>
                             <Form.Input label="Email" type="email" id="email" placeholder='example@gmail.com' onChange={this._changeEmail} required/>
                         </Form.Field>
                         <Form.Field>
-                            <Form.Input label="Username" type="text" id="username" placeholder='donguyen' onChange={this._changeUsername} required/>
+                            <Form.Input label="Tên định danh" type="text" id="username" placeholder='donguyen' onChange={this._changeUsername} required/>
                         </Form.Field>
                         <Form.Field>
-                            <Form.Input label="Password" type="password" id="password" placeholder='••••••••••' onChange={this._changePassword} required/>
+                            <Form.Input label="Mật khẩu" type="password" id="password" placeholder='••••••••••' onChange={this._changePassword} required/>
                         </Form.Field>
                         <Form.Field>
-                            <Form.Input label="Comfirm Password" type="password" id="confirm_password" placeholder='••••••••••' onChange={this._changeConfirmPassword} required/>
+                            <Form.Input label="Xác nhận lại mật khẩu" type="password" id="confirm_password" placeholder='••••••••••' onChange={this._changeConfirmPassword} required/>
                         </Form.Field>
                         <Form.Field>
-                            <Checkbox label='I agree to the Terms and Conditions'/>
+                            <Checkbox label='Tôi đồng ý với Điều khoản và Điều lệ của Website'/>
                         </Form.Field> 
                         {(this.props.data.currentlySending)
-                            ? <Button basic loading>Loading</Button>
-                            : <Button basic type='submit'>Sign Up</Button>}
+                            ? <Button basic loading>Đang tải</Button>
+                            : <Button basic type='submit'>Đăng ký</Button>}
                     </Form>
                 </Segment>
             </Container>

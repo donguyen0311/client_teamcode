@@ -1,14 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {
-    Button,
-    Grid,
-    Input,
-    Label,
-    Modal,
-    Icon,
-    Transition,
-    Step,
     Table
 } from 'semantic-ui-react';
 

@@ -12,6 +12,7 @@ import {
     Input,
     Icon,
     Message,
+    Button
 } from 'semantic-ui-react';
 import axios from 'axios';
 import _ from 'lodash';
@@ -48,6 +49,7 @@ class Dashboard extends React.Component {
         this._handleSearchChangeUserWaiting = this._handleSearchChangeUserWaiting.bind(this);
         this._handleSearchChangeUser = this._handleSearchChangeUser.bind(this);
         this._cancelUserWaiting = this._cancelUserWaiting.bind(this);
+        this._deleteUser = this._deleteUser.bind(this);
         this._showAlert = this._showAlert.bind(this);
     }
     _changeEmail(e) {
@@ -195,10 +197,28 @@ class Dashboard extends React.Component {
         })
         .then(response => {
             // do some stuff here
-            if(response.data.success) {
+            if(response && response.data.success) {
                 this._showAlert('Cancel Successful.', 'success', 2000);
             } else {
                 this._showAlert('Cancel Failed.', 'error', 2000);
+            }
+            console.log(response);
+        });
+    }
+
+    _deleteUser(id) {
+        axios
+            .delete(`/api/users/${id}`, {
+            headers: {
+                'x-access-token': localStorage.token
+            }
+        })
+        .then(response => {
+            // do some stuff here
+            if(response && response.data.success) {
+                this._showAlert('Delete Successful.', 'success', 2000);
+            } else {
+                this._showAlert('Delete Failed.', 'error', 2000);
             }
             console.log(response);
         });
@@ -327,6 +347,7 @@ class Dashboard extends React.Component {
                                                     <List.Item key={user._id}>
                                                         <List.Content floated='right' style={{marginTop: 5}}>
                                                             <ModalEditUserSkills user={user} />
+                                                            {/* <Button onClick={this._deleteUser.bind(this, user._id)} >Xóa</Button> */}
                                                         </List.Content>
                                                         <Image avatar src={user.image}/>
                                                         <List.Content>
@@ -344,6 +365,7 @@ class Dashboard extends React.Component {
                                             <List.Item key={user._id}>
                                                 <List.Content floated='right'>
                                                     <ModalEditUserSkills user={user} />
+                                                    {/* <Button onClick={this._deleteUser.bind(this, user._id)} >Xóa</Button> */}
                                                 </List.Content>
                                                 <Image avatar src={user.image}/>
                                                 <List.Content>

@@ -32,7 +32,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
             .get(`/api/checkCompany/${props.match.params.company}`)
             .then(response => {
                 console.log(response);
-                if(!response.data.success) {
+                if(response && !response.data.success) {
                     auth.logout();
                     history.push('/');
                 }

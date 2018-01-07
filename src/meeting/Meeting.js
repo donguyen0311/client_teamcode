@@ -127,9 +127,13 @@ class Meeting extends React.Component {
         console.log(this.room, 'room------------------')
         if(this.props.match.params.project !== nextProps.match.params.project) {
             var projectId = this.getQueryParams(nextProps.location.search, 'id');
-            this.loadMessage(projectId);
             this.setState({
-                projectId: projectId
+                projectId: projectId,
+                messages: [],
+                limit: 30,
+                offset: 0
+            }, () => {
+                this.loadMessage(projectId);
             });
             this.leaveMeeting(() => {
                 this.initMeeting(nextProps.match.url);
@@ -198,10 +202,10 @@ class Meeting extends React.Component {
         console.log(this.state);
         return (
             <div style={{marginTop:'-1rem', height: 'calc(100vh - 59px)'}}>
-                <div key={'video'} style={{width: '80%', display: 'inline-block', height: 'calc(100vh - 59px)'}}>
+                <div key={'video'} style={{width: '80%', display: 'inline-block', height: 'calc(100vh - 59px)', position: 'relative'}}>
                     <video src={this.state.stream} autoPlay muted style={{width: '100%', height: 'inherit', background: '#000'}}></video>
                     {this.state.peers.map((peer, index) => (
-                        <video key={peer.id} src={peer.stream} autoPlay style={{width: '20%', position: 'absolute', bottom: 0, right: index * 200}} muted></video>
+                        <video key={peer.id} src={peer.stream} autoPlay style={{width: '20%', position: 'absolute', bottom: 0, right: index * 200}}></video>
                     ))}
                 </div>
                 <div key={'chat'} style={{width: '20%', display: 'inline-block', height: 'calc(100vh - 59px)'}}>

@@ -51,7 +51,7 @@ class SideBar extends React.Component {
 
     componentWillMount() {
         user.getUserInfo().then(response => {
-            if(response.success) {
+            if(response && response.success) {
                 this.setState({
                     company: response.user.current_company,
                     projects: [...this.state.projects, ...response.user.belong_project]
@@ -62,7 +62,7 @@ class SideBar extends React.Component {
             }
         });
         project.getProjectBelongUser().then(response => {
-            if(response.success) {
+            if(response && response.success) {
                 this.setState({
                     projects: [...this.state.projects, ...response.projects]
                 });

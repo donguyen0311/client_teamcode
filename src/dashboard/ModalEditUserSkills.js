@@ -184,13 +184,11 @@ class ModalEditUserSkills extends React.Component {
         }, {
             headers: { 'x-access-token': localStorage.token }
         }).then(response => {
-            if(response.data.success) {
-                if(response.data.success) {
-                    this.showAlert('Update Successful.', 'success', 2000);
-                    this.changeView('view');
-                } else {
-                    this.showAlert('Update Failed.', 'error', 2000);
-                }
+            if(response && response.data.success) {
+                this.showAlert('Update Successful.', 'success', 2000);
+                this.changeView('view');
+            } else {
+                this.showAlert('Update Failed.', 'error', 2000);
             }
         });
     }

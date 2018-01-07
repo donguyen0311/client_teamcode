@@ -334,7 +334,7 @@ class Project extends React.Component {
 			});
 			this.props.socket.emit('Task:joinRoom', nextProps.match.url);
 			var projectId = this.getQueryParams(nextProps.location.search, 'id');
-			axios.get('/api/projects/' + projectId, {headers: { 'x-access-token': localStorage.token } })
+			axios.get(`/api/projects/${projectId}?project_name=${this.props.match.params.project}`, {headers: { 'x-access-token': localStorage.token } })
 				.then(response => {
 					console.log(response);
 					this.setState({
@@ -356,7 +356,7 @@ class Project extends React.Component {
 		console.log(this.props);
 		this.props.socket.emit('Task:joinRoom', this.props.match.url);
 		var projectId = this.getQueryParams(this.props.location.search, 'id');
-		axios.get('/api/projects/' + projectId, {headers: { 'x-access-token': localStorage.token } })
+		axios.get(`/api/projects/${projectId}?project_name=${this.props.match.params.project}`, {headers: { 'x-access-token': localStorage.token } })
 			.then(response => {
 				console.log(response);
 				this.setState({
@@ -527,7 +527,7 @@ class Project extends React.Component {
 						<Container>
 							<HeaderCustom>
 								<Title>
-									<span style={{fontSize: 18, verticalAlign: 'middle'}}>Đang làm</span> 
+									<span style={{fontSize: 18, verticalAlign: 'middle'}}>Viêc đang làm</span> 
 									<Label as='a' size={'small'} style={{float: 'right'}}>{this.state.columns['INPROGRESS'].length}</Label>
 								</Title>
 							</HeaderCustom>
@@ -581,7 +581,7 @@ class Project extends React.Component {
 						<Container>
 							<HeaderCustom>
 								<Title>
-									<span style={{fontSize: 18, verticalAlign: 'middle'}}>Kiểm tra</span> 
+									<span style={{fontSize: 18, verticalAlign: 'middle'}}>Việc đang kiểm tra</span> 
 									<Label as='a' size={'small'} style={{float: 'right'}}>{this.state.columns['CODEREVIEW'].length}</Label>
 								</Title>
 							</HeaderCustom>
@@ -635,7 +635,7 @@ class Project extends React.Component {
 						<Container>
 							<HeaderCustom>
 								<Title>
-									<span style={{fontSize: 18, verticalAlign: 'middle'}}>Hoàn thành</span> 
+									<span style={{fontSize: 18, verticalAlign: 'middle'}}>Việc đã hoàn thành</span> 
 									<Label as='a' size={'small'} style={{float: 'right'}}>{this.state.columns['DONE'].length}</Label>
 								</Title>
 							</HeaderCustom>

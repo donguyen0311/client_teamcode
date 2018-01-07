@@ -17,7 +17,7 @@ export function login(email, password, company_name) {
         }
         return auth.login(email, password, company_name).then(response => {
             dispatch(sendingRequest(false));
-            if (response.success) {
+            if (response && response.success) {
                 dispatch(setAuthState(true));
                 dispatch(changeLoginForm({
                     email: "",
@@ -42,7 +42,7 @@ export function register(company_name, email, username, password, confirm_passwo
         }
         return auth.register(company_name, email, username, password, confirm_password).then(response => {
             dispatch(sendingRequest(false));
-            if(response.success) {
+            if(response && response.success) {
                 dispatch(setAuthState(true));
                 dispatch(changeRegisterForm({
                     company_name: "",

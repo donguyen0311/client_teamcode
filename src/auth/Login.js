@@ -44,7 +44,7 @@ class Login extends React.Component {
                 .props
                 .login(this.props.data.formLoginState.email, this.props.data.formLoginState.password, this.props.data.formLoginState.company_name)
                 .then(response => {
-                    if (response.success) {
+                    if (response && response.success) {
                         this
                             .props
                             .history

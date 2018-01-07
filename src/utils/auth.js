@@ -8,7 +8,7 @@ var auth = {
         return axios
                 .post('/api/login', {email, password, company_name})
                 .then(response => {
-                    if (response.data.success) {
+                    if (response && response.data.success) {
                         localStorage.token = response.data.token;
                     }
                     return response.data;
@@ -28,7 +28,7 @@ var auth = {
         return axios
             .post('/api/register', {company_name, email, username, password, confirm_password})
             .then(response => {
-                if (response.data.success) {
+                if (response && response.data.success) {
                     return this.login(email, password, company_name);
                 }
                 return response.data;

@@ -241,7 +241,7 @@ class Profile extends React.Component {
                                     <h4>Đã làm việc tại</h4>
                                 </Table.Cell>
                                 <Table.Cell>
-                                    {this.props.data.profile.worked_at.join()}
+                                    {this.props.data.profile.worked_at.join(', ')}
                                 </Table.Cell>
                             </Table.Row>
                             <Table.Row>
@@ -249,7 +249,7 @@ class Profile extends React.Component {
                                     <h4>Đã học tại</h4>
                                 </Table.Cell>
                                 <Table.Cell>
-                                    {this.props.data.profile.studied_at.join()}
+                                    {this.props.data.profile.studied_at.join(', ')}
                                 </Table.Cell>
                             </Table.Row>
                             <Table.Row>
@@ -257,7 +257,7 @@ class Profile extends React.Component {
                                     <h4>Ngôn ngữ lập trình</h4>
                                 </Table.Cell>
                                 <Table.Cell>
-                                    {this.props.data.profile.language_programming.join()}
+                                    {this.props.data.profile.language_programming.join(', ')}
                                 </Table.Cell>
                             </Table.Row>
                             <Table.Row>

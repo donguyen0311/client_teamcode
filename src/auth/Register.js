@@ -48,7 +48,7 @@ class Register extends React.Component {
                             this.props.data.formRegisterState.password, 
                             this.props.data.formRegisterState.confirm_password)
                 .then(response => {
-                    if (response.success) {
+                    if (response && response.success) {
                         this
                             .props
                             .history

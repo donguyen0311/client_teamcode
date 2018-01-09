@@ -19,7 +19,9 @@ class Meeting extends React.Component {
             limit: 30,
             offset: 0,
             blockRequest: false,
-            visibleSidebar: false
+            visibleSidebar: false,
+            micStatus: true,
+            videoStatus: true
         }
         this.textInput = '';
         this.room = '';
@@ -106,8 +108,18 @@ class Meeting extends React.Component {
         }, callback);
     }
 
-    toggleVideo = () => this.room.toggleVideo()
-    toggleMic = () => this.room.toggleMic()
+    toggleVideo = () => {
+        this.room.toggleVideo();
+        this.setState({
+            videoStatus: !this.state.videoStatus
+        });
+    }
+    toggleMic = () => {
+        this.room.toggleMic();
+        this.setState({
+            micStatus: !this.state.micStatus
+        });
+    }
 
     toggleVisibility = () => this.setState({ visibleSidebar: !this.state.visibleSidebar })
 
@@ -238,13 +250,24 @@ class Meeting extends React.Component {
                     </Header>
                 </Sidebar>
                 <Sidebar.Pusher className='video-meeting'>
-            
                         <div className='navbar-meeting'>
-                            <Button inverted basic icon='video camera' size='large' onClick={this.toggleVideo}></Button>
-                            <Button inverted basic icon='unmute' size='large' onClick={this.toggleMic}></Button>
+                            {this.state.videoStatus ? (
+                                <Button inverted basic icon='video camera' size='large' onClick={this.toggleVideo}></Button>
+                            ) : (
+                                <Button inverted basic icon='low vision' size='large' onClick={this.toggleVideo}></Button>
+                            )}
+                            {this.state.micStatus ? (
+                                <Button inverted basic icon='unmute' size='large' onClick={this.toggleMic}></Button>
+                            ) : (
+                                <Button inverted basic icon='mute' size='large' onClick={this.toggleMic}></Button>
+                            )}
                             <Button inverted basic icon='comments' size='large' onClick={this.toggleVisibility}></Button>
                         </div>
-                        <video src={this.state.stream} autoPlay muted style={{width: '100%', height: 'inherit', background: '#000'}}></video>
+                        {this.state.videoStatus ? (
+                            <video src={this.state.stream} autoPlay muted style={{width: '100%', height: 'inherit', background: '#000'}}></video>
+                        ) : (
+                            <img style={{width: '100%', height: '100%'}} src={this.props.profileUser.profile.image} />
+                        )}
                         {this.state.peers.map((peer, index) => (
                             <video key={peer.id} src={peer.stream} autoPlay style={{width: '20%', position: 'absolute', bottom: 0, right: index * 200}}></video>
                         ))}

@@ -18,7 +18,8 @@ class Meeting extends React.Component {
             containerMessageRef: '',
             limit: 30,
             offset: 0,
-            blockRequest: false
+            blockRequest: false,
+            visibleSidebar: false
         }
         this.textInput = '';
         this.room = '';
@@ -105,6 +106,11 @@ class Meeting extends React.Component {
         }, callback);
     }
 
+    toggleVideo = () => this.room.toggleVideo()
+    toggleMic = () => this.room.toggleMic()
+
+    toggleVisibility = () => this.setState({ visibleSidebar: !this.state.visibleSidebar })
+
     getQueryParams(paramsString, param) {
 		let params = new URLSearchParams(paramsString); 
 		let value = params.get(param);
@@ -131,7 +137,8 @@ class Meeting extends React.Component {
                 projectId: projectId,
                 messages: [],
                 limit: 30,
-                offset: 0
+                offset: 0,
+                visibleSidebar: false
             }, () => {
                 this.loadMessage(projectId);
             });
@@ -201,46 +208,49 @@ class Meeting extends React.Component {
     render() {
         console.log(this.state);
         return (
-            <div style={{marginTop:'-1rem', height: 'calc(100vh - 59px)'}}>
-                <div key={'video'} style={{width: '80%', display: 'inline-block', height: 'calc(100vh - 59px)', position: 'relative'}}>
-                    <video src={this.state.stream} autoPlay muted style={{width: '100%', height: 'inherit', background: '#000'}}></video>
-                    {this.state.peers.map((peer, index) => (
-                        <video key={peer.id} src={peer.stream} autoPlay style={{width: '20%', position: 'absolute', bottom: 0, right: index * 200}}></video>
-                    ))}
-                </div>
-                <div key={'chat'} style={{width: '20%', display: 'inline-block', height: 'calc(100vh - 59px)'}}>
-                    <Sidebar.Pushable>
-                        <Sidebar animation='overlay' style={{width: '100%', paddingLeft: 1, paddingRight: 1}} visible={true} icon='labeled' vertical>
-                            <Header as='h3' attached='top'>Tin nhắn</Header>
-                            <Ref innerRef={this.handleRef}>
-                                <Segment attached style={{height: 'calc(100% - 83px)', overflow: 'auto'}} onScroll={this.handleScroll}>
-                                    <Comment.Group>
-                                        {this.state.messages.map((message) => (
-                                            <Comment key={message._id}>
-                                                <Comment.Avatar src={message.from.image} />
-                                                <Comment.Content>
-                                                    <Comment.Author as='a'>{message.from.firstname} {message.from.lastname}</Comment.Author>
-                                                    <Comment.Metadata>
-                                                        <TimeAgo date={message.createdAt} />
-                                                    </Comment.Metadata>
-                                                    <Comment.Text>
-                                                        {message.message}
-                                                    </Comment.Text>
-                                                </Comment.Content>
-                                            </Comment>
-                                        ))}
-                                    </Comment.Group>
-                                </Segment>
-                            </Ref>
-                            <Header as='div' attached='bottom' style={{padding: 0}}>
-                                <Form onSubmit={this.sendMessage}>
-                                    <Form.Input type='text' placeholder='Nhập tin nhắn' name='text_input' size='small' action={<Button type='submit' content='Gửi' primary />} />
-                                </Form>
-                            </Header>
-                        </Sidebar>
-                    </Sidebar.Pushable>
-                </div>
-            </div>
+            <Sidebar.Pushable key={'chat'} style={{marginTop:'-1rem', height: 'calc(100vh - 59px)'}}>
+                <Sidebar style={{overflow: 'hidden'}} animation='overlay' width='wide' animation='overlay' direction='right' visible={this.state.visibleSidebar} icon='labeled' vertical='true'>
+                    <Header as='h3' attached='top'>Tin nhắn</Header>
+                    <Ref innerRef={this.handleRef}>
+                        <Segment attached style={{height: 'calc(100% - 80px)', overflow: 'auto'}} onScroll={this.handleScroll}>
+                            <Comment.Group>
+                                {this.state.messages.map((message) => (
+                                    <Comment key={message._id}>
+                                        <Comment.Avatar src={message.from.image} />
+                                        <Comment.Content>
+                                            <Comment.Author as='a'>{message.from.firstname} {message.from.lastname}</Comment.Author>
+                                            <Comment.Metadata>
+                                                <TimeAgo date={message.createdAt} />
+                                            </Comment.Metadata>
+                                            <Comment.Text>
+                                                {message.message}
+                                            </Comment.Text>
+                                        </Comment.Content>
+                                    </Comment>
+                                ))}
+                            </Comment.Group>
+                        </Segment>
+                    </Ref>
+                    <Header as='div' attached='bottom' style={{padding: 0, border: 'none'}}>
+                        <Form onSubmit={this.sendMessage}>
+                            <Form.Input type='text' placeholder='Nhập tin nhắn' name='text_input' size='small' action={<Button type='submit' content='Gửi' primary />} />
+                        </Form>
+                    </Header>
+                </Sidebar>
+                <Sidebar.Pusher className='video-meeting'>
+            
+                        <div className='navbar-meeting'>
+                            <Button inverted basic icon='video camera' size='large' onClick={this.toggleVideo}></Button>
+                            <Button inverted basic icon='unmute' size='large' onClick={this.toggleMic}></Button>
+                            <Button inverted basic icon='comments' size='large' onClick={this.toggleVisibility}></Button>
+                        </div>
+                        <video src={this.state.stream} autoPlay muted style={{width: '100%', height: 'inherit', background: '#000'}}></video>
+                        {this.state.peers.map((peer, index) => (
+                            <video key={peer.id} src={peer.stream} autoPlay style={{width: '20%', position: 'absolute', bottom: 0, right: index * 200}}></video>
+                        ))}
+                
+                </Sidebar.Pusher>
+            </Sidebar.Pushable>
         )
     }
 }

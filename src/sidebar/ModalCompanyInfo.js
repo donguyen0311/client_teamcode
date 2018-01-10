@@ -136,7 +136,7 @@ class ModalCompanyInfo extends React.Component {
                         <Table.Body>
                             <Table.Row>
                                 <Table.Cell width={4}>
-                                    <h4>Company Name</h4>
+                                    <h4>tên công ty</h4>
                                 </Table.Cell>
                                 <Table.Cell>
                                     {this.state.company_name}
@@ -144,7 +144,7 @@ class ModalCompanyInfo extends React.Component {
                             </Table.Row>
                             <Table.Row>
                                 <Table.Cell>
-                                    <h4>Address</h4>
+                                    <h4>Địa chỉ</h4>
                                 </Table.Cell>
                                 <Table.Cell>
                                     {this.state.address}
@@ -152,7 +152,7 @@ class ModalCompanyInfo extends React.Component {
                             </Table.Row>
                             <Table.Row>
                                 <Table.Cell>
-                                    <h4>Field</h4>
+                                    <h4>Lĩnh vực</h4>
                                 </Table.Cell>
                                 <Table.Cell>
                                     {this.state.field}
@@ -160,7 +160,7 @@ class ModalCompanyInfo extends React.Component {
                             </Table.Row>
                             <Table.Row>
                                 <Table.Cell>
-                                    <h4>Description</h4>
+                                    <h4>Mô tả</h4>
                                 </Table.Cell>
                                 <Table.Cell>
                                     {this.state.description} 
@@ -168,7 +168,7 @@ class ModalCompanyInfo extends React.Component {
                             </Table.Row>
                             <Table.Row>
                                 <Table.Cell colSpan='2'>
-                                    <Button fluid onClick={this.changeView.bind(this, 'edit')}>Update Profile</Button>
+                                    <Button fluid onClick={this.changeView.bind(this, 'edit')}>Cập nhật thông tin</Button>
                                 </Table.Cell>
                             </Table.Row>                 
                         </Table.Body>
@@ -192,7 +192,7 @@ class ModalCompanyInfo extends React.Component {
                             <Table.Body>
                                 <Table.Row>
                                     <Table.Cell width={2}>
-                                        <h4>Company Name</h4>
+                                        <h4>Tên công ty</h4>
                                     </Table.Cell>
                                     <Table.Cell>
                                         <Form.Input type='text' value={this.state.company_name} readOnly />
@@ -200,7 +200,7 @@ class ModalCompanyInfo extends React.Component {
                                 </Table.Row>
                                 <Table.Row>
                                     <Table.Cell>
-                                        <h4>Address</h4>
+                                        <h4>Địa chỉ</h4>
                                     </Table.Cell>
                                     <Table.Cell>
                                         <Form.Input type='text' name='address' value={this.state.address} onChange={this.handleChange} />
@@ -208,7 +208,7 @@ class ModalCompanyInfo extends React.Component {
                                 </Table.Row>
                                 <Table.Row>
                                     <Table.Cell>
-                                        <h4>Field</h4>
+                                        <h4>Lĩnh vực</h4>
                                     </Table.Cell>
                                     <Table.Cell>
                                         <Form.Input type='text' name='field' value={this.state.field} onChange={this.handleChange} />
@@ -216,7 +216,7 @@ class ModalCompanyInfo extends React.Component {
                                 </Table.Row>
                                 <Table.Row>
                                     <Table.Cell>
-                                        <h4>Description</h4>
+                                        <h4>Mô tả</h4>
                                     </Table.Cell>
                                     <Table.Cell>
                                         <Form.TextArea name='description' value={this.state.description} onChange={this.handleChange} />
@@ -225,8 +225,8 @@ class ModalCompanyInfo extends React.Component {
                                 <Table.Row>
                                     <Table.Cell colSpan='2'>
                                         <Form.Group widths='equal'>
-                                            <Button fluid type='submit' color='green' >Update</Button>
-                                            <Button fluid type='button' onClick={this.changeView.bind(this, 'view')}>View Profile</Button>
+                                            <Button fluid type='submit' color='green' >Cập nhật</Button>
+                                            <Button fluid type='button' onClick={this.changeView.bind(this, 'view')}>Xem thông tin</Button>
                                         </Form.Group>
                                     </Table.Cell>
                                 </Table.Row>                 

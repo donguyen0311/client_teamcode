@@ -12,6 +12,7 @@ import {
     Input,
     Icon,
     Message,
+    Button
 } from 'semantic-ui-react';
 import axios from 'axios';
 import _ from 'lodash';
@@ -48,6 +49,7 @@ class Dashboard extends React.Component {
         this._handleSearchChangeUserWaiting = this._handleSearchChangeUserWaiting.bind(this);
         this._handleSearchChangeUser = this._handleSearchChangeUser.bind(this);
         this._cancelUserWaiting = this._cancelUserWaiting.bind(this);
+        this._deleteUser = this._deleteUser.bind(this);
         this._showAlert = this._showAlert.bind(this);
     }
     _changeEmail(e) {
@@ -195,10 +197,28 @@ class Dashboard extends React.Component {
         })
         .then(response => {
             // do some stuff here
-            if(response.data.success) {
+            if(response && response.data.success) {
                 this._showAlert('Cancel Successful.', 'success', 2000);
             } else {
                 this._showAlert('Cancel Failed.', 'error', 2000);
+            }
+            console.log(response);
+        });
+    }
+
+    _deleteUser(id) {
+        axios
+            .delete(`/api/users/${id}`, {
+            headers: {
+                'x-access-token': localStorage.token
+            }
+        })
+        .then(response => {
+            // do some stuff here
+            if(response && response.data.success) {
+                this._showAlert('Delete Successful.', 'success', 2000);
+            } else {
+                this._showAlert('Delete Failed.', 'error', 2000);
             }
             console.log(response);
         });
@@ -241,7 +261,7 @@ class Dashboard extends React.Component {
                         <Grid.Column mobile={16} tablet={16} computer={16}>
                             <Grid.Row>
                                 <Segment color='blue'>
-                                    <Header as='h2'>Invite</Header>
+                                    <Header as='h2'>Mời nhân viên</Header>
                                     <Form onSubmit={this._handleInvite}>     
                                         <Form.Input size='big' label='Email' placeholder='example@gmail.com' onChange={this._changeEmail} required/>
                                         <Message
@@ -251,8 +271,8 @@ class Dashboard extends React.Component {
                                             content={this.state.emailErrorMessage}
                                         />
                                         {!this.state.loading ? 
-                                            <Form.Button fluid size='large' type='submit' color='blue'>Invite</Form.Button> : 
-                                            <Form.Button fluid size='large' loading disabled color='blue'>Invite</Form.Button>
+                                            <Form.Button fluid size='large' type='submit' color='blue'>Mời</Form.Button> : 
+                                            <Form.Button fluid size='large' loading disabled color='blue'>Mời</Form.Button>
                                         }
                                     </Form>
                                 </Segment>
@@ -261,13 +281,13 @@ class Dashboard extends React.Component {
                         <Grid.Column mobile={16} tablet={8} computer={8}>
                             <Grid.Row>
                                 <Segment color='red'>
-                                    <Header as='h2'>User Waiting</Header>
+                                    <Header as='h2'>Danh sách đang mời</Header>
                                     <Input
                                         loading={this.state.isLoadingSearchUserWaiting}
                                         onChange={this._handleSearchChangeUserWaiting}
                                         icon='search' 
                                         fluid 
-                                        placeholder='Search...'
+                                        placeholder='Tìm kiếm...'
                                     />
                                     <List animated divided verticalAlign='middle' size='large' style={{maxHeight: 500, overflow: 'auto'}}>
                                         {this.state.userWaitingValue.length > 0 ? 
@@ -276,8 +296,8 @@ class Dashboard extends React.Component {
                                                 [...this.state.userWaitingResults].map((user) => (
                                                     <List.Item key={user._id}>
                                                         <List.Content floated='right' style={{marginTop: 5}}>
-                                                            <Label color='green' size='small'>Waiting</Label>
-                                                            <Label color='red' size='small' as='button' style={{cursor: 'pointer'}} onClick={this._cancelUserWaiting.bind(this, user._id)}>Cancel</Label>
+                                                            <Label color='green' size='small'>Đang chờ</Label>
+                                                            <Label color='red' size='small' as='button' style={{cursor: 'pointer'}} onClick={this._cancelUserWaiting.bind(this, user._id)}>Hủy</Label>
                                                         </List.Content>
                                                         <Image avatar src={user.image}/>
                                                         <List.Content>
@@ -287,15 +307,15 @@ class Dashboard extends React.Component {
                                                 )) :
                                                 <List.Item>
                                                     <List.Content>
-                                                        <h4 style={{textIndent: 10}}>No results found.</h4>
+                                                        <h4 style={{textIndent: 10}}>Không tìm thấy kết quả.</h4>
                                                     </List.Content>
                                                 </List.Item>
                                         ) :
                                         [...this.state.userWaitingList].map((user) => (
                                             <List.Item key={user._id}>
                                                 <List.Content floated='right' style={{marginTop: 5}}>
-                                                    <Label color='green' size='small'>Waiting</Label>
-                                                    <Label color='red' size='small' as='button' style={{cursor: 'pointer'}} onClick={this._cancelUserWaiting.bind(this, user._id)}>Cancel</Label>
+                                                    <Label color='green' size='small'>Đang chờ</Label>
+                                                    <Label color='red' size='small' as='button' style={{cursor: 'pointer'}} onClick={this._cancelUserWaiting.bind(this, user._id)}>Hủy</Label>
                                                 </List.Content>
                                                 <Image avatar src={user.image}/>
                                                 <List.Content>
@@ -311,13 +331,13 @@ class Dashboard extends React.Component {
                         <Grid.Column mobile={16} tablet={8} computer={8}>
                             <Grid.Row>
                                 <Segment color='teal'>
-                                    <Header as='h2'>User List</Header>
+                                    <Header as='h2'>Danh sách nhân viên</Header>
                                     <Input
                                         loading={this.state.isLoadingSearchUser}
                                         onChange={this._handleSearchChangeUser}
                                         icon='search' 
                                         fluid 
-                                        placeholder='Search...'
+                                        placeholder='Tìm kiếm...'
                                     />
                                     <List animated divided verticalAlign='middle' size='large' style={{maxHeight: 500, overflow: 'auto'}}>
                                         {this.state.userValue.length > 0 ? 
@@ -327,6 +347,7 @@ class Dashboard extends React.Component {
                                                     <List.Item key={user._id}>
                                                         <List.Content floated='right' style={{marginTop: 5}}>
                                                             <ModalEditUserSkills user={user} />
+                                                            {/* <Button onClick={this._deleteUser.bind(this, user._id)} >Xóa</Button> */}
                                                         </List.Content>
                                                         <Image avatar src={user.image}/>
                                                         <List.Content>
@@ -336,7 +357,7 @@ class Dashboard extends React.Component {
                                                 )) :
                                                 <List.Item>
                                                     <List.Content>
-                                                        <h4 style={{textIndent: 10}}>No results found.</h4>
+                                                        <h4 style={{textIndent: 10}}>Không tìm thấy kết quả.</h4>
                                                     </List.Content>
                                                 </List.Item>
                                         ) :
@@ -344,6 +365,7 @@ class Dashboard extends React.Component {
                                             <List.Item key={user._id}>
                                                 <List.Content floated='right'>
                                                     <ModalEditUserSkills user={user} />
+                                                    {/* <Button onClick={this._deleteUser.bind(this, user._id)} >Xóa</Button> */}
                                                 </List.Content>
                                                 <Image avatar src={user.image}/>
                                                 <List.Content>
@@ -356,119 +378,9 @@ class Dashboard extends React.Component {
                                 </Segment>
                             </Grid.Row>
                         </Grid.Column>
-                        {/* <Grid.Column mobile={16} tablet={16} computer={16}>
-                            <Grid.Row>
-                                <Segment color='teal'>
-                                    <Header as='h2'>User List</Header>
-                                    <Input
-                                        loading={this.state.isLoadingSearchUser}
-                                        onChange={this._handleSearchChangeUser}
-                                        icon='search' 
-                                        fluid 
-                                        placeholder='Search...'
-                                    />
-                                    <List divided verticalAlign='middle' size='large' style={{maxHeight: 500, overflow: 'auto'}}>
-                                        {this.state.userValue.length > 0 ? 
-                                        (
-                                            this.state.userResults.length > 0 ? 
-                                                [...this.state.userResults].map((user) => (
-                                                    <List.Item key={user._id}>
-                                                        <List.Content floated='right' style={{marginTop: 5}}>
-                                                            <ModalEditUserSkills user={user} />
-                                                        </List.Content>
-                                                        <Image avatar src={user.image}/>
-                                                        <List.Content>
-                                                            {user.email}
-                                                        </List.Content>
-                                                    </List.Item>
-                                                )) :
-                                                <List.Item>
-                                                    <List.Content>
-                                                        <h4 style={{textIndent: 10}}>No results found.</h4>
-                                                    </List.Content>
-                                                </List.Item>
-                                        ) :
-                                        [...this.state.userList].map((user) => (
-                                            <List.Item key={user._id}>
-                                                <List.Content floated='right'>
-                                                    <ModalEditUserSkills user={user} />
-                                                </List.Content>
-                                                <Image avatar src={user.image}/>
-                                                <List.Content>
-                                                    {user.email}
-                                                </List.Content>
-                                            </List.Item>
-                                        ))
-                                        }
-                                    </List>
-                                    <Table striped>
-                                        <Table.Header>
-                                        <Table.Row>
-                                            <Table.HeaderCell>Name</Table.HeaderCell>
-                                            <Table.HeaderCell>Name</Table.HeaderCell>
-                                            <Table.HeaderCell>Date Joined</Table.HeaderCell>
-                                            <Table.HeaderCell>E-mail</Table.HeaderCell>
-                                            <Table.HeaderCell>Called</Table.HeaderCell>
-                                        </Table.Row>
-                                        </Table.Header>
-
-                                        <Table.Body>
-                                        <Table.Row>
-                                            <Table.Cell>John Lilki</Table.Cell>
-                                            <Table.Cell>September 14, 2013</Table.Cell>
-                                            <Table.Cell>jhlilk22@yahoo.com</Table.Cell>
-                                            <Table.Cell>No</Table.Cell>
-                                        </Table.Row>
-                                        <Table.Row>
-                                            <Table.Cell>Jamie Harington</Table.Cell>
-                                            <Table.Cell>January 11, 2014</Table.Cell>
-                                            <Table.Cell>jamieharingonton@yahoo.com</Table.Cell>
-                                            <Table.Cell>Yes</Table.Cell>
-                                        </Table.Row>
-                                        <Table.Row>
-                                            <Table.Cell>Jill Lewis</Table.Cell>
-                                            <Table.Cell>May 11, 2014</Table.Cell>
-                                            <Table.Cell>jilsewris22@yahoo.com</Table.Cell>
-                                            <Table.Cell>Yes</Table.Cell>
-                                        </Table.Row>
-                                        <Table.Row>
-                                            <Table.Cell>John Lilki</Table.Cell>
-                                            <Table.Cell>September 14, 2013</Table.Cell>
-                                            <Table.Cell>jhlilk22@yahoo.com</Table.Cell>
-                                            <Table.Cell>No</Table.Cell>
-                                        </Table.Row>
-                                        <Table.Row>
-                                            <Table.Cell>John Lilki</Table.Cell>
-                                            <Table.Cell>September 14, 2013</Table.Cell>
-                                            <Table.Cell>jhlilk22@yahoo.com</Table.Cell>
-                                            <Table.Cell>No</Table.Cell>
-                                        </Table.Row>
-                                        <Table.Row>
-                                            <Table.Cell>Jamie Harington</Table.Cell>
-                                            <Table.Cell>January 11, 2014</Table.Cell>
-                                            <Table.Cell>jamieharingonton@yahoo.com</Table.Cell>
-                                            <Table.Cell>Yes</Table.Cell>
-                                        </Table.Row>
-                                        <Table.Row>
-                                            <Table.Cell>Jill Lewis</Table.Cell>
-                                            <Table.Cell>May 11, 2014</Table.Cell>
-                                            <Table.Cell>jilsewris22@yahoo.com</Table.Cell>
-                                            <Table.Cell>Yes</Table.Cell>
-                                        </Table.Row>
-                                        <Table.Row>
-                                            <Table.Cell>John Lilki</Table.Cell>
-                                            <Table.Cell>September 14, 2013</Table.Cell>
-                                            <Table.Cell>jhlilk22@yahoo.com</Table.Cell>
-                                            <Table.Cell>No</Table.Cell>
-                                        </Table.Row>
-                                        </Table.Body>
-                                    </Table>
-                                </Segment>
-                            </Grid.Row>
-                        </Grid.Column> */}
                     </Grid>
                 ) : (
-                    <h1 style={{textAlign: 'center'}}><Icon name='lock' />You have not permission to access this page</h1>
+                    <h1 style={{textAlign: 'center'}}><Icon name='lock' />Bạn không có quyền truy cập trang này.</h1>
                 )}
             </Container>
         );

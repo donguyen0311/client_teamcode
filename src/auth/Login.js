@@ -44,7 +44,7 @@ class Login extends React.Component {
                 .props
                 .login(this.props.data.formLoginState.email, this.props.data.formLoginState.password, this.props.data.formLoginState.company_name)
                 .then(response => {
-                    if (response.success) {
+                    if (response && response.success) {
                         this
                             .props
                             .history
@@ -107,7 +107,7 @@ class Login extends React.Component {
                     maxWidth: 450,
                     margin: '0 auto'
                 }}>
-                    <Header as='h2'>Sign In</Header>
+                    <Header as='h2'>Đăng nhập</Header>
                     {((this.state.emailValid === false || this.state.passwordValid === false) && this.state.submitSignin)
                         ? <Message key={"1"}
                                 error
@@ -132,7 +132,7 @@ class Login extends React.Component {
                         </Form.Field>
                         <Form.Field>
                             <Form.Input
-                                label="Password"
+                                label="Mật khẩu"
                                 type="password"
                                 id="password"
                                 placeholder='••••••••••'
@@ -140,11 +140,11 @@ class Login extends React.Component {
                                 required />
                         </Form.Field>
                         <Form.Field>
-                            <Checkbox label='Remember me'/>
+                            <Checkbox label='Duy trì đăng nhập'/>
                         </Form.Field>
                         {(this.props.data.currentlySending)
-                            ? <Button basic loading>Loading</Button>
-                            : <Button basic type='submit'>Sign In</Button>}
+                            ? <Button basic loading>Đang tải</Button>
+                            : <Button basic type='submit'>Đăng nhập</Button>}
                     </Form>
                 </Segment>
             </Container>

@@ -29,10 +29,10 @@ class Home extends React.Component {
                         backgroundSize: 'cover'}}>
                 <div style={{verticalAlign: 'middle', display: 'table-cell'}}>
                     <Form style={{width: 300, margin: '0 auto'}} onSubmit={this.hanbdleSubmit}>
-                        <Form.Input onChange={this.handleChange} icon='search' size='massive' placeholder='Your Company Name' transparent autoFocus />
+                        <Form.Input onChange={this.handleChange} icon='search' size='massive' placeholder='Tên công ty của bạn' transparent autoFocus />
                         <Form.Input type='submit' style={{display: 'none'}} />
                     </Form>
-                    <Header as='h4' onClick={() => this.props.history.push('/signup')} style={{cursor: 'pointer'}}>Or Create Your Company</Header>
+                    <Header as='h4' onClick={() => this.props.history.push('/signup')} style={{cursor: 'pointer'}}>Hoặc tạo công ty của bạn</Header>
                 </div>    
             </div>
         )

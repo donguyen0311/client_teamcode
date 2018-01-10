@@ -1,12 +1,11 @@
 import React from 'react';
-// import ReactDOM from 'react-dom';
 import {connect} from 'react-redux';
-import {Menu} from 'semantic-ui-react';
-import {changeTaskEditorCode, changeTaskEditorMode} from './EditorActions';
+import {Menu, Icon} from 'semantic-ui-react';
 import * as ts from "typescript";
 import axios from 'axios';
 var Babel = require('babel-standalone');
 // var uniter = require('uniter');
+
 
 class LiveCode extends React.Component { 
     constructor(props) {
@@ -60,15 +59,14 @@ class LiveCode extends React.Component {
 
     updatePreview() {
         var previewFrame = this.refs.iframe;
-        var codeCSS = this.props.data[this.props.taskID].css.code;
-        var codeHTML = this.props.data[this.props.taskID].html.code;
-        var codeJS = '';
-        if (this.props.data[this.props.taskID].js.mode === 'text/typescript-jsx') {
+        var codeCSS = this.props.data[this.props.taskID].css ? this.props.data[this.props.taskID].css.code : '';
+        var codeHTML = this.props.data[this.props.taskID].html ? this.props.data[this.props.taskID].html.code : '';
+        var modeJS = this.props.data[this.props.taskID].js ? this.props.data[this.props.taskID].js.mode : 'javascript'; 
+        var codeJS = this.props.data[this.props.taskID].js ? this.props.data[this.props.taskID].js.code : '';
+        if (modeJS === 'text/typescript-jsx') {
             codeJS = this.compileCodeJSX(this.props.data[this.props.taskID].js.code);
-        } else if (this.props.data[this.props.taskID].js.mode === 'application/typescript') {
-            codeJS = this.compileCodeTypeScript(this.props.data[this.props.taskID].js.code);
-        }else {
-            codeJS = this.props.data[this.props.taskID].js.code;
+        } else if (modeJS === 'application/typescript') {
+            codeJS = this.compileCodeTypeScript(codeJS);
         }
         
         var preview =  previewFrame.contentDocument || previewFrame.contentWindow.document;
@@ -135,10 +133,10 @@ class LiveCode extends React.Component {
                 <Menu attached={'top'}>
                     <Menu.Menu position='left'>
                         <Menu.Item name='save' onClick={this.saveCode}>
-                            Save
+                            <Icon name='save' /> Lưu
                         </Menu.Item>
                         <Menu.Item name='run' onClick={this.updatePreview}>
-                            Run
+                            <Icon name='play circle' /> Chạy
                         </Menu.Item>
                     </Menu.Menu>
                 </Menu>

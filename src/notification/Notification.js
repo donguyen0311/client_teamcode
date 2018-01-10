@@ -22,7 +22,7 @@ function notifyMe(title, body, link, timeout = 10000, icon = 'https://freeiconsh
             body: body,
         });
         notification.onclick = function () {
-            window.open("localhost:3000" + link);      
+            window.open("teamcode.tk" + link);      
         }; 
         setTimeout(notification.close.bind(notification), timeout);
     }
@@ -54,7 +54,6 @@ class Notifications extends React.Component {
             });
             let link = `/#/${this.props.match.params.company}/project/${notificationItem.link}`;
             notifyMe(notificationItem.title, notificationItem.content, link);
-            //console.log("you have a new notification", notificationItem);
         });
     }
 
@@ -62,10 +61,12 @@ class Notifications extends React.Component {
         axios
             .get('/api/notifications/status/0', {headers: { 'x-access-token': localStorage.token } })
             .then(response => {
-                this.setState({
-                    newNotification: response.data.notifications
-                });
                 console.log(response);
+                if(response && response.data.success) {
+                    this.setState({
+                        newNotification: response.data.notifications
+                    });
+                } 
             })
             .catch(error => {
                 console.log(error);
@@ -77,11 +78,13 @@ class Notifications extends React.Component {
         axios
             .get('/api/notifications/', {headers: { 'x-access-token': localStorage.token } })
             .then(response => {
-                this.setState({
-                    notificationList: response.data.notifications,
-                    offset: this.state.offset + 15
-                });
                 console.log(response);
+                if(response && response.data.success) {
+                    this.setState({
+                        notificationList: response.data.notifications,
+                        offset: this.state.offset + 15
+                    });
+                }
             })
             .catch(error => {
                 console.log(error);
@@ -92,10 +95,12 @@ class Notifications extends React.Component {
         axios
             .put(`/api/notifications/status/${status}`, {}, {headers: { 'x-access-token': localStorage.token } })
             .then(response => {
-                this.setState({
-                    newNotification: response.data.notifications
-                });
                 console.log(response);
+                if(response && response.data.success) {
+                    this.setState({
+                        newNotification: response.data.notifications
+                    });
+                }
             })
             .catch(error => {
                 console.log(error);
@@ -106,11 +111,13 @@ class Notifications extends React.Component {
         axios
             .put(`/api/notifications/${id}/status/${status}`, {}, {headers: { 'x-access-token': localStorage.token } })
             .then(response => {
-                this.setState({
-                    newNotification: response.data.notifications
-                }); 
                 console.log(response);
-                this.props.history.push(`/${this.props.match.params.company}/project/${link}`)
+                if(response && response.data.success) {
+                    this.setState({
+                        newNotification: response.data.notifications
+                    }); 
+                }
+                this.props.history.push(`/${this.props.match.params.company}/project/${link}`);
             })
             .catch(error => {
                 console.log(error);
@@ -137,7 +144,7 @@ class Notifications extends React.Component {
             axios
                 .get(`/api/notifications/?offset=${this.state.offset}&limit=${this.state.limit}`, {headers: { 'x-access-token': localStorage.token } })
                 .then(response => {
-                    if(response.data.success && response.data.notifications.length !== 0) {
+                    if(response && response.data.success && response.data.notifications.length !== 0) {
                         this.setState({
                             notificationList: [...this.state.notificationList, ...response.data.notifications],
                             offset: this.state.offset + 15,
@@ -173,7 +180,7 @@ class Notifications extends React.Component {
         return (
             <Dropdown trigger={trigger} pointing='top right' inline icon={null} onOpen={this.getNotification} onClose={this.handleCloseNotification}>
                 <Dropdown.Menu style={{minWidth: 400, right: -7.5}}>
-                    <Dropdown.Header>Notifications</Dropdown.Header>
+                    <Dropdown.Header>Thông báo</Dropdown.Header>
                     <Dropdown.Menu scrolling onScroll={this.handleScroll}>
                         {(this.state.notificationList.length > 0) ? (
                             this.state.notificationList.map((notification) => (
@@ -196,7 +203,7 @@ class Notifications extends React.Component {
                             ))  
                         ) : (
                             <Dropdown.Item> 
-                                <Header as='h3' textAlign='center' content='Empty' />
+                                <Header as='h3' textAlign='center' content='Trống' />
                             </Dropdown.Item> 
                         )}
                         {this.state.activeLoader ? (

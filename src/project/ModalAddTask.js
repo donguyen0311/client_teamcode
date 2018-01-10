@@ -1,6 +1,11 @@
 import React from 'react';
 import { Dropdown, Header, Icon, Modal, Button, Form } from 'semantic-ui-react';
 
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import moment from 'moment';
+import 'moment-duration-format';
+
 class ModalAddTask extends React.Component {
     constructor(props) {
         super(props);
@@ -12,10 +17,13 @@ class ModalAddTask extends React.Component {
             addLabels: [],
             labelOptions: [],
 			addDescription: '',
-			addResponsible: ''
+            addResponsible: '',
+            addStartDay: moment(),
+            addEndDay: moment().add(1, 'days'),
 		};
         this.handleChangeAdd = this.handleChangeAdd.bind(this);
         this.handleAddition = this.handleAddition.bind(this);
+        this.handleDateChange = this.handleDateChange.bind(this);
     }
 
     formatDropdownValue(arrayValue) {
@@ -36,6 +44,13 @@ class ModalAddTask extends React.Component {
         });
     }
 
+    handleDateChange(type, date) {
+        console.log(date, type);
+        this.setState({
+			[type]: date
+        });
+    }
+
     closeModalAdd = () => {
 		this.setState({ 
 			openModalAdd: false,
@@ -44,8 +59,10 @@ class ModalAddTask extends React.Component {
             addNote: '',
             addLabels: [],
 			addDescription: '',
-			addResponsible: ''
-		})
+            addResponsible: '',
+            addStartDay: moment(),
+            addEndDay: moment().add(1, 'days'),
+		});
 	}
     openModalAdd = () => this.setState({ openModalAdd: true })
     
@@ -59,23 +76,39 @@ class ModalAddTask extends React.Component {
         const { openModalAdd } = this.state; 
         return (
             <Modal open={openModalAdd} onClose={this.closeModalAdd} trigger={<div onClick={this.openModalAdd} style={{height: 60, width: 'auto', border: '3px dashed #999', lineHeight: '50px', borderRadius: 5, textAlign: 'center', color: '#999', cursor: 'pointer'}}><Icon name="add circle" size={'big'} /></div>} size='mini' closeIcon>
-                <Header icon='hashtag' content='Add Task'/>
+                <Header icon='hashtag' content='Thêm công việc'/>
                 <Modal.Content>
                     <Form onSubmit={this.props.addTask.bind(this, this.state, 'TODO', this.closeModalAdd)}>
                         <Form.Field>
-                            <Form.Input label="Task Name" placeholder='Task Name' name='addTaskName' onChange={this.handleChangeAdd} required />
+                            <Form.Input label="Tên công việc" placeholder='Tên công việc' name='addTaskName' onChange={this.handleChangeAdd} required />
                         </Form.Field>
                         <Form.Field>
-                            <Form.Input type="number" label="Level" placeholder='Level' name='addLevel' onChange={this.handleChangeAdd} required />
+                            <Form.Input type="number" label="Cấp độ" placeholder='Cấp độ' name='addLevel' onChange={this.handleChangeAdd} required />
                         </Form.Field>
                         <Form.Field>
-                            <Form.TextArea label="Note" placeholder='Note' name='addNote' onChange={this.handleChangeAdd} required />
+                            <Form.TextArea label="Chú thích" placeholder='Chú thích' name='addNote' onChange={this.handleChangeAdd} required />
                         </Form.Field>
                         <Form.Field>
-                            <Form.TextArea label="Description" placeholder='Description' name='addDescription' onChange={this.handleChangeAdd} required />
+                            <Form.TextArea label="Mô tả" placeholder='Mô tả' name='addDescription' onChange={this.handleChangeAdd} required />
+                        </Form.Field>
+                        <Form.Field className="required">
+                            <label>Ngày bắt đầu</label>
+                            <DatePicker required selected={this.state.addStartDay}
+                                name='addStartDay'
+                                dateFormat="DD/MM/YYYY"
+                                onChange={this.handleDateChange.bind(this, 'addStartDay')}
+                            />
+                        </Form.Field>
+                        <Form.Field className="required">
+                            <label>Ngày kết thúc</label>
+                            <DatePicker required selected={this.state.addEndDay}
+                                name='addEndDay'
+                                dateFormat="DD/MM/YYYY"
+                                onChange={this.handleDateChange.bind(this, 'addEndDay')}
+                            />
                         </Form.Field>
                         <Form.Field>
-                            <label>Labels</label>
+                            <label>Nhãn</label>
                             <Dropdown
                                 name='addLabels'
                                 options={this.state.labelOptions}
@@ -90,15 +123,15 @@ class ModalAddTask extends React.Component {
                             />
                         </Form.Field>
                         <Form.Field>
-                            <label>Responsible</label>
-                            <Dropdown placeholder='Responsible User' fluid multiple selection 
+                            <label>Người chịu trách nhiệm</label>
+                            <Dropdown fluid multiple selection 
                                 name='addResponsible'
                                 options={this.props.formatResponsibleUser(this.props.currentProject.users)}
                                 onChange={this.handleChangeAdd} />
                         </Form.Field>
                         <Button color='green' size='tiny' type='submit'>
                             <Icon name='checkmark'/>
-                            Add
+                            Thêm
                         </Button>
                     </Form>
                 </Modal.Content>

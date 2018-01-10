@@ -3,34 +3,23 @@ import {connect} from 'react-redux';
 import { Link } from 'react-router-dom';
 import {
     Sidebar,
-    Button,
     Menu,
     Image,
     Icon,
     Header,
     Modal,
-    Dropdown,
-    Form
+    Dropdown
 } from 'semantic-ui-react';
 import auth from '../utils/auth';
 import ModalCompanyInfo from './ModalCompanyInfo';
-
+import _ from 'lodash';
 import {changeVisible} from './SidebarActions';
-import Dashboard from '../dashboard/Dashboard';
-import Project from '../project/Project';
-import ProjectNewForm from '../project/ProjectNewForm';
-import Estimate from '../estimate/Estimate';
-import NavBar from '../app/Header';
 
-import Avatar from '../user/UserAvatar';
+import Estimate from '../estimate/Estimate';
 
 import project from '../utils/project';
 
 import user from '../utils/user';
-
-import DatePicker from 'react-datepicker';
-import moment from 'moment';
-import 'react-datepicker/dist/react-datepicker.css';
 
 import {
   changeIdNewProjectForm,
@@ -62,20 +51,23 @@ class SideBar extends React.Component {
 
     componentWillMount() {
         user.getUserInfo().then(response => {
-            if(response.success) {
+            if(response && response.success) {
                 this.setState({
                     company: response.user.current_company,
-                    projects: response.user.belong_project
+                    projects: [...this.state.projects, ...response.user.belong_project]
                 });
             } else {
                 auth.logout();
                 this.props.history.push('/');
             }
         });
-        // console.log(this.props)
-        // this.setState({
-        //     projects: this.props.profileUser.profile.belong_project
-        // })
+        project.getProjectBelongUser().then(response => {
+            if(response && response.success) {
+                this.setState({
+                    projects: [...this.state.projects, ...response.projects]
+                });
+            }
+        });
     }    
 
     componentWillReceiveProps(nextProps) {
@@ -98,7 +90,8 @@ class SideBar extends React.Component {
     }
 
     render() {
-        const {activeItem} = this.state;
+        const { activeItem } = this.state;
+        const projects = _.uniqBy(this.state.projects, '_id');
         var trigger = (
             <Header style={{color: 'white', marginBottom: 0}} as='h1'> 
                 <Image centered circular='true' size={'small'} style={{borderRadius: '50%'}} src={this.state.company.image} />
@@ -119,11 +112,11 @@ class SideBar extends React.Component {
                     <Menu.Item>
                         <Dropdown style={{width: '100%'}} trigger={trigger} pointing='top left' icon={null} >
                             <Dropdown.Menu>
-                                <Modal size={'small'} closeIcon trigger={<Dropdown.Item icon='address book' text='Company Infomation'/>} >
+                                <Modal size={'small'} closeIcon trigger={<Dropdown.Item icon='address book' text='Thông tin công ty'/>} >
                                     <Modal.Header>
-                                        <Header size='small' icon='hashtag' content='Company Infomation'/>
+                                        <Header size='small' icon='hashtag' content='Thông tin công ty'/>
                                     </Modal.Header>
-                                    <Modal.Content image>
+                                    <Modal.Content image scrolling>
                                         <ModalCompanyInfo company={this.state.company} />
                                     </Modal.Content>
                                 </Modal>
@@ -138,24 +131,24 @@ class SideBar extends React.Component {
                                     active={activeItem === 'dashboard'}
                                     onClick={this.handleItemClick.bind(this, 'dashboard')}>
                                     
-                                <Icon name='dashboard' style={{float: 'left', marginRight: 10, marginLeft: 30}} />Dashboard   
+                                <Icon name='dashboard' style={{float: 'left', marginRight: 10, marginLeft: 10}} />Quản lý nhân viên   
                         </Menu.Item>
                     ) : ""}
                     <Menu.Item>
                         <Menu.Header>
-                            <div style={{display: 'inline-block', fontSize: 19}}>Project</div>
+                            <div style={{display: 'inline-block', fontSize: 19}}>Dự án</div>
                             <Estimate/>
                         </Menu.Header>
 
                         <Menu.Menu>
-                            {this.state.projects.map(project => (
+                            {projects.map(project => (
                                 <Menu.Item 
                                     key={project._id}
                                     style={{fontSize: 15}}
                                     name={project.project_name}
                                     active={activeItem === project.project_name}
                                     onClick={this.handleItemClick.bind(this, project.project_name)}
-                                    as={Link} to={`${this.props.match.url}/project/${project.project_name}`}> 
+                                    as={Link} to={`${this.props.match.url}/project/${project.project_name}?id=${project._id}`}> 
                                     <Icon name='rocket' style={{float: 'left', marginRight: 10}} /> {project.project_name}
                                 </Menu.Item>
                             ))}
@@ -163,18 +156,37 @@ class SideBar extends React.Component {
                     </Menu.Item>
                     <Menu.Item>
                         <Menu.Header>
-                            <div style={{display: 'inline-block', fontSize: 19}}>Activity</div>
+                            <div style={{display: 'inline-block', fontSize: 19}}>Lịch sử hoạt động</div>
                         </Menu.Header>
 
                         <Menu.Menu>
-                            {this.state.projects.map(project => (
+                            {projects.map(project => (
                                 <Menu.Item 
                                     key={project._id}
                                     style={{fontSize: 15}}
                                     name={project.project_name + '_activity'}
                                     active={activeItem === project.project_name + '_activity'}
                                     onClick={this.handleItemClick.bind(this, project.project_name + '_activity')}
-                                    as={Link} to={`${this.props.match.url}/activity/${project.project_name}`}> 
+                                    as={Link} to={`${this.props.match.url}/activity/${project.project_name}?id=${project._id}`}> 
+                                    <Icon name='rocket' style={{float: 'left', marginRight: 10}} /> {project.project_name}
+                                </Menu.Item>
+                            ))}
+                        </Menu.Menu>
+                    </Menu.Item>
+                    <Menu.Item>
+                        <Menu.Header>
+                            <div style={{display: 'inline-block', fontSize: 19}}>Phòng họp</div>
+                        </Menu.Header>
+
+                        <Menu.Menu>
+                            {projects.map(project => (
+                                <Menu.Item 
+                                    key={project._id}
+                                    style={{fontSize: 15}}
+                                    name={project.project_name + '_meeting'}
+                                    active={activeItem === project.project_name + '_meeting'}
+                                    onClick={this.handleItemClick.bind(this, project.project_name + '_meeting')}
+                                    as={Link} to={`${this.props.match.url}/meeting/${project.project_name}?id=${project._id}`}> 
                                     <Icon name='rocket' style={{float: 'left', marginRight: 10}} /> {project.project_name}
                                 </Menu.Item>
                             ))}

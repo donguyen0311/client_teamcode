@@ -1,11 +1,14 @@
 import React from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { Label, Dimmer, Loader } from 'semantic-ui-react';
+import { Label, Dimmer, Loader, Button } from 'semantic-ui-react';
 import styled, { injectGlobal } from 'styled-components';
 import TaskItem from './TaskItem';
 import ModalAddTask from './ModalAddTask';
 import {connect} from 'react-redux';
 import axios from 'axios';
+
+import ModalManageUsers from './ModalManageUsers';
+import ModalWarningUsers from './ModalWarningUsers';
 
 // fake data generator
 const getItems = count =>
@@ -260,7 +263,8 @@ class Project extends React.Component {
 			activeLoading: true,
 			columns: {TODO: [], INPROGRESS: [], CODEREVIEW: [], DONE: []},
 			// autoFocusQuoteId: ''
-			currentProject: ''
+			currentProject: '',
+			users: []
 		};
 		this.formatResponsibleUser = this.formatResponsibleUser.bind(this);
 		this.addTask = this.addTask.bind(this);
@@ -316,6 +320,12 @@ class Project extends React.Component {
 		});
 	}
 
+	getQueryParams(paramsString, param) {
+		let params = new URLSearchParams(paramsString); 
+		let value = params.get(param);
+		return value;
+	}
+
 	componentWillReceiveProps(nextProps) {
 		console.log(nextProps);
 		if (this.props.match.params.project !== nextProps.match.params.project) {
@@ -323,11 +333,14 @@ class Project extends React.Component {
 				activeLoading: true
 			});
 			this.props.socket.emit('Task:joinRoom', nextProps.match.url);
-			axios.get('/api/projects/' + nextProps.match.params.project, {headers: { 'x-access-token': localStorage.token } })
+			var projectId = this.getQueryParams(nextProps.location.search, 'id');
+			axios.get(`/api/projects/${projectId}?project_name=${this.props.match.params.project}`, {headers: { 'x-access-token': localStorage.token } })
 				.then(response => {
+					console.log(response);
 					this.setState({
 						columns: formatTasks(response.data.project.tasks),
 						currentProject: response.data.project,
+						users: response.data.project.users,
 						activeLoading: false
 					});
 				})
@@ -342,12 +355,14 @@ class Project extends React.Component {
 	componentWillMount() {
 		console.log(this.props);
 		this.props.socket.emit('Task:joinRoom', this.props.match.url);
-		axios.get('/api/projects/' + this.props.match.params.project, {headers: { 'x-access-token': localStorage.token } })
+		var projectId = this.getQueryParams(this.props.location.search, 'id');
+		axios.get(`/api/projects/${projectId}?project_name=${this.props.match.params.project}`, {headers: { 'x-access-token': localStorage.token } })
 			.then(response => {
 				console.log(response);
 				this.setState({
 					columns: formatTasks(response.data.project.tasks),
 					currentProject: response.data.project,
+					users: response.data.project.users,
 					activeLoading: false
 				});
 			})
@@ -384,6 +399,8 @@ class Project extends React.Component {
 			labels: task.addLabels,
 			description: task.addDescription,
 			responsible_user: task.addResponsible,
+			start_day: task.addStartDay,
+			end_day: task.addStartDay,
 			belong_project: this.state.currentProject._id,
 			created_by: this.props.profileUser.profile._id
 		});
@@ -434,11 +451,19 @@ class Project extends React.Component {
 
   	render() {
 		console.log(this.state.activeLoading);
+		const currentUserId = this.props.profileUser.profile._id;
+		const projectOwnerId = this.state.currentProject ? this.state.currentProject.created_by._id : '';
 		return (
 			<div style={{width: '100%', height: 'calc(100vh - 59px)', overflow: 'auto', marginTop: '-1rem'}}>
 				<Dimmer active={this.state.activeLoading} inverted>
-					<Loader inverted>Loading</Loader>
-				</Dimmer>		
+					<Loader inverted>Đang tải</Loader>
+				</Dimmer>
+				{currentUserId === projectOwnerId ? (
+					<Button.Group basic size='large' style={{marginTop: 15, marginLeft: 15}}>
+						<ModalManageUsers project={this.state.currentProject} users={this.state.users} />
+						<ModalWarningUsers project={this.state.currentProject} users={this.state.users} />
+					</Button.Group>
+				) : ''}
 				<div style={{ width: 1330 }}>
 				<DragDropContext 
 					onDragEnd={this.onDragEnd}
@@ -448,7 +473,7 @@ class Project extends React.Component {
 						<Container>
 							<HeaderCustom>
 								<Title>
-									<span style={{fontSize: 18, verticalAlign: 'middle'}}>To Do</span> 
+									<span style={{fontSize: 18, verticalAlign: 'middle'}}>Danh sách việc</span> 
 									<Label as='a' size={'small'} style={{float: 'right'}}>{this.state.columns['TODO'].length}</Label>
 								</Title>
 							</HeaderCustom>
@@ -469,12 +494,12 @@ class Project extends React.Component {
 											{this.state.columns['TODO'].map(task => (
 												<Draggable type="TASK" key={task._id} draggableId={task._id} >
 													{(provided, snapshot) => (
-														<div>														
+														<div>													
 															<div
 																ref={provided.innerRef}
 																style={ContainerItemStyle(provided.draggableStyle, snapshot.isDragging, 'todo')}
 																{...provided.dragHandleProps}
-															>	
+															>
 																<TaskItem 
 																	data={task} 
 																	editTask={this.editTask} 
@@ -502,7 +527,7 @@ class Project extends React.Component {
 						<Container>
 							<HeaderCustom>
 								<Title>
-									<span style={{fontSize: 18, verticalAlign: 'middle'}}>In Progress</span> 
+									<span style={{fontSize: 18, verticalAlign: 'middle'}}>Viêc đang làm</span> 
 									<Label as='a' size={'small'} style={{float: 'right'}}>{this.state.columns['INPROGRESS'].length}</Label>
 								</Title>
 							</HeaderCustom>
@@ -556,7 +581,7 @@ class Project extends React.Component {
 						<Container>
 							<HeaderCustom>
 								<Title>
-									<span style={{fontSize: 18, verticalAlign: 'middle'}}>Code Review</span> 
+									<span style={{fontSize: 18, verticalAlign: 'middle'}}>Việc đang kiểm tra</span> 
 									<Label as='a' size={'small'} style={{float: 'right'}}>{this.state.columns['CODEREVIEW'].length}</Label>
 								</Title>
 							</HeaderCustom>
@@ -610,7 +635,7 @@ class Project extends React.Component {
 						<Container>
 							<HeaderCustom>
 								<Title>
-									<span style={{fontSize: 18, verticalAlign: 'middle'}}>Done</span> 
+									<span style={{fontSize: 18, verticalAlign: 'middle'}}>Việc đã hoàn thành</span> 
 									<Label as='a' size={'small'} style={{float: 'right'}}>{this.state.columns['DONE'].length}</Label>
 								</Title>
 							</HeaderCustom>

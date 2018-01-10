@@ -2,7 +2,7 @@ import React from 'react';
 import {createStore, applyMiddleware} from 'redux';
 import {Provider} from 'react-redux';
 import thunk from 'redux-thunk';
-import {BrowserRouter, Route, Switch, HashRouter} from 'react-router-dom';
+import {Route, Switch, HashRouter} from 'react-router-dom';
 import {composeWithDevTools} from 'redux-devtools-extension';
 import axios from 'axios';
 
@@ -13,13 +13,6 @@ import SideBarContainer from '../sidebar/SidebarContainer';
 
 import Login from '../auth/Login';
 import Register from '../auth/Register';
-
-// import Dashboard from '../dashboard/Dashboard';
-// import Project from '../project/Project';
-// import Estimate from '../estimate/Estimate';
-// import CostDriver from '../estimate/CostDriver';
-// import ScaleFactor from '../estimate/ScaleFactor';
-// import FunctionPoint from '../estimate/FunctionPoint';
 
 import rootReducer from './reducers';
 import { changeSocket } from './socket';
@@ -39,7 +32,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
             .get(`/api/checkCompany/${props.match.params.company}`)
             .then(response => {
                 console.log(response);
-                if(!response.data.success) {
+                if(response && !response.data.success) {
                     auth.logout();
                     history.push('/');
                 }

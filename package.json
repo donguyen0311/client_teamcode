@@ -43,7 +43,8 @@
     "styled-components": "^2.2.2",
     "sweetalert2-react": "^0.5.0",
     "typescript": "^2.6.2",
-    "uniter": "^2.11.1"
+    "uniter": "^2.11.1",
+    "wolfy87-eventemitter": "^5.2.4"
   },
   "scripts": {
     "start": "react-scripts start",

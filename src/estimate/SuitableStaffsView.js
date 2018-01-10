@@ -1,13 +1,10 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {
-    Button,
     Grid,
     Icon,
     Rating,
-    Image,
-    Divider,
-    Accordion
+    Image
 } from 'semantic-ui-react';
 
 const NOT_DECIDED = -1, ACCEPTED = 1, DECLINED = 0;

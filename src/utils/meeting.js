@@ -1,21 +1,17 @@
-// var connection = new RTCMultiConnection();
-// console.log(window.DetectRTC);
-// // this line is VERY_important
-// connection.socketURL = 'https://rtcmulticonnection.herokuapp.com:443/';
-// // all below lines are optional; however recommended.
+import axios from 'axios';
 
-// connection.session = {
-//     audio: true,
-//     video: true
-// };
+var meeting = {
+    getMessage(projectId, limit, offset) {
+        return axios.get(`/api/chats/projects/${projectId}?limit=${limit}&offset=${offset}`, {
+	        	headers: { 'x-access-token': localStorage.token }
+    		})
+            .then(response => {
+                return response.data;
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    },
+}
 
-// connection.sdpConstraints.mandatory = {
-//     OfferToReceiveAudio: true,
-//     OfferToReceiveVideo: true
-// };
-// connection.onstream = function(event) {
-//     document.body.appendChild( event.mediaElement );
-// };
-var connection = "";
-
-export default connection;
+export default meeting;

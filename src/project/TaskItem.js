@@ -17,6 +17,11 @@ import {
 import TimeAgo from 'react-timeago';
 import ModalTaskEditor from './ModalTaskEditor';
 
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import moment from 'moment';
+import 'moment-duration-format';
+
 class TaskItem extends React.Component {
     constructor(props) {
         super(props);
@@ -30,12 +35,15 @@ class TaskItem extends React.Component {
             editDescription: this.props.data.description,
             editLabels: this.props.data.labels,
             labelOptions: this.formatDropdownValue(this.props.data.labels),
-			editResponsible: this.props.data.responsible_user.map(user => user._id)
+            editResponsible: this.props.data.responsible_user.map(user => user._id),
+            editStartDay: moment(this.props.data.start_day),
+            editEndDay: moment(this.props.data.end_day),
         }
         this.handleChangeEdit = this.handleChangeEdit.bind(this);
         this.handleAdditionEdit = this.handleAdditionEdit.bind(this);
         this.editTask = this.editTask.bind(this);
         this.deleteTask = this.deleteTask.bind(this);
+        this.handleDateChange = this.handleDateChange.bind(this);
     }
 
     formatDate(dateValue) {
@@ -85,6 +93,13 @@ class TaskItem extends React.Component {
         });
     }
 
+    handleDateChange(type, date) {
+        console.log(date, type);
+        this.setState({
+			[type]: date
+        });
+    }
+
     handleAdditionEdit(e, { name, value }) {
         console.log(name, value);
         let mapName = {
@@ -104,7 +119,9 @@ class TaskItem extends React.Component {
             editLabels: this.props.data.labels,
             labelOptions: this.formatDropdownValue(this.props.data.labels),
 			editDescription: this.props.data.description,
-			editResponsible: this.props.data.responsible_user.map(user => user._id)
+            editResponsible: this.props.data.responsible_user.map(user => user._id),
+            editStartDay: moment(this.props.data.start_day),
+            editEndDay: moment(this.props.data.end_day),
         });
 	}
 	openModalEdit = () => this.setState({ openModalEdit: true })
@@ -134,8 +151,10 @@ class TaskItem extends React.Component {
             editDescription: nextProps.data.description,
             editLabels: nextProps.data.labels,
             labelOptions: this.formatDropdownValue(nextProps.data.labels),
-			editResponsible: nextProps.data.responsible_user.map(user => user._id)
-        })
+            editResponsible: nextProps.data.responsible_user.map(user => user._id),
+            editStartDay: moment(nextProps.data.start_day),
+            editEndDay: moment(nextProps.data.end_day),
+        });
     }
 
     render() {
@@ -151,14 +170,14 @@ class TaskItem extends React.Component {
             <div style={{position: 'relative'}}>
                 <Dropdown style={{position: 'absolute', top: -3, right: -5}} trigger={<Icon size='large' name="ellipsis vertical" />} icon={null}>
                     <Dropdown.Menu>
-                        <Modal trigger={< Dropdown.Item text = 'Detail' />} size='mini' closeIcon>
-                            <Header icon='hashtag' content='Task Detail'/>
+                        <Modal trigger={<Dropdown.Item icon='info circle' text = 'Chi tiết' />} size='mini' closeIcon>
+                            <Header icon='hashtag' content='Chi tiết công việc'/>
                             <Modal.Content>
                                 <Table basic='very'>
                                     <Table.Body>
                                         <Table.Row>
                                             <Table.Cell>
-                                                <h4>Task Name</h4>
+                                                <h4>Tên công việc</h4>
                                             </Table.Cell>
                                             <Table.Cell>
                                                 {this.props.data.task_name}
@@ -166,7 +185,7 @@ class TaskItem extends React.Component {
                                         </Table.Row>
                                         <Table.Row>
                                             <Table.Cell>
-                                                <h4>Status</h4>
+                                                <h4>Trạng thái</h4>
                                             </Table.Cell>
                                             <Table.Cell>
                                                 {this.props.data.status}
@@ -174,7 +193,7 @@ class TaskItem extends React.Component {
                                         </Table.Row>
                                         <Table.Row>
                                             <Table.Cell>
-                                                <h4>Level</h4>
+                                                <h4>Cấp độ</h4>
                                             </Table.Cell>
                                             <Table.Cell>
                                                 {this.props.data.level}
@@ -182,7 +201,7 @@ class TaskItem extends React.Component {
                                         </Table.Row>
                                         <Table.Row>
                                             <Table.Cell>
-                                                <h4>Note</h4>
+                                                <h4>Chú thích</h4>
                                             </Table.Cell>
                                             <Table.Cell>
                                                 {this.props.data.note}
@@ -190,7 +209,7 @@ class TaskItem extends React.Component {
                                         </Table.Row>
                                         <Table.Row>
                                             <Table.Cell>
-                                                <h4>Labels</h4>
+                                                <h4>Nhãn</h4>
                                             </Table.Cell>
                                             <Table.Cell>
                                                 {this.props.data.labels.join(', ')}
@@ -198,7 +217,7 @@ class TaskItem extends React.Component {
                                         </Table.Row>
                                         <Table.Row>
                                             <Table.Cell>
-                                                <h4>Description</h4>
+                                                <h4>Mô tả</h4>
                                             </Table.Cell>
                                             <Table.Cell>
                                                 {this.props.data.description}
@@ -206,7 +225,23 @@ class TaskItem extends React.Component {
                                         </Table.Row>
                                         <Table.Row>
                                             <Table.Cell>
-                                                <h4>Created by</h4>
+                                                <h4>Ngày bắt đầu</h4>
+                                            </Table.Cell>
+                                            <Table.Cell>
+                                                {this.formatDate(this.props.data.start_day)}
+                                            </Table.Cell>
+                                        </Table.Row>
+                                        <Table.Row>
+                                            <Table.Cell>
+                                                <h4>Ngày kết thúc</h4>
+                                            </Table.Cell>
+                                            <Table.Cell>
+                                                {this.formatDate(this.props.data.end_day)}
+                                            </Table.Cell>
+                                        </Table.Row>
+                                        <Table.Row>
+                                            <Table.Cell>
+                                                <h4>Tạo bởi</h4>
                                             </Table.Cell>
                                             <Table.Cell>
                                                 <Label as='a' image size='small'>
@@ -216,7 +251,7 @@ class TaskItem extends React.Component {
                                         </Table.Row>
                                         <Table.Row>
                                             <Table.Cell>
-                                                <h4>Responsible</h4>
+                                                <h4>Người chịu trách nhiệm</h4>
                                             </Table.Cell>
                                             <Table.Cell>
                                                 {this
@@ -232,7 +267,7 @@ class TaskItem extends React.Component {
                                         </Table.Row>
                                         <Table.Row>
                                             <Table.Cell>
-                                                <h4>Created at</h4>
+                                                <h4>Thời gian tạo</h4>
                                             </Table.Cell>
                                             <Table.Cell>
                                                 {this.formatDate(this.props.data.createdAt)}
@@ -240,7 +275,7 @@ class TaskItem extends React.Component {
                                         </Table.Row>
                                         <Table.Row>
                                             <Table.Cell>
-                                                <h4>Updated at</h4>
+                                                <h4>Thời gian cập nhật</h4>
                                             </Table.Cell>
                                             <Table.Cell>
                                                 {this.formatDate(this.props.data.updatedAt)}
@@ -250,24 +285,40 @@ class TaskItem extends React.Component {
                                 </Table>
                             </Modal.Content>
                         </Modal>
-                        <Modal open={openModalEdit} onClose={this.closeModalEdit} trigger={<Dropdown.Item onClick={this.openModalEdit} text = 'Edit' />} size='mini' closeIcon>
-                            <Header icon='hashtag' content='Edit Task'/>
+                        <Modal open={openModalEdit} onClose={this.closeModalEdit} trigger={<Dropdown.Item icon='edit' onClick={this.openModalEdit} text = 'Chỉnh sửa' />} size='mini' closeIcon>
+                            <Header icon='hashtag' content='Chỉnh sửa công việc'/>
                             <Modal.Content>
                                 <Form onSubmit={this.editTask}>
                                     <Form.Field>
-                                        <Form.Input label="Task Name" placeholder='Task Name' name='editTaskName' value={this.state.editTaskName} onChange={this.handleChangeEdit} required />
+                                        <Form.Input label="Tên công việc" placeholder='Tên công việc' name='editTaskName' value={this.state.editTaskName} onChange={this.handleChangeEdit} required />
                                     </Form.Field>
                                     <Form.Field>
-                                        <Form.Input type="number" label="Level"  placeholder='Level' name='editLevel' value={this.state.editLevel} onChange={this.handleChangeEdit} required />
+                                        <Form.Input type="number" label="Cấp độ"  placeholder='Cấp độ' name='editLevel' value={this.state.editLevel} onChange={this.handleChangeEdit} required />
                                     </Form.Field>
                                     <Form.Field>
-                                        <Form.TextArea label="Note" placeholder='Note' name='editNote' value={this.state.editNote} onChange={this.handleChangeEdit} required />
+                                        <Form.TextArea label="Chú thích" placeholder='Chú thích' name='editNote' value={this.state.editNote} onChange={this.handleChangeEdit} required />
                                     </Form.Field>
                                     <Form.Field>
-                                        <Form.TextArea label="Description" placeholder='Description' name='editDescription' value={this.state.editDescription} onChange={this.handleChangeEdit} required />
+                                        <Form.TextArea label="Mô tả" placeholder='Mô tả' name='editDescription' value={this.state.editDescription} onChange={this.handleChangeEdit} required />
+                                    </Form.Field>
+                                    <Form.Field className="required">
+                                        <label>Ngày bắt đầu</label>
+                                        <DatePicker required selected={this.state.editStartDay}
+                                            name='editStartDay'
+                                            dateFormat="DD/MM/YYYY"
+                                            onChange={this.handleDateChange.bind(this, 'editStartDay')}
+                                        />
+                                    </Form.Field>
+                                    <Form.Field className="required">
+                                        <label>Ngày kết thúc</label>
+                                        <DatePicker required selected={this.state.editEndDay}
+                                            name='editEndDay'
+                                            dateFormat="DD/MM/YYYY"
+                                            onChange={this.handleDateChange.bind(this, 'editEndDay')}
+                                        />
                                     </Form.Field>
                                     <Form.Field>
-                                        <label>Labels</label>
+                                        <label>Nhãn</label>
                                         <Dropdown
                                             name='editLabels'
                                             options={this.state.labelOptions}
@@ -282,8 +333,8 @@ class TaskItem extends React.Component {
                                         />
                                     </Form.Field>
                                     <Form.Field>
-                                        <label>Responsible</label>
-                                        <Dropdown placeholder='Responsible User' fluid multiple selection 
+                                        <label>Người chịu trách nhiệm</label>
+                                        <Dropdown fluid multiple selection 
                                             value={this.state.editResponsible}
                                             name='editResponsible'
                                             options={this.props.formatResponsibleUser(this.props.users)}
@@ -291,29 +342,29 @@ class TaskItem extends React.Component {
                                     </Form.Field>
                                     <Button color='green' size='tiny' type='submit'>
                                         <Icon name='checkmark'/>
-                                        Update
+                                        Cập nhật
                                     </Button>
                                 </Form>
                             </Modal.Content>
                         </Modal>
-                        <Modal open={openModalDelete} onClose={this.closeModalDelete} trigger={<Dropdown.Item onClick={this.openModalDelete} text = 'Delete' />} size='mini' closeIcon>
-                            <Header icon='hashtag' content='Delete Task'/>
+                        <Modal open={openModalDelete} onClose={this.closeModalDelete} trigger={<Dropdown.Item icon='trash outline' onClick={this.openModalDelete} text = 'Xóa' />} size='mini' closeIcon>
+                            <Header icon='hashtag' content='Xóa công việc'/>
                             <Modal.Content>
-                                <h4>Are you sure to delete this task ?</h4>
+                                <h4>Bạn có chắc muốn xóa công việc này ?</h4>
                             </Modal.Content>
                             <Modal.Actions>
                                 <Button color='red' size='tiny' onClick={this.closeModalDelete}>
                                     <Icon name='remove'/>
-                                    No
+                                    Không
                                 </Button>
                                 <Button color='green' size='tiny' onClick={this.deleteTask}>
                                     <Icon name='checkmark'/>
-                                    Yes
+                                    Có
                                 </Button>
                             </Modal.Actions>
                         </Modal>
-                        <Modal open={openModalEditor} onClose={this.closeModalEditor} trigger={<Dropdown.Item onClick={this.openModalEditor} text = 'Editor' />} size='fullscreen' closeIcon>
-                            <Header icon='hashtag' content='Editor'/>
+                        <Modal open={openModalEditor} onClose={this.closeModalEditor} trigger={<Dropdown.Item icon='code' onClick={this.openModalEditor} text = 'Trình soạn thảo' />} size='fullscreen' closeIcon>
+                            <Header icon='hashtag' content='Trình soạn thảo'/>
                             <Modal.Content>
                                 <ModalTaskEditor taskID={this.props.data._id} />
                             </Modal.Content>
@@ -369,7 +420,8 @@ class TaskItem extends React.Component {
                 </Container>
                 <Divider fitted />
                 <div style={{marginTop: 5}}>
-                    <Label circular size='mini' color='red' title={this.props.data.level}>{this.props.data.level}</Label>
+                    <Label circular size='mini' color='blue' title={this.props.data.level}>{this.props.data.level}</Label>
+                    {new Date() > new Date(this.props.data.end_day) ? (<Label circular size='mini' color='red' title='Out of date'>Hết hạn</Label>) : ''}
                     {this.props.data.labels.map(label => (
                         <Label key={label} size='mini' basic title={label} >{label}</Label>
                     ))}

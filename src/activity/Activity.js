@@ -1,9 +1,9 @@
 import React from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
-import { Label, Dimmer, Loader, Icon, Grid, Segment, Header } from 'semantic-ui-react';
+import { Dimmer, Loader, Segment, Header } from 'semantic-ui-react';
 import Timeline from 'react-time-line';
-import {Doughnut, Line} from 'react-chartjs-2';
+// import {Doughnut, Line} from 'react-chartjs-2';
 import auth from '../utils/auth';
 
 class Activity extends React.Component {
@@ -15,7 +15,8 @@ class Activity extends React.Component {
             offset: 0,
             limit: 30,
             activeLoader: true,
-            blockRequest: false
+            blockRequest: false,
+            projectId: ''
         };
         this.handleScroll = this.handleScroll.bind(this);
         this.props.socket.on('Activity:updateActivity', (response) => {
@@ -34,17 +35,25 @@ class Activity extends React.Component {
         return data;
     }
 
+    getQueryParams(paramsString, param) {
+		let params = new URLSearchParams(paramsString); 
+		let value = params.get(param);
+		return value;
+	}
+
     componentWillMount() {
         this.props.socket.emit('Task:joinRoom', this.props.match.url);
-        axios.get('/api/activities/projects/' + this.props.match.params.project, {headers: { 'x-access-token': localStorage.token } })
+        var projectId = this.getQueryParams(this.props.location.search, 'id');
+        axios.get('/api/activities/projects/' + projectId, {headers: { 'x-access-token': localStorage.token } })
             .then(response => {
                 console.log(response);
-                if(response.success) {
+                if(response.data.success) {
                     this.setState({
                         activitiesLog: response.data.activities,
                         offset: this.state.offset + 30,
                         activeLoading: false,
-                        activeLoader: false
+                        activeLoader: false,
+                        projectId: projectId
                     });
                 } else {
                     auth.logout();
@@ -70,14 +79,16 @@ class Activity extends React.Component {
                 activeLoader: true,
                 blockRequest: false
 			});
-			this.props.socket.emit('Task:joinRoom', nextProps.match.url);
-			axios.get('/api/activities/projects/' + nextProps.match.params.project, {headers: { 'x-access-token': localStorage.token } })
+            this.props.socket.emit('Task:joinRoom', nextProps.match.url);
+            var projectId = this.getQueryParams(nextProps.location.search, 'id');
+			axios.get('/api/activities/projects/' + projectId, {headers: { 'x-access-token': localStorage.token } })
 				.then(response => {
 					this.setState({
                         activitiesLog: response.data.activities,
                         offset: this.state.offset + 30,
                         activeLoading: false,
-                        activeLoader: false
+                        activeLoader: false,
+                        projectId: projectId
 					});
 				})
 				.catch(error => {
@@ -95,7 +106,7 @@ class Activity extends React.Component {
                 activeLoader: true
             });
             axios
-                .get(`/api/activities/projects/${this.props.match.params.project}?offset=${this.state.offset}&limit=${this.state.limit}`, {headers: { 'x-access-token': localStorage.token } })
+                .get(`/api/activities/projects/${this.state.projectId}?offset=${this.state.offset}&limit=${this.state.limit}`, {headers: { 'x-access-token': localStorage.token } })
                 .then(response => {
                     if(response.data.success && response.data.activities.length !== 0) {
                         this.setState({
@@ -191,10 +202,10 @@ class Activity extends React.Component {
         return (
             <div style={{width: '100%', height: 'calc(100vh - 59px)', overflow: 'auto', marginTop: '-1rem', fontSize: 18}}>
                 <Dimmer active={this.state.activeLoading} inverted>
-                    <Loader inverted>Loading</Loader>
+                    <Loader inverted>Đang tải</Loader>
                 </Dimmer>
                 <div style={{width: '100%', bottom: 0, position: 'absolute'}}>
-                    <Header attached='top' size='medium'>Activities Log</Header>
+                    <Header attached='top' size='medium'>Lịch sử hoạt động</Header>
                     <Segment loading={this.state.activeLoader} attached style={{height: 300, overflow: 'auto', padding: 0, paddingTop: 10}} onScroll={this.handleScroll}>
                         <Timeline items={this.formatActivities(this.state.activitiesLog)} />
                     </Segment>

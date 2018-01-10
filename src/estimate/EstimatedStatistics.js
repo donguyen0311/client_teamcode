@@ -7,7 +7,6 @@ import {
     Statistic,
     Popup
 } from 'semantic-ui-react';
-import CountUp from 'react-countup';
 
 
 

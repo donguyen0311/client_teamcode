@@ -46,7 +46,7 @@ class ModalWarningUsers extends React.Component {
                     <Modal.Content scrolling>
                         {this.state.warningUser.length > 0 ? (
                             <Card.Group itemsPerRow={3}>
-                                {this.state.users.map(user => (
+                                {this.state.warningUser.map(user => (
                                     <Card key={user._id}>
                                         <Image src={user.image} />
                                         <Card.Content>

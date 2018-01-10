@@ -6,6 +6,7 @@ import axios from 'axios';
 var Babel = require('babel-standalone');
 // var uniter = require('uniter');
 
+
 class LiveCode extends React.Component { 
     constructor(props) {
         super(props);
@@ -58,15 +59,14 @@ class LiveCode extends React.Component {
 
     updatePreview() {
         var previewFrame = this.refs.iframe;
-        var codeCSS = this.props.data[this.props.taskID].css.code;
-        var codeHTML = this.props.data[this.props.taskID].html.code;
-        var codeJS = '';
-        if (this.props.data[this.props.taskID].js.mode === 'text/typescript-jsx') {
+        var codeCSS = this.props.data[this.props.taskID].css ? this.props.data[this.props.taskID].css.code : '';
+        var codeHTML = this.props.data[this.props.taskID].html ? this.props.data[this.props.taskID].html.code : '';
+        var modeJS = this.props.data[this.props.taskID].js ? this.props.data[this.props.taskID].js.mode : 'javascript'; 
+        var codeJS = this.props.data[this.props.taskID].js ? this.props.data[this.props.taskID].js.code : '';
+        if (modeJS === 'text/typescript-jsx') {
             codeJS = this.compileCodeJSX(this.props.data[this.props.taskID].js.code);
-        } else if (this.props.data[this.props.taskID].js.mode === 'application/typescript') {
-            codeJS = this.compileCodeTypeScript(this.props.data[this.props.taskID].js.code);
-        }else {
-            codeJS = this.props.data[this.props.taskID].js.code;
+        } else if (modeJS === 'application/typescript') {
+            codeJS = this.compileCodeTypeScript(codeJS);
         }
         
         var preview =  previewFrame.contentDocument || previewFrame.contentWindow.document;

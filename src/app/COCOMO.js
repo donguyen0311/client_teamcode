@@ -197,7 +197,7 @@ export const EAF = [
 				},
 				{
 					value: 0.9,
-					description: 'Testing DB bytes/Pgm SLOC < 10.'
+					description: 'Dung lượng (byte) của cơ sở dữ liệu thử nghiệm/Tổng số dòng lệnh của dự án < 10 (D/P).'
 				},
 				{
 					value: 1,
@@ -281,23 +281,23 @@ export const EAF = [
 			rating: [
 				{
 					value: 0.81,
-					description: 'Many life-cycle needs uncovered.'
+					description: 'Nhiều vòng đời cần thiết không được hướng dẫn.'
 				},
 				{
 					value: 0.91,
-					description: 'Some life-cycle needs uncovered.'
+					description: 'Một số vòng đời cần thiết không được hướng dẫn.'
 				},
 				{
 					value: 1,
-					description: 'Right-sized to life-cycle needs.'
+					description: 'Những vòng đời cần thiết được viết hướng dẫn.'
 				},
 				{
 					value: 1.11,
-					description: 'Excessive for life-cycle needs.'
+					description: 'Những tài liệu hướng dẫn được viết thừa.'
 				},
 				{
 					value: 1.23,
-					description: 'Very excessive for life-cycle needs.'
+					description: 'Những tài liệu hướng dẫn được viết rất thừa.'
 				},
 				{
 					value: 0
@@ -320,15 +320,15 @@ export const EAF = [
 				},
 				{
 					value: 1.11,
-					description: 'Thời gian thực thi chiếm <= 70% thời gian sẵn sàng.'
+					description: 'Thời gian thực thi chiếm 70% thời gian sẵn sàng.'
 				},
 				{
 					value: 1.29,
-					description: 'Thời gian thực thi chiếm <= 85% thời gian sẵn sàng.'
+					description: 'Thời gian thực thi chiếm 85% thời gian sẵn sàng.'
 				},
 				{
 					value: 1.63,
-					description: 'Thời gian thực thi chiếm <= 95% thời gian sẵn sàng.'
+					description: 'Thời gian thực thi chiếm 95% thời gian sẵn sàng.'
 				}
 			],
 			description: 'Thời gian thực thi.'
@@ -348,15 +348,15 @@ export const EAF = [
 				},
 				{
 					value: 1.05,
-					description: 'Sử dụng <= 70% dung lượng bộ nhớ.'
+					description: 'Sử dụng 70% dung lượng bộ nhớ.'
 				},
 				{
 					value: 1.17,
-					description: 'Sử dụng <= 85% dung lượng bộ nhớ.'
+					description: 'Sử dụng 85% dung lượng bộ nhớ.'
 				},
 				{
 					value: 1.46,
-					description: 'Sử dụng <= 95% dung lượng bộ nhớ.'
+					description: 'Sử dụng 95% dung lượng bộ nhớ.'
 				}
 			],
 			description: 'Sử dụng bộ nhớ.'
@@ -394,23 +394,23 @@ export const EAF = [
 			rating: [
 				{
 					value: 1.42,
-					description: '15th percentile.'
+					description: 'Năng lực của nhân viên ≥ 15%  tổng số nhân viên.'
 				},
 				{
 					value: 1.19,
-					description: '35th percentile.'
+					description: 'Năng lực của nhân viên ≥ 35%  tổng số nhân viên.'
 				},
 				{
 					value: 1,
-					description: '55th percentile.'
+					description: 'Năng lực của nhân viên ≥ 55%  tổng số nhân viên.'
 				},
 				{
 					value: 0.85,
-					description: '75th percentile.'
+					description: 'Năng lực của nhân viên ≥ 75%  tổng số nhân viên.'
 				},
 				{
 					value: 0.71,
-					description: '90th percentile.'
+					description: 'Năng lực của nhân viên ≥ 90%  tổng số nhân viên.'
 				},
 				{
 					value: 0
@@ -423,23 +423,23 @@ export const EAF = [
 			rating: [
 				{
 					value: 1.34,
-					description: '15th percentile.'
+					description: 'Năng lực của nhân viên ≥ 15%  tổng số nhân viên.'
 				},
 				{
 					value: 1.15,
-					description: '35th percentile.'
+					description: 'Năng lực của nhân viên ≥ 35%  tổng số nhân viên.'
 				},
 				{
 					value: 1,
-					description: '55th percentile.'
+					description: 'Năng lực của nhân viên ≥ 55%  tổng số nhân viên.'
 				},
 				{
 					value: 0.88,
-					description: '75th percentile.'
+					description: 'Năng lực của nhân viên ≥ 75%  tổng số nhân viên.'
 				},
 				{
 					value: 0.76,
-					description: '90th percentile.'
+					description: 'Năng lực của nhân viên ≥ 90%  tổng số nhân viên.'
 				},
 				{
 					value: 0
@@ -568,7 +568,7 @@ export const EAF = [
 			rating: [
 				{
 					value: 1.17,
-					description: 'edit, code, debug.'
+					description: 'Trình soạn thảo,trình lập trình, trình gỡ lỗi.'
 				},
 				{
 					value: 1.09,
@@ -597,30 +597,30 @@ export const EAF = [
 			rating: [
 				{
 					value: 1.22,
-					description: 'International.'
+					description: 'Quốc tế.'
 				},
 				{
 					value: 1.09,
-					description: 'Multi-city and multi-company.'
+					description: 'Nhiều thành phố và nhiều công ty.'
 				},
 				{
 					value: 1,
-					description: 'Multi-city or multi-company.'
+					description: 'Nhiều thành phố hoặc nhiều công ty.'
 				},
 				{
 					value: 0.93,
-					description: 'Same city or metro area.'
+					description: 'Cùng thành phố hoặc vùng đô thị.'
 				},
 				{
 					value: 0.86,
-					description: 'Same building or complex.'
+					description: 'Cùng tòa nhà hoặc khu liên hợp.'
 				},
 				{
 					value: 0.8,
-					description: 'Fully collocated.'
+					description: 'Tập hợp cùng một nơi.'
 				}
 			],
-			description: 'Quy mô phát triển phần mềm.'
+			description: 'Mức độ phân tán khi có nhiều bên cùng phát triển dự án.'
 		},
 	},{
 		SCED:{

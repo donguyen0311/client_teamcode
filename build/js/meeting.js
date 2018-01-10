@@ -124,12 +124,14 @@ window.meeting = function (socketioHost) {
 	 *
 	 */
     function toggleMic() {
-		var tracks = _localStream.getTracks();
-		for (var i = 0; i < tracks.length; i++) {
-			if (tracks[i].kind=="audio") {
-				tracks[i].enabled = !tracks[i].enabled;	
-			}
-		}
+        if(_localStream) {
+            var tracks = _localStream.getTracks();
+            for (var i = 0; i < tracks.length; i++) {
+                if (tracks[i].kind=="audio") {
+                    tracks[i].enabled = !tracks[i].enabled;	
+                }
+            }
+        }
 	}
     
     
@@ -139,12 +141,14 @@ window.meeting = function (socketioHost) {
 	 *
 	 */
     function toggleVideo() {
-		var tracks = _localStream.getTracks();
-		for (var i = 0; i < tracks.length; i++) {
-			if (tracks[i].kind=="video") {
-				tracks[i].enabled = !tracks[i].enabled;	
-			}
-		}
+        if(_localStream) {
+            var tracks = _localStream.getTracks();
+            for (var i = 0; i < tracks.length; i++) {
+                if (tracks[i].kind=="video") {
+                    tracks[i].enabled = !tracks[i].enabled;	
+                }
+            }
+        }
 	}
 	
 	/**

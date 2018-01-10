@@ -213,3 +213,25 @@ input.FP{
 .CodeMirror {
 	height: 500px !important;
 }
+
+.navbar-meeting {
+	visibility: hidden;
+	opacity: 0;
+	position: absolute; 
+	width: 100%;
+	margin-top: 20px;
+	display: inline-block;
+	z-index: 1000;
+	transition: visibility 0.4s, opacity 0.4s linear;
+	text-align:center;
+}
+
+.video-meeting {
+	width: 100%;
+	height: calc(100vh - 59px);
+}
+.video-meeting:hover > .navbar-meeting {
+	visibility: visible;
+  	opacity: 1;
+	transition: visibility 0s, opacity 0.5s linear;
+}

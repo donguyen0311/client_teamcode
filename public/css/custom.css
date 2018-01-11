@@ -1,3 +1,7 @@
+li {
+	list-style-type: none;
+}
+
 .ui.dropdown .menu>* {
 	white-space: normal !important;
 	word-wrap: break-word !important;
@@ -234,4 +238,42 @@ input.FP{
 	visibility: visible;
   	opacity: 1;
 	transition: visibility 0s, opacity 0.5s linear;
+}
+.emojis-container {
+	width: 250px;
+	height: 250px;
+	overflow: auto;
+}
+.emoji-group {
+	display: block;
+	width: 100%;
+	font-weight: bold;
+	font-size: 20px;
+	padding: 10px 0;
+}
+
+.emoji-wrapper {
+	display: inline-block;
+	width: 12%;
+	overflow: hidden;
+	white-space: nowrap;
+	padding: 5px;
+	cursor: pointer;
+}
+
+.emoji-wrapper:hover {
+	background: #eeeded;
+}
+
+.twemojified .native-emoji {
+	padding: 0;
+}
+
+.twemoji, .emoji {
+	width: 16px;
+	height: 16px;
+}
+
+.emoji {
+	vertical-align: middle;
 }

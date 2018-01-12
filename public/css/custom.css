@@ -256,6 +256,14 @@ input.FP{
 	background-color: #db2828 !important;
 }
 
+.rct-outer {
+	overflow-y: auto !important;
+	height: calc(100vh - 160px) !important;
+}
+.rct-scroll {
+	overflow-x: hidden !important;
+}
+
 .react-calendar-timeline .rct-items .rct-item.selected {
     background: #FFC107 !important;
     border: 1px solid #FF9800;
@@ -277,10 +285,10 @@ input.FP{
 	top: 50vh;
 }
 
-.pushable:not(body) {
+/* .pushable:not(body) {
      -webkit-transform: none !important; 
      transform: none !important; 
-}
+} */
 
 .emojis-container {
 	width: 250px;

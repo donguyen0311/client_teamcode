@@ -1,8 +1,11 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import {connect} from 'react-redux';
-import { Sidebar, Segment, Form, Comment, Header, Button, Ref } from 'semantic-ui-react';
+import { Sidebar, Segment, Form, Comment, Header, Button, Ref, Input } from 'semantic-ui-react';
 import meeting from '../utils/meeting';
 import TimeAgo from 'react-timeago';
+import EmojiPopup from './EmojiPopup';
+import twemoji from 'twemoji';
 
 class Meeting extends React.Component {
     constructor(props) {
@@ -21,7 +24,8 @@ class Meeting extends React.Component {
             blockRequest: false,
             visibleSidebar: false,
             micStatus: true,
-            videoStatus: true
+            videoStatus: true,
+            inputText: ''
         }
         this.textInput = '';
         this.room = '';
@@ -30,6 +34,8 @@ class Meeting extends React.Component {
         this.onUnload = this.onUnload.bind(this);
         this.sendMessage = this.sendMessage.bind(this);
         this.loadMessage = this.loadMessage.bind(this);
+        this.handleChangeInput = this.handleChangeInput.bind(this);
+        this.handleClickEmoji = this.handleClickEmoji.bind(this);
     }
 
     initMeeting(currentRoom) {
@@ -77,7 +83,9 @@ class Meeting extends React.Component {
             this.setState({
                 messages: [...this.state.messages, message]
             }, () => {
-                if (this.state.containerMessageRef.scrollTop + this.state.containerMessageRef.offsetHeight + 51 === this.state.containerMessageRef.scrollHeight) {
+                twemoji.parse(ReactDOM.findDOMNode(this));
+                console.log(this.state.containerMessageRef.scrollTop ,this.state.containerMessageRef.offsetHeight, this.state.containerMessageRef.scrollHeight)
+                if (this.state.containerMessageRef.scrollHeight - (this.state.containerMessageRef.scrollTop + this.state.containerMessageRef.offsetHeight) > 49) {
                     this.scrollToBottom();
                 }
             });
@@ -157,14 +165,19 @@ class Meeting extends React.Component {
             this.leaveMeeting(() => {
                 this.initMeeting(nextProps.match.url);
             });
+            
         }
     }
 
     sendMessage(e) {
-        var message = e.target.elements.text_input.value;
+        // var message = e.target.elements.text_input.value;
+        var message = this.state.inputText;
         if (message) {
             this.room.sendChatGroupMessage(this.props.profileUser.profile._id, this.state.projectId, message);
-            e.target.elements.text_input.value = '';
+            // e.target.elements.text_input.value = '';
+            this.setState({
+                inputText: ''
+            });
         }
     }
 
@@ -181,11 +194,13 @@ class Meeting extends React.Component {
                         if (this.state.offset === 30) {
                             this.scrollToBottom();
                         }
+                        twemoji.parse(ReactDOM.findDOMNode(this));
                     });
                 } else {
                     this.setState({
                         blockRequest: true
                     });
+                    twemoji.parse(ReactDOM.findDOMNode(this));
                 } 
             });
     }
@@ -217,14 +232,27 @@ class Meeting extends React.Component {
         }
     }
 
+    handleClickEmoji(emoji) {
+        // console.log(emoji);
+        this.setState({
+            inputText: this.state.inputText + emoji
+        });
+    }
+
+    handleChangeInput(e, {name, value}) {
+        this.setState({
+            inputText: value
+        });
+    }
+
     render() {
-        console.log(this.state);
+        // console.log(this.state);
         return (
             <Sidebar.Pushable key={'chat'} style={{marginTop:'-1rem', height: 'calc(100vh - 59px)'}}>
                 <Sidebar style={{overflow: 'hidden'}} animation='overlay' width='wide' animation='overlay' direction='right' visible={this.state.visibleSidebar} icon='labeled' vertical='true'>
                     <Header as='h3' attached='top'>Tin nhắn</Header>
                     <Ref innerRef={this.handleRef}>
-                        <Segment attached style={{height: 'calc(100% - 80px)', overflow: 'auto'}} onScroll={this.handleScroll}>
+                        <Segment attached style={{height: 'calc(100% - 101px)', overflow: 'auto'}} onScroll={this.handleScroll}>
                             <Comment.Group>
                                 {this.state.messages.map((message) => (
                                     <Comment key={message._id}>
@@ -245,7 +273,10 @@ class Meeting extends React.Component {
                     </Ref>
                     <Header as='div' attached='bottom' style={{padding: 0, border: 'none'}}>
                         <Form onSubmit={this.sendMessage}>
-                            <Form.Input type='text' placeholder='Nhập tin nhắn' name='text_input' size='small' action={<Button type='submit' content='Gửi' primary />} />
+                            <Form.Field>
+                                <Input className='inputChat' type='text' placeholder='Nhập tin nhắn' value={this.state.inputText} name='text_input' size='small' onChange={this.handleChangeInput} action={<Button type='submit' content='Gửi' primary />} />
+                                <EmojiPopup handleClickEmoji={this.handleClickEmoji} />
+                            </Form.Field>
                         </Form>
                     </Header>
                 </Sidebar>

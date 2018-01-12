@@ -32,7 +32,7 @@ class AllStaffTimeline extends React.Component {
         this.handleSubmitForm = this.handleSubmitForm.bind(this);
         this.handleOnClickChangeViewMethod = this.handleOnClickChangeViewMethod.bind(this);
         this.displayTimeline = this.displayTimeline.bind(this);
-        this.handleScrollBody = this.handleScrollBody.bind(this);
+        // this.handleScrollBody = this.handleScrollBody.bind(this);
     }
 
     state = { 
@@ -268,6 +268,7 @@ class AllStaffTimeline extends React.Component {
                             <Button floated="right" 
                                 onClick={this.handleOnClickChangeViewMethod}
                                 color='green'
+                                className="change-view-method-fixed"
                             >  
                                 <Icon name="hourglass empty" /> Xem thời gian rảnh
                             </Button>
@@ -275,6 +276,7 @@ class AllStaffTimeline extends React.Component {
                             <Button floated="right" 
                                 onClick={this.handleOnClickChangeViewMethod}
                                 color='red'
+                                className="change-view-method-fixed"
                             >  
                                 <Icon name="hourglass full" /> Xem thời gian làm việc
                             </Button>
@@ -287,7 +289,7 @@ class AllStaffTimeline extends React.Component {
                   this.state.visible.dayInput ? beginEndForm : ''
                 }
                 <Grid columns={2} className="margin-bot-1">
-                  <Grid.Column width={10}>
+                  <Grid.Column width={14}>
                     {
                       this.state.visible.dayInput ? '' :   
                         this.state.viewMethod == BUSY ? 
@@ -295,17 +297,17 @@ class AllStaffTimeline extends React.Component {
                         :
                             <Header as="h2" color="green">Bảng thời gian rảnh rỗi của nhân viên</Header>
                     }
-                    
+                    { 
+                      this.state.visible.dayInput ? '' : timeline
+                    }
                   </Grid.Column>
-                  <Grid.Column width={6}>
+                  <Grid.Column width={2}>
                     {
                       this.state.visible.dayInput ? '' : viewMethodControl  
                     }
                   </Grid.Column>
                 </Grid>
-                { 
-                  this.state.visible.dayInput ? '' : timeline
-                }
+                
             </Container>
         )
     }

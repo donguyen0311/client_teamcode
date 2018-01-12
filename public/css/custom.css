@@ -273,7 +273,7 @@ input.FP{
 .change-view-method-fixed{
 	position: fixed;
 	z-index: 100;
-	right: 1vw;
+	right: 1.5vw;
 	top: 50vh;
 }
 

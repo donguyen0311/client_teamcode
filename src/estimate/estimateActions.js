@@ -6,7 +6,8 @@ import {
     CHANGE_ESTIMATED_RESULT,
     CHANGE_BRUTEFORCE_STAFFS,
     CHANGE_STAFF_REQUIREMENTS,
-    RESET_ESTIMATED_RESULT
+    RESET_ESTIMATED_RESULT,
+    CHANGE_ESTIMATE_MODE
 } from './estimateConstants'
 
 import estimate from '../utils/estimate'
@@ -45,6 +46,10 @@ export function changeStaffRequirements(newState) {
 
 export function resetEstimateResult(newState){
     return {type: RESET_ESTIMATED_RESULT, newState};   
+}
+
+export function changeEstimateMode(newState){
+    return {type: CHANGE_ESTIMATE_MODE, newState};   
 }
 
 export function getSuitableStaffs(requirement) {

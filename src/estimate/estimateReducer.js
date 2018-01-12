@@ -6,9 +6,11 @@ import {
     CHANGE_ESTIMATED_RESULT,
     CHANGE_BRUTEFORCE_STAFFS,
     CHANGE_STAFF_REQUIREMENTS,
-    RESET_ESTIMATED_RESULT
+    RESET_ESTIMATED_RESULT,
+    CHANGE_ESTIMATE_MODE
 } from './estimateConstants'
-
+const ESTIMATE_MODE_MANUAL = 0 ;
+const ESTIMATE_MODE_AUTO = 1 ;
 const initialState = {
 	KLOC: 0,
 	EAF: {
@@ -45,7 +47,8 @@ const initialState = {
         totalTimeTeamAfforable: 0
 
     },
-    bruteforceStaffs:[]
+    bruteforceStaffs:[],
+    mode: ESTIMATE_MODE_AUTO
 };
 
 export function estimateReducer(state = initialState, action) {
@@ -84,6 +87,11 @@ export function estimateReducer(state = initialState, action) {
             return {
                 ...state,
                 staffRequirements: action.newState
+            };
+        case CHANGE_ESTIMATE_MODE:
+            return {
+                ...state,
+                mode: action.newState
             };
         case RESET_ESTIMATED_RESULT:
             return {

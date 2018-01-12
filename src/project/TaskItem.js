@@ -143,7 +143,6 @@ class TaskItem extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log(nextProps)
         this.setState({
             editTaskName: nextProps.data.task_name,
 			editLevel: nextProps.data.level,

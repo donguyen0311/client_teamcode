@@ -124,15 +124,26 @@ class SideBar extends React.Component {
                         </Dropdown>
                     </Menu.Item>
                     {this.props.profileUser.profile.admin === 1 ? (
-                        <Menu.Item style={{fontSize: 19, fontWeight: 'bold'}} 
+                        <div>
+                            <Menu.Item style={{fontSize: 19, fontWeight: 'bold'}} 
+                                        as={Link} 
+                                        to={`${this.props.match.url}/dashboard`}
+                                        name={'dashboard'}
+                                        active={activeItem === 'dashboard'}
+                                        onClick={this.handleItemClick.bind(this, 'dashboard')}>
+                                        
+                                    <Icon name='dashboard' style={{float: 'left', marginRight: 10, marginLeft: 10}} />Quản lý nhân viên   
+                            </Menu.Item>
+                            <Menu.Item style={{fontSize: 19, fontWeight: 'bold'}} 
                                     as={Link} 
-                                    to={`${this.props.match.url}/dashboard`}
+                                    to={`${this.props.match.url}/allStaffTimeline`}
                                     name={'dashboard'}
-                                    active={activeItem === 'dashboard'}
-                                    onClick={this.handleItemClick.bind(this, 'dashboard')}>
+                                    active={activeItem === 'allStaffTimeline'}
+                                    onClick={this.handleItemClick.bind(this, 'allStaffTimeline')}>
                                     
-                                <Icon name='dashboard' style={{float: 'left', marginRight: 10, marginLeft: 10}} />Quản lý nhân viên   
-                        </Menu.Item>
+                                <Icon name='clock' style={{float: 'left', marginRight: 10, marginLeft: 10}} />Thời gian làm việc   
+                            </Menu.Item>
+                        </div>
                     ) : ""}
                     <Menu.Item>
                         <Menu.Header>

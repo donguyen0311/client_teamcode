@@ -153,6 +153,10 @@ input.FP{
 	margin-top: 2vh;
 }
 
+.margin-bot-1{
+	margin-bottom: 1vh !important;
+}
+
 .cursor-pointer-hover{
 	cursor: pointer !important;
 }
@@ -234,4 +238,42 @@ input.FP{
 	visibility: visible;
   	opacity: 1;
 	transition: visibility 0s, opacity 0.5s linear;
+}
+
+.date-picker-input-width{
+	width: 27.5vw !important;
+}
+
+.rtc-free-time{
+	background-color: #22be34 !important;
+}
+
+.rtc-busy-time{
+	background-color: #db2828 !important;
+}
+
+.react-calendar-timeline .rct-items .rct-item.selected {
+    background: #FFC107 !important;
+    border: 1px solid #FF9800;
+    z-index: 82;
+}
+
+.react-calendar-timeline .rct-header .rct-label-group{
+    background: #2185d0 !important;
+}
+
+.react-calendar-timeline .rct-sidebar .rct-sidebar-header{
+	background: #2185d0 !important;	
+}
+
+.change-view-method-fixed{
+	position: fixed;
+	z-index: 100;
+	right: 1vw;
+	top: 50vh;
+}
+
+.pushable:not(body) {
+     -webkit-transform: none !important; 
+     transform: none !important; 
 }

@@ -53,6 +53,7 @@ class StaffAfforableTimeline extends React.Component {
 
       /*---------------------------------------------*/
       // console.log('staffsId_tempId',staffsId_tempId);
+      
       let items = [];
       let item_id = 1;
       this.props.estimateReducer.estimatedResult.suitableStaffs.map((staff, staffIndex) => {
@@ -114,7 +115,7 @@ class StaffAfforableTimeline extends React.Component {
     state = {
       groups: [],
       items: []
-    }
+    };
 
     render() {
       return (

@@ -8,6 +8,7 @@ import Activity from '../activity/Activity';
 import SideBar from './Sidebar';
 import BlockPage from './BlockPage';
 import Meeting from '../meeting/Meeting';
+import AllStaffTimeline from '../timeline/AllStaffTimeline'
 
 class SideBarContainer extends React.Component {
     constructor(props) {
@@ -25,6 +26,7 @@ class SideBarContainer extends React.Component {
                         {/* <Redirect from={`${this.props.match.url}/`} to={`${this.props.match.url}/dashboard`}/> */}
                         <Switch>
                             <Route path={`${this.props.match.url}/dashboard`} component={Dashboard} />
+                            <Route path={`${this.props.match.url}/allStaffTimeline`} component={AllStaffTimeline} />
                             <Route path={`${this.props.match.url}/project/:project`} component={Project} />
                             <Route path={`${this.props.match.url}/activity/:project`} component={Activity} />
                             <Route path={`${this.props.match.url}/meeting/:project`} component={Meeting} />

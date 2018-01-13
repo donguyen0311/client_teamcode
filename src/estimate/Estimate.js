@@ -37,13 +37,15 @@ import {
     changeFindTeamBugdetError,
     setAcceptSuggestionStatus,
     changeProjectWillCreate,
-    setProjectCreatedStatus
+    setProjectCreatedStatus,
+    changeVisibleCreateModeModal
 } from '../project/ProjectActions';
 
 import {
     changeVisibleState
 } from '../estimate/function_point/FunctionPointActions';
 
+import EstimateMode from './EstimateMode';
 import StaffAfforableTimeline from './timeline/StaffAfforableTimeline';
 import ProjectNewForm from '../project/ProjectNewForm';
 import SuitableStaffsView from './SuitableStaffsView';
@@ -62,6 +64,12 @@ import 'moment-duration-format';
 
 const NOT_DECIDED = -1, ACCEPTED = 1, DECLINED = 0;
 
+const CREATE_MODE_NOT_DECIDED = 0;
+const MANUAL_PICK_STAFF = 1;
+const AUTO_PICK_STAFF = 2;
+const COMPLETELY_AUTO_PICK_STAFF = 3;
+const PRE_PICK_STAFF = 4;
+
 class Estimate extends React.Component {
     constructor(props) {
         super(props);
@@ -74,6 +82,7 @@ class Estimate extends React.Component {
         this.allUserAbilityCases = this.allUserAbilityCases.bind(this);
         this.closeTimeline = this.closeTimeline.bind(this);
         this.openTimeline = this.openTimeline.bind(this);
+        this.showCreateMode = this.showCreateMode.bind(this);
 
     }
     componentWillReceiveProps(nextProps)
@@ -101,6 +110,11 @@ class Estimate extends React.Component {
                })
             },2000);
         }
+
+        // if(nextProps.projectReducer.createMode == COMPLETELY_AUTO_PICK_STAFF)
+        // {
+        //     this.show('ProjectTimeModal');
+        // }
     }
     estimate(){
         let currentState;
@@ -294,6 +308,12 @@ class Estimate extends React.Component {
         isDeclineSuggest: false
     }
 
+    showCreateMode()
+    {   
+        console.log('click i');
+        this.props.changeVisibleCreateModeModal(true);
+    }
+
     show = element => () => {
         if(element == 'ProjectTimeModal')
         {
@@ -371,6 +391,7 @@ class Estimate extends React.Component {
                 ));
             }
         }
+        console.log('here');
         for(let modal_name in this.state.modal)
         {
             // console.log(modal_name);
@@ -385,6 +406,7 @@ class Estimate extends React.Component {
                 currentState.modal[modal_name] = false;
                 this.setState(currentState);
             }
+            console.log('here');
         }   
         // if(element == 'SLOCModal')  
           // document.querySelectorAll('#sloc').focus()
@@ -590,8 +612,8 @@ class Estimate extends React.Component {
              {sweetAlertTag}
                 {/*<Button type='button' color='orange' onClick={this.show('SLOCModal')}><Icon name='wizard' /> Find suitable team</Button>*/}
               <Icon name="add circle" size={'large'} style={{float: 'right', cursor: 'pointer'}} 
-                    onClick={this.show('ProjectTimeModal')}/>
-
+                    onClick={() => {this.showCreateMode()}}/>
+                <EstimateMode />
                 <Modal 
                     id = "project-time-modal"
                     size="fullscreen"
@@ -834,7 +856,8 @@ const mapDispatchToProps = {
     getBruteforceStaffs,
     changeBruteforceStaffs,
     setProjectCreatedStatus,
-    changeVisibleState
+    changeVisibleState,
+    changeVisibleCreateModeModal
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Estimate);

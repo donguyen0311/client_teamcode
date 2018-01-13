@@ -7,12 +7,21 @@ import {
     CHANGE_FIND_TEAM_BUGDET_ERROR,
     SET_ACCEPT_SUGGESTION_STATUS,
     SET_PROJECT_CREATED_STATUS,
-    RESET_PROJECT_WILL_CREATE
+    RESET_PROJECT_WILL_CREATE,
+    CHANGE_CREATE_MODE,
+    CHANGE_VISIBLE_CREATE_MODE_MODAL
 } from './ProjectConstants'
 
 import moment from 'moment';
 
 const NOT_DECIDED = -1, ACCEPTED = 1, DECLINED = 0;
+
+const CREATE_MODE_NOT_DECIDED = 0;
+const MANUAL_PICK_STAFF = 1;
+const AUTO_PICK_STAFF = 2;
+const COMPLETELY_AUTO_PICK_STAFF = 3;
+const PRE_PICK_STAFF = 4;
+
 const initialState = {
 	projectSaved:{
 
@@ -36,7 +45,10 @@ const initialState = {
 	responsible_user: [],
     findTeamBudgetError: false,
     acceptSuggestionStatus: NOT_DECIDED,
-    isProjectCreated: false
+    isProjectCreated: false,
+    createMode: CREATE_MODE_NOT_DECIDED,
+    visibleCreateModeModal: false
+
 	// _id :{
  //    	'project_id': 0,
  //    },
@@ -98,6 +110,16 @@ export function projectReducer(state = initialState, action) {
             return {
                 ...state,
                 projectWillCreate: {...initialState.projectWillCreate}
+            };
+        case CHANGE_CREATE_MODE:
+            return {
+                ...state,
+                createMode: action.newState
+            };
+        case CHANGE_VISIBLE_CREATE_MODE_MODAL:
+            return {
+                ...state,
+                visibleCreateModeModal: action.newState
             };
         default:
             return state;

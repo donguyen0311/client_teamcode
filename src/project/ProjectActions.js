@@ -7,7 +7,9 @@ import {
 	CHANGE_FIND_TEAM_BUGDET_ERROR,
 	SET_ACCEPT_SUGGESTION_STATUS,
 	SET_PROJECT_CREATED_STATUS,
-	RESET_PROJECT_WILL_CREATE
+	RESET_PROJECT_WILL_CREATE,
+	CHANGE_CREATE_MODE,
+	CHANGE_VISIBLE_CREATE_MODE_MODAL
 } from './ProjectConstants'
 
 export function changeUserNewProjectForm(newState) {
@@ -46,3 +48,10 @@ export function resetProjectWillCreate(newState) {
     return {type: RESET_PROJECT_WILL_CREATE, newState};
 }
 
+export function changeCreateMode(newState) {
+    return {type: CHANGE_CREATE_MODE, newState};
+}
+
+export function changeVisibleCreateModeModal(newState) {
+    return {type: CHANGE_VISIBLE_CREATE_MODE_MODAL, newState};
+}

@@ -320,3 +320,39 @@ input.FP{
 .emoji {
 	vertical-align: middle;
 }
+
+.auto-pick-staff{
+	background-color: #db2828;
+	color: #fff;
+}
+
+.manual-pick-staff{
+	background-color: #f2711c;
+	color: #fff;
+}
+
+.manual-pick-staff:hover{
+	background-color: #f98336;
+}
+
+.auto-pick-staff:hover{
+	background-color: #de4343;
+}
+
+.pre-pick-staff{
+	background-color: #2185d0;
+	color: #fff;
+}
+
+.completely-auto-pick-staff{
+	background-color: #25a233;
+	color: #fff;
+}
+
+.pre-pick-staff:hover{
+	background-color: #3c8ecc;
+}
+
+.completely-auto-pick-staff:hover{
+	background-color: #41a74d;
+}

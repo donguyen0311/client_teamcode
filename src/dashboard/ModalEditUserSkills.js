@@ -9,45 +9,45 @@ let skills_description = {
     analyst_capability: [
         {
             value: 0,
-            text: '15th percentile.'
+            text: 'Năng lực của nhân viên ≥ 15% tổng số nhân viên.'
         },
         {
             value: 1,
-            text: '35th percentile.'
+            text: 'Năng lực của nhân viên ≥ 35% tổng số nhân viên.'
         },
         {
             value: 2,
-            text: '55th percentile.'
+            text: 'Năng lực của nhân viên ≥ 55% tổng số nhân viên.'
         },
         {
             value: 3,
-            text: '75th percentile.'
+            text: 'Năng lực của nhân viên ≥ 75% tổng số nhân viên.'
         },
         {
             value: 4,
-            text: '90th percentile.'
+            text: 'Năng lực của nhân viên ≥ 90% tổng số nhân viên.'
         }
     ],
     programmer_capability: [
         {
             value: 0,
-            text: '15th percentile.'
+            text: 'Năng lực của nhân viên ≥ 15% tổng số nhân viên.'
         },
         {
             value: 1,
-            text: '35th percentile.'
+            text: 'Năng lực của nhân viên ≥ 35% tổng số nhân viên.'
         },
         {
             value: 2,
-            text: '55th percentile.'
+            text: 'Năng lực của nhân viên ≥ 55% tổng số nhân viên.'
         },
         {
             value: 3,
-            text: '75th percentile.'
+            text: 'Năng lực của nhân viên ≥ 75% tổng số nhân viên.'
         },
         {
             value: 4,
-            text: '90th percentile.'
+            text: 'Năng lực của nhân viên ≥ 90% tổng số nhân viên.'
         }
     ],
     application_experience: [
@@ -218,7 +218,7 @@ class ModalEditUserSkills extends React.Component {
                     type={this.state.typeAlert}
                     showConfirmButton = {false}
                 />
-            <Modal size={'small'} closeIcon trigger={<Button color='teal'>Xem và chỉnh sửa</Button>} >
+            <Modal size={'small'} closeIcon trigger={<Button fluid color='teal'>Xem và chỉnh sửa</Button>} >
                 <Modal.Header>
                     <Header size='small' icon='hashtag' content='Xem và chỉnh sửa kỹ năng nhân viên'/>
                 </Modal.Header>

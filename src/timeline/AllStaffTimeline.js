@@ -284,12 +284,12 @@ class AllStaffTimeline extends React.Component {
                 </Form>
 
         return (
-            <Container>
+            <Container style={{width: '100%', height: 'calc(100vh - 59px)', overflow: 'auto', marginTop: '-1rem', padding: 10, position: 'relative'}}>
                 {
                   this.state.visible.dayInput ? beginEndForm : ''
                 }
                 <Grid columns={2} className="margin-bot-1">
-                  <Grid.Column width={14}>
+                  <Grid.Column width={13}>
                     {
                       this.state.visible.dayInput ? '' :   
                         this.state.viewMethod == BUSY ? 
@@ -301,7 +301,7 @@ class AllStaffTimeline extends React.Component {
                       this.state.visible.dayInput ? '' : timeline
                     }
                   </Grid.Column>
-                  <Grid.Column width={2}>
+                  <Grid.Column width={3}>
                     {
                       this.state.visible.dayInput ? '' : viewMethodControl  
                     }

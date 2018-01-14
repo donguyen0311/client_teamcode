@@ -69,7 +69,7 @@ export function projectReducer(state = initialState, action) {
         case CHANGE_USERS_NEW_PROJECT_FORM:
             return {
                 ...state,
-                users: action.newState
+                projectWillCreate: {...state.projectWillCreate, users: action.newState}
             };
         case CHANGE_ID_NEW_PROJECT_FORM:
             return {

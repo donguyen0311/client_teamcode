@@ -8,7 +8,8 @@ import {
     Input,
     Label,
     Loader,
-    Grid
+    Grid,
+    Message
 } from 'semantic-ui-react';
 
 import project from '../utils/project';
@@ -26,7 +27,8 @@ import {
 } from '../project/ProjectActions';
 
 import {
-  resetEstimateResult
+  resetEstimateResult,
+  changePrePickStaffs
 } from '../estimate/estimateActions';
 
 import DatePicker from 'react-datepicker';
@@ -51,6 +53,10 @@ class ProjectNewForm extends React.Component {
             'belong_company' : this.props.profileUser.profile.current_company._id,
             'created_by' : this.props.profileUser.profile._id,
             'users': []
+        },
+        error:{
+          occurred: false,
+          message: ''
         },
         estimatedResult:{
           budget: 0,
@@ -286,34 +292,75 @@ class ProjectNewForm extends React.Component {
       this.onNewProjectFormSubmit = this.onNewProjectFormSubmit.bind(this);
       this.open = this.open.bind(this);
       this.close = this.close.bind(this);
+      this.distinctStaff = this.distinctStaff.bind(this);
+      this.handleDismiss = this.handleDismiss.bind(this);
     }
 
     componentDidMount()
     {
+      if(this.props.onlyCreateProject || this.props.onlyPickStaff)
+      {
+        // console.log('reset');
+        this.props.resetProjectWillCreate(true);
+        this.props.changeProjectWillCreate(
+          Object.assign(
+            {...this.props.projectReducer.projectWillCreate},
+            {
+              'belong_company' : this.props.profileUser.profile.current_company._id,
+              'created_by' : this.props.profileUser.profile._id,
+              'users': []
+            }
+          )
+        );
+      }
+      else
+      {
+        // console.log('update');
+        this.props.changeProjectWillCreate(
+          Object.assign(
+            {...this.props.projectReducer.projectWillCreate},
+            {
+              'belong_company' : this.props.profileUser.profile.current_company._id,
+              'created_by' : this.props.profileUser.profile._id
+            }
+          )
+        );
+      }
       // console.log(this.formatUsersInCompany(this.props.estimateReducer.estimatedResult.suitableStaffs).map(user => user._id));
       this.getUsersInCompanyInfo();
-      this.setState({
-        estimatedResult:{
-          budget: this.props.estimateReducer.estimatedResult.budget,
-          start_day: this.props.projectReducer.projectWillCreate.start_day,
-          end_day: this.props.projectReducer.projectWillCreate.end_day
-        },
-        defaultDropdownStaffs: this.props.estimateReducer.estimatedResult.suitableStaffs.map(user => user._id)
-      });
-      this.props.changeProjectWillCreate(
-        Object.assign(
-          {...this.props.projectReducer.projectWillCreate},
-          {
-            'belong_company' : this.props.profileUser.profile.current_company._id,
-            'created_by' : this.props.profileUser.profile._id
-          }
-        )
-      );
+      if(this.props.isDisabled)
+      {
+        this.setState({
+          estimatedResult:{
+            budget: this.props.estimateReducer.estimatedResult.budget,
+            start_day: this.props.projectReducer.projectWillCreate.start_day,
+            end_day: this.props.projectReducer.projectWillCreate.end_day
+          },
+          defaultDropdownStaffs: this.distinctStaff(this.props.estimateReducer.estimatedResult.suitableStaffs).map(user => user._id)
+        });
+      }
     }
 
     componentWillReceiveProps(nextProps)
     {
       // this.setState({defaultDropdownStaffs: this.formatUsersInCompany(this.props.estimateReducer.estimatedResult.suitableStaffs)});
+    }
+
+    distinctStaff(staffs){
+        if(staffs.length == 0)
+            return [];
+
+        let distinctStaffsId = [];
+        let distinctStaffs = [];
+        for(let staff of staffs)
+        {
+            if(distinctStaffsId.indexOf(staff._id)<0)
+            {
+                distinctStaffsId.push(staff._id);
+                distinctStaffs.push(staff);
+            }
+        }
+        return distinctStaffs;
     }
 
     updateCreateByBelongCompany(){
@@ -379,11 +426,23 @@ class ProjectNewForm extends React.Component {
 
     onMutipleChoiceChange(event,data)
     {
-      // console.log(event.target.value)
-      var elementName = data.name;
-      let currentState = {...this.state};
-      currentState.projectInfos[elementName] = data.value;
-      this.setState(currentState);
+      if(this.props.onlyPickStaff)
+      {
+        this.props.changePrePickStaffs(data.value);
+      }
+      else
+      {
+        // console.log(event.target.value)
+        var elementName = data.name;
+        let currentState = {...this.state};
+        currentState.projectInfos[elementName] = data.value;
+        this.setState(currentState);
+        console.log('elementName',elementName);
+        if(elementName == "users")
+        {
+          this.props.changeUserNewProjectForm(data.value);
+        }
+      }
       // console.log(data.placeholder)
       // console.log(data.value)
       // data.value.push('wordpress')
@@ -442,6 +501,12 @@ class ProjectNewForm extends React.Component {
     }
 
     onNewProjectFormSubmit(){
+     
+      if(this.props.modal == "PrePickStaffModal")
+      {
+        this.props.closeEstimateModal("PrePickStaffModal");
+        return false;
+      }
 
       if(!this.state.isCreatingProject){
         this.setState({
@@ -471,20 +536,30 @@ class ProjectNewForm extends React.Component {
         .then(response => {
           console.log(response);
           this.setState({
-            isCreatingProject: false
-          });
-          this.setState({
-            openModal: false
-          });
-          
-          // this.props.changeUserNewProjectForm(response.projectSaved.users)
-          // this.props.changeIdNewProjectForm(response.projectSaved._id)
-          this.props.changeProjectSaved(response.projectSaved);
+              isCreatingProject: false
+            });
+          if(response.success)
+          {
+            
+            // this.setState({
+            //   openModal: false
+            // });
+            
+            // this.props.changeUserNewProjectForm(response.projectSaved.users)
+            // this.props.changeIdNewProjectForm(response.projectSaved._id)
+            this.props.changeProjectSaved(response.projectSaved);
 
-          this.props.setProjectCreatedStatus(true);
+            this.props.setProjectCreatedStatus(true);
+            setTimeout(()=>this.props.setProjectCreatedStatus(false),2000);
+            this.props.resetEstimateResult(true);
+            this.props.resetProjectWillCreate(true);
 
-          this.props.resetEstimateResult(true);
-          this.props.resetProjectWillCreate(true);
+            this.props.closeEstimateModal(this.props.modal);
+          }
+          else
+          {
+            this.setState({ error: {occurred: true, message: response.message}});
+          }
         });
       }
     }
@@ -497,9 +572,9 @@ class ProjectNewForm extends React.Component {
           duration: 0
       });
       this.getUsersInCompanyInfo();
-      this.setState({
-        openModal: true
-      });
+      // this.setState({
+      //   openModal: true
+      // });
       
       // let budgetInput = document.querySelectorAll('input[name="budget"]')[0];
       
@@ -523,66 +598,95 @@ class ProjectNewForm extends React.Component {
         return 0;
     }
 
+    handleDismiss = () => {
+      this.setState({ error: {occurred: false, message: ''}});
+    }
+
+
+
     render() {
         const openModal = this.state.openModal;
         return(
           <div>
+            {
+              this.state.error.occurred &&
+              <Message negative
+                onDismiss={this.handleDismiss}
+              >
+                <Message.Header>Lỗi!</Message.Header>
+                <p>{this.state.error.message}</p>
+              </Message>
+            }
             <Form id="new_project" className="new-project-form" onSubmit={this.onNewProjectFormSubmit}>
-              <Form.Field>
-                <Form.Input label='Tên dự án' name='project_name' placeholder='Tên dự án' autoFocus required 
-                  onChange={this.onInputChange}
-                />
-              </Form.Field>
-              <Form.Field className="required">
-                  <label>Ngân sách</label>
-                  <Input
-                    label={{ basic: true, content: '$' }}
-                    className="text-bold"
-                    labelPosition='right'
-                    placeholder='Ngân sách cho dự án này'
-                    name='budget'
-                    disabled={true}
-                    onChange={this.onInputChange}
-                    value={Math.round(this.props.estimateReducer.estimatedResult.totalProjectCost*100)/100}
-                    required
-                  />
-                  {this.props.projectReducer.findTeamBudgetError && <Label basic color='red' pointing>Please enter a value</Label>}
-              </Form.Field>
-              <Grid columns={2}>
-                <Grid.Row>
-                  <Grid.Column width={8}>
-                    <Form.Field className="required">
-                        <label>Ngày bắt dầu dự án</label>
-                        <DatePicker selected={moment(this.props.projectReducer.projectWillCreate.start_day)} required
-                          className="text-bold"
-                          name='start_day'
-                          dateFormat="DD/MM/YYYY"
-                          onChange={this.handleChange}
-                          disabled={true}
-                        />
-                    </Form.Field>
-                  </Grid.Column>
-                  <Grid.Column width={8}>
-                    <Form.Field className="required">
-                        <label>Ngày kết thúc dự án</label>
-                        <DatePicker selected={moment(this.props.projectReducer.projectWillCreate.end_day)} required
-                          className="text-bold"
-                          name='end_day'
-                          dateFormat="DD/MM/YYYY"
-                          onChange={this.handleChange}
-                          disabled={true}
-                        />
-                    </Form.Field>
-                  </Grid.Column>
-                </Grid.Row>
-              </Grid>
-              <Form.Field>
-                  <label className="padding-top-1">Mô tả</label>
-                  <Form.TextArea placeholder='Mô tả' 
-                    name='description'
+              {
+                (!this.props.onlyPickStaff) && 
+                <Form.Field>
+                  <Form.Input label='Tên dự án' name='project_name' placeholder='Tên dự án' autoFocus required 
                     onChange={this.onInputChange}
                   />
-              </Form.Field>
+                </Form.Field>
+              }
+              {
+                (!this.props.onlyPickStaff) && (
+                (!this.props.onlyCreateProject) &&
+                <Form.Field className="required">
+                    <label>Chi phí</label>
+                    <Input
+                      label={{ basic: true, content: '$' }}
+                      className="text-bold"
+                      labelPosition='right'
+                      placeholder='Ngân sách cho dự án này'
+                      name='budget'
+                      disabled={this.props.isDisabled}
+                      onChange={this.onInputChange}
+                      value={Math.round(this.props.estimateReducer.estimatedResult.totalProjectCost*100)/100}
+                    />
+                    {this.props.projectReducer.findTeamBudgetError && <Label basic color='red' pointing>Please enter a value</Label>}
+                </Form.Field>
+                )
+              }
+              {
+                (!this.props.onlyPickStaff) && 
+                <Grid columns={2}>
+                  <Grid.Row>
+                    <Grid.Column width={8}>
+                      <Form.Field className="required">
+                          <label>Ngày bắt dầu dự án</label>
+                          <DatePicker selected={moment(this.props.projectReducer.projectWillCreate.start_day)} required
+                            className="text-bold"
+                            name='start_day'
+                            dateFormat="DD/MM/YYYY"
+                            onChange={this.handleChange}
+                            disabled={this.props.isDisabled}
+                          />
+                      </Form.Field>
+                    </Grid.Column>
+                    <Grid.Column width={8}>
+                      <Form.Field className="required">
+                          <label>Ngày kết thúc dự án</label>
+                          <DatePicker selected={moment(this.props.projectReducer.projectWillCreate.end_day)} required
+                            className="text-bold"
+                            name='end_day'
+                            dateFormat="DD/MM/YYYY"
+                            onChange={this.handleChange}
+                            disabled={this.props.isDisabled}
+                          />
+                      </Form.Field>
+                    </Grid.Column>
+                  </Grid.Row>
+                </Grid>
+              }
+              {
+                (!this.props.onlyPickStaff) && 
+                <Form.Field>
+                    <label className="padding-top-1">Mô tả</label>
+                    <Form.TextArea placeholder='Mô tả' 
+                      name='description'
+                      onChange={this.onInputChange}
+                    />
+                </Form.Field>
+              }
+              
               {/*<Form.Field className="required">
                   <label>Programming Language/Skills</label>
                   <Dropdown id="language_programming" placeholder='Programming Language' fluid multiple selection search
@@ -597,14 +701,14 @@ class ProjectNewForm extends React.Component {
                     this.state.isGetUsersInfoDone ? ( this.props.estimateReducer.estimatedResult.suitableStaffs.length > 0 ? 
                     <Dropdown key={123} placeholder='Nhân viên tham gia' fluid multiple selection search
                       options={this.state.usersAvailableInCompany} required
-                      name='users1'
+                      name='users'
                       onChange={this.onMutipleChoiceChange}
                       defaultValue={this.state.defaultDropdownStaffs}
-                      disabled={true}
+                      disabled={this.props.isDisabled}
                       /> : 
                       <Dropdown key={456} placeholder='Nhân viên tham gia' fluid multiple selection search
                       options={this.state.usersAvailableInCompany} required
-                      name='users2'
+                      name='users'
                       onChange={this.onMutipleChoiceChange}
                       />
                       )
@@ -612,14 +716,33 @@ class ProjectNewForm extends React.Component {
                       <Loader active inline='centered' className="new_project"/>
                   }
               </Form.Field>
-              <div className="new_project_action clearfix display-none">
-                <Button id="create_new_project" className='margin_1em display-none' floated='right' primary type="submit">
-                    {this.state.isCreatingProject ? <Loader active inline size='tiny'/> : <Icon name='plus' />} Tạo dự án
-                </Button>
-                <Button id="cancel_new_project" className='margin_1em display-none' floated='right' type='button' onClick={this.close}>
-                    <Icon name='cancel' /> Hủy bỏ
-                </Button>
-              </div>
+              {
+                (!this.props.onlyPickStaff) && 
+                <div className="new_project_action clearfix display-none">
+                  <Button id="create_new_project" className='margin_1em display-none' floated='right' primary type="submit">
+                      {this.state.isCreatingProject ? <Loader active inline size='tiny'/> : <Icon name='plus' />} Tạo dự án
+                  </Button>
+                  <Button id="cancel_new_project" className='margin_1em display-none' floated='right' type='button'
+                     onClick={()=>{
+                        this.close();
+                        this.props.resetProjectWillCreate(true);
+                      }
+                    }>
+
+                      <Icon name='cancel' /> Hủy bỏ
+                  </Button>
+                </div>
+              }
+
+              {
+                this.props.onlyPickStaff && 
+                <div className="new_project_action clearfix display-none">
+                  <Button id="apply_pre_pick_staff" className='margin_1em display-none' floated='right' primary type="submit">
+                      {this.state.isCreatingProject ? <Loader active inline size='tiny'/> : <Icon name='plus' />} Áp dụng nhân viên
+                  </Button>
+                </div>
+              }
+              
             </Form>
           </div>
         )
@@ -645,7 +768,8 @@ const mapDispatchToProps = {
     changeResponsibleUser,
     setProjectCreatedStatus,
     resetEstimateResult,
-    resetProjectWillCreate
+    resetProjectWillCreate,
+    changePrePickStaffs
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProjectNewForm);

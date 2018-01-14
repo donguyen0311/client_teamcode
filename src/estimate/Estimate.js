@@ -29,7 +29,8 @@ import {
     changeEstimatedResult,
     changeStaffRequirements,
     getBruteforceStaffs,
-    changeBruteforceStaffs
+    changeBruteforceStaffs,
+    changePrePickStaffs
 } from './estimateActions';
 
 import {
@@ -83,10 +84,16 @@ class Estimate extends React.Component {
         this.closeTimeline = this.closeTimeline.bind(this);
         this.openTimeline = this.openTimeline.bind(this);
         this.showCreateMode = this.showCreateMode.bind(this);
+        this.show = this.show.bind(this);
+        this.close = this.close.bind(this);
+        this.showModal = this.showModal.bind(this);
+        this.closeModal = this.closeModal.bind(this);
 
     }
+    
     componentWillReceiveProps(nextProps)
     {
+        // console.log('nextProps',nextProps);
         if(nextProps.projectReducer.isProjectCreated)
         {
             let willSaveState = {...this.state};
@@ -110,12 +117,22 @@ class Estimate extends React.Component {
                })
             },2000);
         }
+        else
+        {
+            this.setState({
+                    alert: {
+                        projectIsCreated: false
+                    }
+               });
+        }
 
         // if(nextProps.projectReducer.createMode == COMPLETELY_AUTO_PICK_STAFF)
         // {
+        //     console.log('complete-auto');
         //     this.show('ProjectTimeModal');
         // }
     }
+
     estimate(){
         let currentState;
         currentState                              = {...this.state};
@@ -167,6 +184,7 @@ class Estimate extends React.Component {
         currentState = {...this.state};
         let requirements = {
             // person_month: 6,
+            prePickStaffsId: this.props.estimateReducer.prePickStaffsId,
             start_day: this.props.projectReducer.projectWillCreate.start_day,
             end_day: this.props.projectReducer.projectWillCreate.end_day,
             personMonths: PMs,
@@ -286,7 +304,9 @@ class Estimate extends React.Component {
             CostDriverModal    : false,
             SuitableStaffsModal: false,
             SummaryProjectModal: false,
-            StaffAfforableTimelineModal: false
+            StaffAfforableTimelineModal: false,
+            CreateProjectModal: false,
+            PrePickStaffModal: false
         },
         alert: {
             projectIsCreated: false
@@ -310,11 +330,27 @@ class Estimate extends React.Component {
 
     showCreateMode()
     {   
-        console.log('click i');
+        // console.log('click i');
         this.props.changeVisibleCreateModeModal(true);
     }
 
-    show = element => () => {
+    showModal(modal_name)
+    {
+        let currentState                   = {...this.state};
+        currentState.modal[modal_name] = true;
+        this.setState(currentState);
+    }
+
+    closeModal(modal_name)
+    {
+        let currentState                   = {...this.state};
+        currentState.modal[modal_name] = false;
+        this.setState(currentState);   
+    }
+
+    show (element) {
+    // show = element => () => {
+        console.log(element);
         if(element == 'ProjectTimeModal')
         {
             this.props.changeProjectWillCreate(
@@ -340,7 +376,6 @@ class Estimate extends React.Component {
         // this.setState({[element]: true })  
         if(element != 'SLOCModal' && element != 'ProjectTimeModal')
         {
-            
           let currentState;
           if (this.props.estimateReducer.KLOC == 0)
           {
@@ -391,7 +426,7 @@ class Estimate extends React.Component {
                 ));
             }
         }
-        console.log('here');
+        // console.log('here');
         for(let modal_name in this.state.modal)
         {
             // console.log(modal_name);
@@ -400,13 +435,15 @@ class Estimate extends React.Component {
                 currentState                   = {...this.state};
                 currentState.modal[modal_name] = true;
                 this.setState(currentState);
+                console.log('open',modal_name);
             }
             else{
                 currentState                   = {...this.state};
                 currentState.modal[modal_name] = false;
                 this.setState(currentState);
+                console.log('close',modal_name);
             }
-            console.log('here');
+            // console.log('here2');
         }   
         // if(element == 'SLOCModal')  
           // document.querySelectorAll('#sloc').focus()
@@ -421,12 +458,13 @@ class Estimate extends React.Component {
 
     openTimeline = element  => () =>
     {
+        console.log(element);
         let currentState            = {...this.state};
         currentState.modal[element] = true;
         this.setState(currentState);
     }
 
-    close = element => () => {
+    close(element){
         if(element == 'SuitableStaffsModal'){
             this.props.changeResponsibleUser(this.props.estimateReducer.estimatedResult.suitableStaffs.map(user=>user._id));
             if(this.props.projectReducer.acceptSuggestionStatus == ACCEPTED)
@@ -537,12 +575,12 @@ class Estimate extends React.Component {
 
     render() {
 
-        const { SLOCModal, CostDriverModal, ScaleFactorModal, SuitableStaffsModal, ProjectTimeModal, SummaryProjectModal, StaffAfforableTimelineModal } = this.state.modal
+        const { SLOCModal, CostDriverModal, ScaleFactorModal, SuitableStaffsModal, ProjectTimeModal, SummaryProjectModal, StaffAfforableTimelineModal, CreateProjectModal, PrePickStaffModal } = this.state.modal
         const { fpVisible, fpAnimation } = this.state.transition
         const { slocInput } = this.state.input
         const estimateStep = 
               <Step.Group attached='top'>
-                <Step active = {ProjectTimeModal} completed ={!ProjectTimeModal} onClick={this.show('ProjectTimeModal')}
+                <Step active = {ProjectTimeModal} completed ={!ProjectTimeModal} onClick={() => {this.show('ProjectTimeModal')}}
                     className="estimate_step">
                     <Icon name='clock' size='large'/>
                   <Step.Content>
@@ -551,7 +589,7 @@ class Estimate extends React.Component {
                   </Step.Content>
                 </Step>
 
-                <Step active = {SLOCModal} completed ={((ProjectTimeModal == false) && (SLOCModal == false)) ? true : false} onClick={this.show('SLOCModal')}
+                <Step active = {SLOCModal} completed ={((ProjectTimeModal == false) && (SLOCModal == false)) ? true : false} onClick={() => {this.show('SLOCModal')}}
                     className="estimate_step">
                     <Icon name='align justify' size='large'/>
                   <Step.Content>
@@ -561,7 +599,7 @@ class Estimate extends React.Component {
                 </Step>
 
                 <Step active = {ScaleFactorModal} completed={((ProjectTimeModal == false) && (SLOCModal == false) && (ScaleFactorModal == false)) ? true : false}
-                      onClick={this.show('ScaleFactorModal')}
+                      onClick={() => {this.show('ScaleFactorModal')}}
                       className="estimate_step">
                   <Icon name='signal' size='large'/>
                   <Step.Content>
@@ -571,7 +609,7 @@ class Estimate extends React.Component {
                 </Step>
 
                 <Step active = {CostDriverModal} completed={((ProjectTimeModal == false) && (SLOCModal == false) && (ScaleFactorModal == false) && (CostDriverModal == false)) ? true : false}
-                      onClick={this.show('CostDriverModal')}
+                      onClick={() => this.show('CostDriverModal')}
                       className="estimate_step">
                   <Icon name='tasks' size='large'/>
                   <Step.Content>
@@ -581,7 +619,7 @@ class Estimate extends React.Component {
                 </Step>
 
                 <Step active = {SuitableStaffsModal} completed={((ProjectTimeModal == false) && (SLOCModal == false) && (ScaleFactorModal == false) && (CostDriverModal == false) && (SuitableStaffsModal == false)) ? true : false}
-                    onClick={this.show('SuitableStaffsModal')}
+                    onClick={() => this.show('SuitableStaffsModal')}
                     className="estimate_step">
                   <Icon name='trophy' size='large'/>
                   <Step.Content>
@@ -590,7 +628,7 @@ class Estimate extends React.Component {
                   </Step.Content>
                 </Step>
 
-                <Step active = {SummaryProjectModal} onClick={this.show('SummaryProjectModal')}
+                <Step active = {SummaryProjectModal} onClick={() => this.show('SummaryProjectModal')}
                     className="estimate_step">
                   <Icon name='checkmark box' size='large'/>
                   <Step.Content>
@@ -613,11 +651,14 @@ class Estimate extends React.Component {
                 {/*<Button type='button' color='orange' onClick={this.show('SLOCModal')}><Icon name='wizard' /> Find suitable team</Button>*/}
               <Icon name="add circle" size={'large'} style={{float: 'right', cursor: 'pointer'}} 
                     onClick={() => {this.showCreateMode()}}/>
-                <EstimateMode />
+                <EstimateMode 
+                    showEstimateModal={this.show}
+                    showModal={this.showModal}
+                />
                 <Modal 
                     id = "project-time-modal"
                     size="fullscreen"
-                    open={ProjectTimeModal} onClose={this.close('ProjectTimeModal')}
+                    open={ProjectTimeModal} onClose={() => this.close('ProjectTimeModal')}
                     closeOnDimmerClick={false}
                     closeOnDocumentClick={false}
                     className="estimate_modal"
@@ -653,15 +694,15 @@ class Estimate extends React.Component {
                   </Modal.Description>
                 </Modal.Content>
                 <Modal.Actions>
-                    <Button onClick={this.close('ProjectTimeModal')} > <Icon name='remove' /> Hủy bỏ </Button>
-                    <Button onClick={this.show('SLOCModal')} primary> Tiếp <Icon name='right chevron' /></Button>
+                    <Button onClick={() => this.close('ProjectTimeModal')} > <Icon name='remove' /> Hủy bỏ </Button>
+                    <Button onClick={() => this.show('SLOCModal')} primary> Tiếp <Icon name='right chevron' /></Button>
                 </Modal.Actions>
                 </Modal>
 
                 <Modal 
                     id = "fp-modal"
                     size="fullscreen"
-                    open={SLOCModal} onClose={this.close('SLOCModal')}
+                    open={SLOCModal} onClose={() => this.close('SLOCModal')}
                     closeOnDimmerClick={false}
                     closeOnDocumentClick={false}
                     className="estimate_modal"
@@ -703,15 +744,15 @@ class Estimate extends React.Component {
                   </Modal.Description>
                 </Modal.Content>
                 <Modal.Actions>
-                    <Button onClick={this.show('ProjectTimeModal')} > <Icon name='left chevron' /> Quay lại  </Button>
-                    <Button onClick={this.show('ScaleFactorModal')} primary disabled={!this.props.functionPointReducer.isFunctionPointDone && fpVisible}> Tiếp <Icon name='right chevron' /></Button>
+                    <Button onClick={() => this.show('ProjectTimeModal')} > <Icon name='left chevron' /> Quay lại  </Button>
+                    <Button onClick={() => this.show('ScaleFactorModal')} primary disabled={!this.props.functionPointReducer.isFunctionPointDone && fpVisible}> Tiếp <Icon name='right chevron' /></Button>
                 </Modal.Actions>
                 </Modal>
 
                 <Modal 
                     id = "scale-driver-modal"
                     size="fullscreen"
-                    open={ScaleFactorModal} onClose={this.close('ScaleFactorModal')}
+                    open={ScaleFactorModal} onClose={() => this.close('ScaleFactorModal')}
                     closeOnDimmerClick={false}
                     closeOnDocumentClick={false}
                     className="estimate_modal"
@@ -723,15 +764,15 @@ class Estimate extends React.Component {
                   </Modal.Description>
                 </Modal.Content>
                 <Modal.Actions>
-                    <Button onClick={this.show('SLOCModal')} > <Icon name='left chevron' /> Quay lại </Button>
-                    <Button onClick={this.show('CostDriverModal')} primary> Tiếp <Icon name='right chevron' /></Button>
+                    <Button onClick={() => this.show('SLOCModal')} > <Icon name='left chevron' /> Quay lại </Button>
+                    <Button onClick={() => this.show('CostDriverModal')} primary> Tiếp <Icon name='right chevron' /></Button>
                 </Modal.Actions>
                 </Modal>
 
                 <Modal 
                     id = "cost-driver-modal"
                     size="fullscreen"
-                    open={CostDriverModal} onClose={this.close('CostDriverModal')}
+                    open={CostDriverModal} onClose={() => this.close('CostDriverModal')}
                     closeOnDimmerClick={false}
                     closeOnDocumentClick={false}
                     className="estimate_modal"
@@ -743,15 +784,15 @@ class Estimate extends React.Component {
                   </Modal.Description>
                 </Modal.Content>
                 <Modal.Actions>
-                    <Button onClick={this.show('ScaleFactorModal')} > <Icon name='left chevron' /> Quay lại </Button>
-                    <Button onClick={this.show('SuitableStaffsModal')} color='blue'> Ước lượng  <Icon name='chevron right' /></Button>
+                    <Button onClick={() => this.show('ScaleFactorModal')} > <Icon name='left chevron' /> Quay lại </Button>
+                    <Button onClick={() => this.show('SuitableStaffsModal')} color='blue'> Ước lượng  <Icon name='chevron right' /></Button>
                 </Modal.Actions>
                 </Modal>
 
                 <Modal 
                     id = "suitable-staff-modal"
                     size="fullscreen"
-                    open={SuitableStaffsModal} onClose={this.close('SuitableStaffsModal')}
+                    open={SuitableStaffsModal} onClose={() => this.close('SuitableStaffsModal')}
                     closeOnDimmerClick={false}
                     closeOnDocumentClick={false}
                     className="estimate_modal"
@@ -776,10 +817,10 @@ class Estimate extends React.Component {
                   </Modal.Description>
                 </Modal.Content>
                 <Modal.Actions>
-                    <Button onClick={this.show('ProjectTimeModal')} > <Icon name='repeat' color='black'/> Thử lại </Button>
-                    <Button onClick={this.show('CostDriverModal')} > <Icon name='left chevron' /> Quay lại </Button>
+                    <Button onClick={() => this.show('ProjectTimeModal')} > <Icon name='repeat' color='black'/> Thử lại </Button>
+                    <Button onClick={() => this.show('CostDriverModal')} > <Icon name='left chevron' /> Quay lại </Button>
                     <Button onClick={this.openTimeline('StaffAfforableTimelineModal')} color='orange'> Dòng thời gian nhân viên <Icon name='clock' /></Button>
-                    <Button onClick={this.show('SummaryProjectModal')} color='green' 
+                    <Button onClick={() => this.show('SummaryProjectModal')} color='green' 
                         disabled={(!this.state.isGetSuitableStaffDone)}>
                         <Icon name='checkmark' /> Chấp nhận nhân viên
                     </Button>
@@ -789,7 +830,7 @@ class Estimate extends React.Component {
                 <Modal 
                     id = "summary-project-modal"
                     size="fullscreen"
-                    open={SummaryProjectModal} onClose={this.close('SummaryProjectModal')}
+                    open={SummaryProjectModal} onClose={() => this.close('SummaryProjectModal')}
                     closeOnDimmerClick={false}
                     closeOnDocumentClick={false}
                     className="estimate_modal"
@@ -797,11 +838,17 @@ class Estimate extends React.Component {
                 <Modal.Header>{estimateStep}</Modal.Header>
                 <Modal.Content className="estimate_maxHeight" scrolling>
                   <Modal.Description>
-                    <ProjectNewForm />
+                    <ProjectNewForm 
+                        isDisabled={this.props.projectReducer.createMode == COMPLETELY_AUTO_PICK_STAFF}
+                        onlyPickStaff={false}
+                        onlyCreateProject={false}
+                        closeEstimateModal={this.close}
+                        modal="SummaryProjectModal"
+                    />
                   </Modal.Description>
                 </Modal.Content>
                 <Modal.Actions>
-                    <Button onClick={this.show('SuitableStaffsModal')} > <Icon name='left chevron' /> Quay lại </Button>
+                    <Button onClick={() => this.show('SuitableStaffsModal')} > <Icon name='left chevron' /> Quay lại </Button>
                     <Button 
                         onClick={() => {
                                 this.close('SummaryProjectModal');
@@ -826,6 +873,67 @@ class Estimate extends React.Component {
                 </Modal.Content>
                 <Modal.Actions>
                     <Button onClick={this.closeTimeline('StaffAfforableTimelineModal')} > <Icon name='remove' /> Đóng </Button>
+                </Modal.Actions>
+                </Modal>
+
+                <Modal 
+                    id = "create-project-modal"
+                    size="fullscreen"
+                    open={CreateProjectModal} onClose={() => this.close('CreateProjectModal')}
+
+                    // className="estimate_modal"
+                    >
+                <Modal.Header>Tạo dự án</Modal.Header>
+                <Modal.Content className="estimate_maxHeight" scrolling>
+                  <Modal.Description>
+                    <ProjectNewForm 
+                        isDisabled={false}
+                        onlyPickStaff={false}
+                        onlyCreateProject={true}
+                        closeEstimateModal={this.close}
+                        modal="CreateProjectModal"
+                    />
+                  </Modal.Description>
+                </Modal.Content>
+                <Modal.Actions>
+                    <Button onClick={() => this.close('CreateProjectModal')} > <Icon name='remove' /> Hủy bỏ </Button>
+                    <Button 
+                        onClick={() => {
+                                document.getElementById('create_new_project').click();
+                            }
+                        }
+                        primary> Tạo dự án <Icon name='right chevron' /></Button>
+                </Modal.Actions>
+                </Modal>
+
+                <Modal 
+                    id = "pre-pick-staff-modal"
+                    size="fullscreen"
+                    open={PrePickStaffModal} onClose={() => this.close('PrePickStaffModal')}
+
+                    // className="estimate_modal"
+                    >
+                <Modal.Header>Chọn trước một số nhân viên</Modal.Header>
+                <Modal.Content className="estimate_maxHeight" scrolling>
+                  <Modal.Description>
+                    <ProjectNewForm 
+                        isDisabled={false}
+                        onlyPickStaff={true}
+                        onlyCreateProject={false}
+                        closeEstimateModal={this.close}
+                        modal="PrePickStaffModal"
+                    />
+                  </Modal.Description>
+                </Modal.Content>
+                <Modal.Actions>
+                    <Button onClick={() => this.close('PrePickStaffModal')} > <Icon name='remove' /> Hủy bỏ </Button>
+                    <Button 
+                        onClick={() => {
+                                document.getElementById('apply_pre_pick_staff').click();
+                                this.show('ProjectTimeModal');
+                            }
+                        }
+                        primary> Áp dụng nhân viên <Icon name='right chevron' /></Button>
                 </Modal.Actions>
                 </Modal>
         </div>
@@ -857,7 +965,8 @@ const mapDispatchToProps = {
     changeBruteforceStaffs,
     setProjectCreatedStatus,
     changeVisibleState,
-    changeVisibleCreateModeModal
+    changeVisibleCreateModeModal,
+    changePrePickStaffs
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Estimate);

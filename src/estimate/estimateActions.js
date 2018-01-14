@@ -7,7 +7,8 @@ import {
     CHANGE_BRUTEFORCE_STAFFS,
     CHANGE_STAFF_REQUIREMENTS,
     RESET_ESTIMATED_RESULT,
-    CHANGE_ESTIMATE_MODE
+    CHANGE_ESTIMATE_MODE,
+    CHANGE_PRE_PICK_STAFFS
 } from './estimateConstants'
 
 import estimate from '../utils/estimate'
@@ -50,6 +51,10 @@ export function resetEstimateResult(newState){
 
 export function changeEstimateMode(newState){
     return {type: CHANGE_ESTIMATE_MODE, newState};   
+}
+
+export function changePrePickStaffs(newState){
+    return {type: CHANGE_PRE_PICK_STAFFS, newState};   
 }
 
 export function getSuitableStaffs(requirement) {

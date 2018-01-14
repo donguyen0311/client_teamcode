@@ -7,7 +7,8 @@ import {
     CHANGE_BRUTEFORCE_STAFFS,
     CHANGE_STAFF_REQUIREMENTS,
     RESET_ESTIMATED_RESULT,
-    CHANGE_ESTIMATE_MODE
+    CHANGE_ESTIMATE_MODE,
+    CHANGE_PRE_PICK_STAFFS
 } from './estimateConstants'
 const ESTIMATE_MODE_MANUAL = 0 ;
 const ESTIMATE_MODE_AUTO = 1 ;
@@ -45,8 +46,8 @@ const initialState = {
         // projectCostPerMonth: 0,
         totalProjectCost: 0,
         totalTimeTeamAfforable: 0
-
     },
+    prePickStaffsId: [],
     bruteforceStaffs:[],
     mode: ESTIMATE_MODE_AUTO
 };
@@ -92,6 +93,11 @@ export function estimateReducer(state = initialState, action) {
             return {
                 ...state,
                 mode: action.newState
+            };
+        case CHANGE_PRE_PICK_STAFFS:
+            return {
+                ...state,
+                prePickStaffsId: action.newState
             };
         case RESET_ESTIMATED_RESULT:
             return {

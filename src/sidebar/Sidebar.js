@@ -71,21 +71,23 @@ class SideBar extends React.Component {
     }    
 
     componentWillReceiveProps(nextProps) {
-        
-        if(Object.keys(nextProps.projectReducer.projectSaved).length > 0){
-            // console.log('nextProps.projectReducer.projectSaved.users',nextProps.projectReducer.projectSaved.users);
-            // console.log('this.props.profileUser.profile._id',this.props.profileUser.profile._id);
-            if(nextProps.projectReducer.projectSaved.users.indexOf(this.props.profileUser.profile._id) > -1)
-            {
-                let projects = [...this.state.projects];
+        if(nextProps.projectReducer.projectSaved !== undefined)
+        {
+            if(Object.keys(nextProps.projectReducer.projectSaved).length > 0){
+                // console.log('nextProps.projectReducer.projectSaved.users',nextProps.projectReducer.projectSaved.users);
+                // console.log('this.props.profileUser.profile._id',this.props.profileUser.profile._id);
+                if(nextProps.projectReducer.projectSaved.users.indexOf(this.props.profileUser.profile._id) > -1)
+                {
+                    let projects = [...this.state.projects];
 
-                projects.push(nextProps.projectReducer.projectSaved);
-            
-                this.setState({
-                    projects: projects
-                });
+                    projects.push(nextProps.projectReducer.projectSaved);
+                
+                    this.setState({
+                        projects: projects
+                    });
+                }
+                this.props.changeProjectSaved({});
             }
-            this.props.changeProjectSaved({});
         }
     }
 

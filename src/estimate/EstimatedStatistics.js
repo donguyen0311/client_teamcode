@@ -16,6 +16,24 @@ class EstimatedStatistics extends React.Component {
     constructor(props) {
         super(props);
         // this.close = this.close.bind(this);
+        this.distinctStaff = this.distinctStaff.bind(this);
+    }
+
+    distinctStaff(staffs){
+        if(staffs.length == 0)
+            return [];
+
+        let distinctStaffsId = [];
+        let distinctStaffs = [];
+        for(let staff of staffs)
+        {
+            if(distinctStaffsId.indexOf(staff._id)<0)
+            {
+                distinctStaffsId.push(staff._id);
+                distinctStaffs.push(staff);
+            }
+        }
+        return distinctStaffs;
     }
     // state = {
     //   modal: 
@@ -82,7 +100,7 @@ class EstimatedStatistics extends React.Component {
                     <Statistic size="tiny">
                       <Statistic.Value>
                         {
-                          this.props.estimateReducer.estimatedResult.suitableStaffs.length
+                          this.distinctStaff(this.props.estimateReducer.estimatedResult.suitableStaffs).length
                         } <Icon name='users'/>
                       </Statistic.Value>
                       <Statistic.Label>Người</Statistic.Label>

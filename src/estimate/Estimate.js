@@ -545,12 +545,18 @@ class Estimate extends React.Component {
         let projectE    = COEFFICIENT.B+0.01*(this.caculateScaleFactors(this.props.estimateReducer));
         let projectPMs = COEFFICIENT.A * Math.pow(this.props.estimateReducer.KLOC,projectE) * this.caculateEAF();
 
-        let projectACAPRequire = projectUserAbilityRequire.ACAP === undefined ? NOMINAL_RATING_VALUE : projectUserAbilityRequire.ACAP;
-        let projectPCAPRequire = projectUserAbilityRequire.PCAP === undefined ? NOMINAL_RATING_VALUE : projectUserAbilityRequire.PCAP;
-        let projectAPEXRequire = projectUserAbilityRequire.APEX === undefined ? NOMINAL_RATING_VALUE : projectUserAbilityRequire.APEX;
-        let projectPLEXRequire = projectUserAbilityRequire.PLEX === undefined ? NOMINAL_RATING_VALUE : projectUserAbilityRequire.PLEX;
-        let projectLTEXRequire = projectUserAbilityRequire.LTEX === undefined ? NOMINAL_RATING_VALUE : projectUserAbilityRequire.LTEX;
+        // let projectACAPRequire = projectUserAbilityRequire.ACAP === undefined ? NOMINAL_RATING_VALUE : projectUserAbilityRequire.ACAP;
+        // let projectPCAPRequire = projectUserAbilityRequire.PCAP === undefined ? NOMINAL_RATING_VALUE : projectUserAbilityRequire.PCAP;
+        // let projectAPEXRequire = projectUserAbilityRequire.APEX === undefined ? NOMINAL_RATING_VALUE : projectUserAbilityRequire.APEX;
+        // let projectPLEXRequire = projectUserAbilityRequire.PLEX === undefined ? NOMINAL_RATING_VALUE : projectUserAbilityRequire.PLEX;
+        // let projectLTEXRequire = projectUserAbilityRequire.LTEX === undefined ? NOMINAL_RATING_VALUE : projectUserAbilityRequire.LTEX;
        
+        let projectACAPRequire = 0;
+        let projectPCAPRequire = 0;
+        let projectAPEXRequire = 0;
+        let projectPLEXRequire = 0;
+        let projectLTEXRequire = 0;
+
         for(let ACAP=projectACAPRequire;ACAP<=4;ACAP++)
             for(let PCAP=projectPCAPRequire;PCAP<=4;PCAP++)
                 for(let APEX=projectAPEXRequire;APEX<=4;APEX++)

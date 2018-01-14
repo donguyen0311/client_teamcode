@@ -92,7 +92,7 @@ class EstimateMode extends React.Component {
 				          	 		}
 				          	 	>
 					            	<Icon name="refresh" size="huge" /><br/>
-					            	TỰ ĐỘNG CHỌN NHÂN VIÊN
+					            	SỬ DỤNG ƯỚC LƯỢNG
 				            	</Grid.Column>
 				            	
 				            	<Grid.Column width={8} textAlign="center" className="cursor-pointer-hover manual-pick-staff"
@@ -103,7 +103,7 @@ class EstimateMode extends React.Component {
 				            		}
 				            	>
 					            	<Icon name="configure" size="huge" /><br/>
-					            	CHỌN NHÂN VIÊN BẰNG TAY
+					            	KHÔNG SỬ DỤNG ƯỚC LƯỢNG
 					          	</Grid.Column>
 				            </Grid>
 				          </Container>

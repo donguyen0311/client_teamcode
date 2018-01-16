@@ -334,7 +334,7 @@ class Project extends React.Component {
 			});
 			this.props.socket.emit('Task:joinRoom', nextProps.match.url);
 			var projectId = this.getQueryParams(nextProps.location.search, 'id');
-			axios.get(`/api/projects/${projectId}?project_name=${this.props.match.params.project}`, {headers: { 'x-access-token': localStorage.token } })
+			axios.get(`/api/projects/${projectId}?project_name=${nextProps.match.params.project}`, {headers: { 'x-access-token': localStorage.token } })
 				.then(response => {
 					console.log(response);
 					this.setState({

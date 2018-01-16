@@ -47,15 +47,15 @@ export const SCALE_FACTORS =[
 				},
 				{
 					value: 2.03,
-					description: 'General conformity.'
+					description: 'Tuân theo những điều chung.'
 				},
 				{
 					value: 1.01,
-					description: 'Some conformity.'
+					description: 'Tuân theo một vài điều.'
 				},
 				{
 					value: 0,
-					description: 'General goals.'
+					description: 'Những mục tiêu phổ biến.'
 				}
 			],
 			description: 'Tính mềm dẻo khi phát triển.'
@@ -74,22 +74,22 @@ export const SCALE_FACTORS =[
 				},
 				{
 					value: 4.24,
-					description: 'Often (60%).'
+					description: 'Đáp ứng nhiều (60%)'
 				},
 				{
 					value: 2.83,
-					description: 'Generally (75%).'
+					description: 'Đáp ứng được tổng quát (75%).'
 				},
 				{
 					value: 1.41,
-					description: 'Mostly (90%).'
+					description: 'Đáp ứng hầu hết (90%).'
 				},
 				{
 					value: 0,
-					description: 'Full (100%).'
+					description: 'Đáp ứng đầy đủ (100%).'
 				}
 			],
-			description: 'Architecture / Risk Resolution.'
+			description: 'Mức độ hoàn hảo về kiến trúc hoặc kế hoạch xử lý rủi ro.'
 		},
 	},
 	{
@@ -97,30 +97,30 @@ export const SCALE_FACTORS =[
 			rating: [
 				{
 					value: 5.48,
-					description: 'Very difficult interactions.'
+					description: 'Rất khó để tương tác.'
 				},
 				{
 					value: 4.38,
-					description: 'Some difficult interactions.'
+					description: 'Gặp một vài khó khăn trong việc tương tác.'
 				},
 				{
 					value: 3.29,
-					description: 'Basically copperative interactions.'
+					description: 'Có sự hợp tác và tương tác cơ bản.'
 				},
 				{
 					value: 2.19,
-					description: 'Largely cooperative.'
+					description: 'Có sự hợp tác tốt.'
 				},
 				{
 					value: 1.1,
-					description: 'Highly cooperative.'
+					description: 'Có sự hợp tác cao.'
 				},
 				{
 					value: 0,
-					description: 'Seamless interactions.'
+					description: 'Có sự hợp tác trôi chảy.'
 				}
 			],
-			description: 'Team cohesion.'
+			description: 'Khả năng gắn kết của các thành viên trong nhóm.'
 		}
 	},
 	{
@@ -128,27 +128,27 @@ export const SCALE_FACTORS =[
 			rating: [
 				{
 					value: 7.8,
-					description: 'CCM Level 1 (lower half).'
+					description: 'CCM cấp độ 1 (nửa dưới).'
 				},
 				{
 					value: 6.24,
-					description: 'CCM Level 1 (upper half).'
+					description: 'CCM cấp độ 1 (nửa trên).'
 				},
 				{
 					value: 4.68,
-					description: 'CMM Level 2.'
+					description: 'CMM cấp độ 2.'
 				},
 				{
 					value: 3.12,
-					description: 'CCM Level 3.'
+					description: 'CCM cấp độ 3.'
 				},
 				{
 					value: 1.56,
-					description: 'CMM Level 4.'
+					description: 'CMM cấp độ 4.'
 				},
 				{
 					value: 0,
-					description: 'CMM Level 5.'
+					description: 'CMM cấp độ 5.'
 				}
 			],
 			description: 'Process Maturity.'
@@ -303,7 +303,7 @@ export const EAF = [
 					value: 0
 				}
 			],
-			description: 'Yêu cầu document.'
+			description: 'Số lượng tài liệu hướng dẫn.'
 		},
 	},{
 		TIME:{
@@ -572,19 +572,19 @@ export const EAF = [
 				},
 				{
 					value: 1.09,
-					description: 'simple frontend, backend CASE, little integration.'
+					description: 'Độ tích hợp ít với các quy trình, phương pháp.'
 				},
 				{
 					value: 1,
-					description: 'basic lifecycle tools, moderately intergrated.'
+					description: 'Hỗ trợ cơ bản quản lý các vòng đời, độ tích hợp trung bình với các quy trình, phương pháp.'
 				},
 				{
 					value: 0.9,
-					description: 'strong mature lifecycle tools, moderately intergrated.'
+					description: 'Hỗ trợ tốt quản lý các vòng đời, độ tích hợp trung bình với các quy trình, phương pháp.'
 				},
 				{
 					value: 0.78,
-					description: 'strong mature proactive lifecycle tools, well intergrated with processes, methods, reuse.'
+					description: 'Hỗ trợ tốt và thuần thục khi quản lý các vòng đời, độ tích hợp tốt với các quy trình, phương pháp.'
 				},
 				{
 					value: 0
@@ -620,7 +620,7 @@ export const EAF = [
 					description: 'Tập hợp cùng một nơi.'
 				}
 			],
-			description: 'Mức độ phân tán khi có nhiều bên cùng phát triển dự án.'
+			description: 'Mức độ tập trung về địa lý khi có nhiều bên cùng phát triển dự án.'
 		},
 	},{
 		SCED:{

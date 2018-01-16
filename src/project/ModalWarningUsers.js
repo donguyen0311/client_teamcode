@@ -21,11 +21,15 @@ class ModalWarningUsers extends React.Component {
     closeModal = () => this.setState({ openModal: false })
 
     getUserReplace(users, project) {
-        var warningUserList = Object.keys(project.warning_list);
-        var warningUser = users.filter((user) => {
-            return _.indexOf(warningUserList, user._id) > -1;
-        });
-        return warningUser;
+        if(project.warning_list && project.warning_list.length > 0)
+        {
+            var warningUserList = Object.keys(project.warning_list);
+            var warningUser = users.filter((user) => {
+                return _.indexOf(warningUserList, user._id) > -1;
+            });
+            return warningUser;
+        }
+        return [];
     }
 
     componentDidMount() {
